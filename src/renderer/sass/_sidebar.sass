@@ -1,0 +1,63 @@
+#sidebar
+  position: fixed
+  width: 25rem
+  height: 100%
+  display: flex
+  flex-direction: column
+  align-items: flex-start
+  border-right: 2px solid $border
+  z-index: 10
+  & .logo
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 100%
+    height: 65px
+    color: #fff
+    margin-top: 20px
+    margin-bottom: 30px
+    & img
+      width: auto
+      height: 65px
+      margin-right: 15px
+    & h2
+      display: flex
+      font-family: $font_bold
+      color: #ff4000
+      font-size: 2rem
+  & .dir_list
+    width: 100%
+    list-style-type: none
+    & li
+      padding: 15px 25px
+      width: 100%
+      cursor: pointer
+      font-size: 1.5rem
+      &:hover
+        background-color: #eee
+  & .search
+    position: relative
+    align-self: center
+    display: flex
+    justify-content: center
+    width: 80%
+    margin-bottom: 30px
+    & .fa
+      position: absolute
+      left: 15px
+      top: 10px
+      font-size: 1.6rem
+      color: #cecccc
+    & input
+      width: 100%
+      height: 45px
+      border-radius: 3px 
+      background-color: transparent
+      border: 1px solid $border
+      box-shadow: inset 0 0 6px 1px rgba(92, 101, 117, 0.18)
+      padding: 0 15px 0 50px
+      &:active, &:focus
+        outline: none
+        & ~ .search .fa
+          color: #000
+        
