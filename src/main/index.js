@@ -29,16 +29,16 @@ function createWindow () {
     height: 700,
     minWidth: 900,
     minHeight: 600,
-    movable: true,//может ли окно перемещаться. В Linux это не реализовано
-    opacity: 0.95,
+    //movable: true,//может ли окно перемещаться. В Linux это не реализовано
+    opacity: 1,
     frame: false,
     visualEffectState: 'active',
-    vibrancy: "sidebar",
+    //vibrancy: "sidebar",
     
     // vibrancyState: 'active',
     //transparent: true,
     //backgroundColor: "#00000000",
-    titleBarStyle: 'hiddenInset',
+    //titleBarStyle: 'hiddenInset',
     webPreferences: {
       nodeIntegration: true,
       // nodeIntegrationInWorker: true
