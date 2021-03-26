@@ -1,17 +1,19 @@
 .addcontent
-  position: fixed
+  position: absolute
   display: flex
   justify-self: center
   align-items: center
   bottom: 0
-  right: 0
+  left: 0
   height: 120px
-  width: 80rem
+  width: 100%
   padding: 20px
   background-color: #fff
   transition: all .3s ease
+  &.is_active
+    height: auto
   &:hover
-    box-shadow: 10px 5px 10px 5px rgba(92, 101, 117, 0.18)
+    box-shadow: 5px 3px 10px 5px rgba(92, 101, 117, 0.18)
     height: 220px
     transition: all .3s ease
 #drag-file

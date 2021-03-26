@@ -1,6 +1,7 @@
 <template>
   <div id="header">
     <div class="user_container" @click="notice">
+      <avatar :username="username" :size="42"></avatar>
       <div 
         v-bind:class="this.notifyed.length > 0 ? 'notice is_active' : 'notice'" ref="notice" 
         @click="shownotify=!shownotify"
@@ -8,8 +9,7 @@
           <i class="fa fa-bell-o"></i>
           <span class="notice_count">{{ notifyed.length >= 99 ? 99 :  notifyed.length }}</span>
         </div>
-      <avatar :username="username" :size="42"></avatar>
-      <u class="notice_list">
+      <u class="notice_list" v-show="shownotify">
         <li v-for="(notice, i) in notifyed" :key="notice.title+'-'+i" class="notice_item">
         <div class="notice_item_wrap" :style="{backgroundColor: notice.bgColor, color: notice.color}">
           <h6><i :class="'fa '+notice.icon" @click="closeNotify($event, i)"></i> {{notice.title}}</h6>
@@ -71,20 +71,17 @@ export default {
       // if (audio) {
       //     audio.play();
       // }
-      let myNotification = new Notification("Title", {
-        body: this.username,
-        timeoutType: 'never',
-        audio: this.$path.join(__dirname, '/static/notify.mp3'),
-        hasReply: true
-      });
-      console.log(myNotification)
-      myNotification.onclick = () => {
-        console.log('Notification clicked')
-        myNotification.close()
-      }
-      // setInterval(()=>{
-      //   myNotification.shownotify()
-      // }, 3000)
+      // let myNotification = new Notification("Title", {
+      //   body: this.username,
+      //   timeoutType: 'never',
+      //   audio: this.$path.join(__dirname, '/static/notify.mp3'),
+      //   hasReply: true
+      // });
+      // console.log(myNotification)
+      // myNotification.onclick = () => {
+      //   console.log('Notification clicked')
+      //   myNotification.close()
+      // }
     },
     closeNotify($event, i){
       let that = this

@@ -10,22 +10,22 @@
             <app-header></app-header>
             <b-table hover :items="dirContent" :fields="fields">
               <template #cell(name)="data">
-                <div class="rows" @contextmenu.prevent="contextMenu(data)">
+                <div class="rows" @contextmenu.prevent="contextMenu($event,data)">
                   {{data.item.name}}
                 </div>
               </template>
                     <template #cell(createDateTime)="data">
-                <div class="rows" @contextmenu.prevent="contextMenu(data)">
+                <div class="rows" @contextmenu.prevent="contextMenu($event,data)">
                   {{data.item.createDateTime}}
                 </div>
               </template>
                     <template #cell(changeDataTime)="data">
-                <div class="rows" @contextmenu.prevent="contextMenu(data)">
+                <div class="rows" @contextmenu.prevent="contextMenu($event,data)">
                   {{data.item.changeDataTime}}
                 </div>
               </template>
                     <template #cell(size)="data">
-                <div class="rows" @contextmenu.prevent="contextMenu(data)">
+                <div class="rows" @contextmenu.prevent="contextMenu($event,data)">
                   {{data.item.size}}
                 </div>
               </template>
@@ -42,6 +42,7 @@
                 Удалить
               </li>
             </context-menu>
+
             <div class="addcontent" v-if="showLoader">
               <DragDroup/>
             </div>
@@ -73,6 +74,10 @@ export default {
       contextActiveItem: null,
       showContextMenu: false,
       showLoader: false,
+      style: {
+        top: '',
+        left: ''
+      },
       fields: [
         {
           key: "name",
@@ -113,8 +118,35 @@ export default {
     };
   },
   methods: {
-    contextMenu(data){
+    contextMenu(event, data){
       this.contextActiveItem = data
+      console.log(data)
+      this.style.top = event.clientY
+      this.style.left = event.clientX
+      this.outsideClick(event.target);
+      this.showContextMenu = true
+    },
+    outsideClick(elem) {
+      let that = this
+      function outsideClickListener(event) {
+        if (!elem.contains(event.target) && isVisible(elem)) {
+          that.showContextMenu = false
+          document.removeEventListener('click', outsideClickListener);
+        }
+        
+      }
+      document.addEventListener('click', outsideClickListener);
+      function isVisible(elem) {
+        //открыто ли условное окно
+        return (
+          !!elem &&
+          !!(
+            elem.offsetWidth ||
+            elem.offsetHeight ||
+            elem.getClientRects().length
+          )
+        );
+      }
     },
     contextItemClick(option) {
       if (option == "notice") {

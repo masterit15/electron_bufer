@@ -1,10 +1,25 @@
 #header
-  -webkit-app-region: drag
+  // -webkit-app-region: drag
   width: 100%
   height: 60px
   display: flex
-  justify-content: space-between
-  padding: 0 15px
+  justify-content: flex-end
+  .user
+    &_container
+      width: 250px
+      display: flex
+      justify-content: space-between
+      z-index: 10
+  .notice
+    line-height: 60px
+    height: 45px
+    cursor: pointer
+    &_list
+      position: fixed
+      top: 60px
+      right: 0
+      width: 280px
+      height: auto
   .notifyed
     position: absolute
     right: 120px

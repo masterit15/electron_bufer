@@ -6,65 +6,37 @@
     </div>
     <div class="search">
       <i class="fa fa-search"></i>
-      <input type="search" name="" id="" placeholder="Поиск">
+      <input type="search" v-model="search" id="" placeholder="Поиск">
     </div>
     <ul class="dir_list">
-      <li v-for="(dir, index) in dirList" :key="index" @click="dirClick(dir)">{{dir}}</li>
+      <li :class="activeDepartament == departament.id ? 'is_active' : ''" v-for="(departament, index) in departamentsList" :key="index" @click="dirClick(departament)">{{departament.name}}</li>
     </ul>
   </div>
 </template>
 <script>
+import {mapActions, mapGetters} from 'vuex'
 export default {
   data() {
     return {
-      activeDir: ''
+      activeDepartament: null,
+      search: ''
     }
   },
   computed: {
-    dirList(){
-      let list = []
-      this.$fs.readdirSync(this.$path.resolve('./'), { withFileTypes: true }).map(d => {
-        const stats = this.$fs.statSync(d);
-        if(stats.isDirectory()){
-          list.push(d)
-        }
+    ...mapGetters(['departaments']),
+    departamentsList(){
+      return this.departaments.filter(departament => {
+        return departament.name.toLowerCase().includes(this.search.toLowerCase())
       })
-      return list
     }
   },
-  watch: {
-    // activeDir(){
-    //   // let watcher = this.$chokidar.watch(this.$path.resolve(this.activeDir), { persistent: true });
-    //   // watcher
-    //   //   .on('add', function(path) {console.log('File', path, 'has been added');})
-    //   //   .on('change', function(path) {console.log('File', path, 'has been changed');})
-    //   //   .on('unlink', function(path) {console.log('File', path, 'has been removed');})
-    //   //   .on('error', function(error) {console.error('Error happened', error);})
-    // }
-  },
   mounted() {
-    // this.$watchet.on('file-added', log => {
-    //     console.log(log.message);
-    // });
-    this.dirList.forEach(dir => {
-      // this.$fs.watch(this.$path.resolve(dir), (eventType, filename) => {
-      //   console.log(eventType);
-      //   console.log(filename);
-      //   // this.streamDir(this.$path.resolve(dir))
-      // })
-      // this.$watchet.watchFolder(this.$path.resolve(dir));
-    });
-    
 
-    
   },
   methods: {
-    dirClick(dir){
-      this.activeDir = dir
+    dirClick(departament){
+      this.activeDepartament = departament.id
       this.$emit('dir', dir)
-    },
-    onClick (text) {
-        alert(`You clicked ${text}!`);
     }
   },
 }

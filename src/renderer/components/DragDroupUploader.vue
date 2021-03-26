@@ -1,6 +1,7 @@
 <template>
   <div class="file_form">
     <div class="file_prev" v-if="files.length > 0">
+      
       <ul>
         <li v-for="(file, index) in files" :key="index">
           <i class="fa fa-file"></i> {{ file.name }}
@@ -9,6 +10,7 @@
           ></span>
         </li>
       </ul>
+      <button @click="uploadFiles">Загрузить</button>{{percent}}
     </div>
     <div id="drag-file" class="add_btn" @click="clickInput">
       <input type="file" @change="addFiles" id="files_input" multiple />
@@ -20,10 +22,12 @@
   </div>
 </template>
 <script>
+import {mapActions} from 'vuex'
 export default {
   data() {
     return {
       files: [],
+      percent: 0,
     };
   },
   mounted() {
@@ -67,6 +71,8 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['upload']),
+
     clickInput() {
       let input = document.getElementById("files_input");
       input.click();
@@ -79,6 +85,10 @@ export default {
     deleteFile(index) {
       this.files.splice(index, 1);
     },
+    uploadFiles(){
+      this.percent = this.upload(this.files)
+
+    }
   },
 };
 </script>
