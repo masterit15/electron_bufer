@@ -5,11 +5,33 @@
   padding: 0
   margin: 0
   box-sizing: border-box
+::selection
+  background: tomato
 body
   color: $dark
   // background-color: $dark
   overflow-x: hidden
   font-family: $font_regular
+.logo
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 100%
+  height: 65px
+  color: #fff
+  margin-top: 20px
+  margin-bottom: 30px
+  app-region: drag
+  -webkit-app-region: drag
+  & img
+    width: auto
+    height: 65px
+    margin-right: 15px
+  & h2
+    display: flex
+    font-family: $font_bold
+    color: #ff4000
+    font-size: 2rem
 #home
   display: flex
   justify-content: space-between
@@ -25,5 +47,6 @@ body
   border-top: 2px solid #e8e8e8
 @import 'header'
 @import 'sidebar'
+@import 'form'
 @import 'drag'
 @import 'smalltalk'

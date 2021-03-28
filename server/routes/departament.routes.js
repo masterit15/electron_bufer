@@ -11,11 +11,11 @@ router.post('/', async (req, res, next) =>{
     }
     Departament.create({
       name, 
-  }).then(users=>{
+  }).then(departament=>{
       return res.status(201).json({ 
           success: true,
           message: 'Департамент добавлен',
-          users
+          departament
       })
   }).catch((err)=>{
       return res.status(500).json({

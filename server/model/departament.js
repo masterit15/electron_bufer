@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require('../db')
 const Folder = require('./folder')
+const User = require('./user')
 const Departament = sequelize.define('departament', {
     id: {
       type: Sequelize.INTEGER,
@@ -10,7 +11,6 @@ const Departament = sequelize.define('departament', {
     },
     name: { type: Sequelize.STRING, allowNull: false},
   })
-
-Departament.hasMany(Folder);
+Departament.hasMany(User);
 
 module.exports = Departament

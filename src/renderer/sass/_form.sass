@@ -1,0 +1,181 @@
+.form
+  position: fixed
+  left: 0
+  top: 0
+  width: 100%
+  height: 100%
+  background-color: rgba(#fff, 0.5)
+  background-attachment: fixed
+  background-size: cover
+  background-repeat: no-repeat
+  background-position: 50% 50%
+  z-index: 100
+  &_auth
+    position: absolute
+    left: 0
+    right: 0
+    top: 0
+    bottom: 0
+    margin: auto
+    width: 400px
+    height: 100%
+    max-height: 430px
+    padding: 20px
+    display: flex
+    justify-content: flex-start
+    flex-direction: column
+    background: inherit
+    border-radius: 10px
+    overflow: hidden
+    box-shadow: 0 5px 10px 3px rgba(0, 0, 0, 0.3)
+    border: 1px solid rgba(#fff,0.2)
+    z-index: 10
+    &:before
+      content: ''
+      position: absolute
+      left: 0px
+      top: 0px
+      width: 100%
+      height: 100%
+      background-color: rgba(0, 0, 0, 0.18)
+      z-index: 0
+    &:after
+      content: ''
+      position: absolute
+      left: -20px
+      top: -20px
+      width: 110%
+      height: 110%
+      background: inherit
+      filter: blur(8px)
+      z-index: -1
+    
+.form-dropdown
+  position: absolute
+  left: 0
+  width: 100%
+  height: 0
+  margin: 0
+  padding: 0
+  list-style: none
+  overflow: hidden
+  background: #FFFFFF 
+  color: #333
+  z-index: 50
+  transition: 0.2s ease-in height, step-end box-shadow 0.2s
+  &.form-dropdown-open
+    box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2)
+  li
+    cursor: pointer
+    padding: 10px
+    user-select: none
+    &:hover
+      background-color: rgba(tomato,0.3)
+.btn
+  color: #fff
+  border: 2px solid tomato
+  width: 160px
+  margin: auto
+  z-index: 30
+  &:hover, &:focus, &:active
+    outline: none
+    color: #fff
+.form-field
+  font-size: 14px
+  position: relative
+  display: block
+  padding: 25px 0 10px 0
+  
+  & #ava
+    display: block
+    position: relative
+    background-size: cover
+    background-position: 50% 50%
+    background-attachment: scroll
+    background-repeat: no-repeat
+    width: 80px
+    height: 80px
+    border-radius: 100%
+    border: 2px dashed #fff
+    margin: auto
+    .delete_avatar
+      position: absolute
+      cursor: pointer
+      right: 0
+      top: 0
+      width: 22px
+      height: 22px
+      line-height: 22px
+      border-radius: 100%
+      background-color: #fff
+      box-shadow: $shadow
+      text-align: center
+  & .add_avatar
+    cursor: pointer
+    text-align: center
+    width: 80px
+    height: 80px
+    line-height: 80px
+    border-radius: 100%
+    margin: auto
+    border: 2px dashed rgba(#fff,0.5)
+    font-size: 3rem
+    color: rgba(#fff,0.5)
+    &:hover
+      border-color: #fff
+      color: #fff
+    .input_avatar
+      display: none
+  .form-field-label
+    position: absolute
+    display: block
+    top: 35px
+    left: 10px
+    transition: 0.2s ease all
+    pointer-events: none
+    cursor: text
+    color: #fff
+  input
+    padding: 10px 15px
+    display: block
+    width: 100%
+    border: none
+    font-size: 14px
+    border-radius: 5px
+    outline: none
+    background-color: transparent
+    border: 2px solid rgba(255, 255, 255, 0.28)
+    color: #fff
+    &:invalid
+      outline: none
+      box-shadow: none
+      color: tomato
+      ~ .form-field-label
+    &:valid ~ .form-field-label
+      top: 5px
+      left: 0
+      font-size: 14px
+    &:focus
+      outline: none
+      padding-bottom: 8px
+      border-bottom-width: 3px
+      border-bottom-color: tomato
+      ~
+        .form-field-label
+          top: 5px
+          left: 0
+          font-size: 14px
+          color: #fff
+        .form-dropdown
+          height: auto
+          min-height: 100px
+          box-shadow: $shadow
+          transition: 0.2s ease-out height, step-start box-shadow 0.2s
+      
+  &.form-field-invalid
+    color: #d50000
+    &::after
+      content: attr(data-validationError)
+    input:focus ~ .form-field-label
+      color: #d50000
+    

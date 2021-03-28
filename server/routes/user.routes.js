@@ -1,32 +1,40 @@
 const { Router } = require('express')
 const router = Router()
 const User = require('../model/user')
-
+const Token = require('../model/token')
+const Departament = require('../model/departament')
+const config = require('config')
+const jwt = require('jsonwebtoken')
 // метод добавления пользователя
 router.post('/', async (req, res, next) =>{
-    console.log(req.body)
-    let {login, permission, username, avatar} = req.body
+    const { login, permission, username, avatar, departament } = req.body
+    const departamentId = await getDepartamentId(departament)
     const candidate = await User.findOne({where: {login}})
     if(candidate){
         return res.json({message: 'Такой пользователь уже существует'})
     }
+    console.log(departamentId)
     User.create({
       login, 
       username,
       avatar, 
       permission, 
-  }).then(users=>{
-      return res.status(201).json({ 
-          success: true,
-          message: 'Пользователь создан',
-          users
-      })
+      departamentId
+  }).then(user=>{
+    const accessToken = generateAccessToken(user)
+    return res.status(201).json({ 
+        success: true,
+        message: 'Пользователь создан',
+        token: accessToken,
+        user
+    })
   }).catch((err)=>{
-      return res.status(500).json({
-          success: false,
-          message: 'Что-то пошло не так, попробуйте еще раз',
-          err
-      })
+      console.log('errrrr',err)
+    return res.status(500).json({
+        success: false,
+        message: 'Что-то пошло не так, попробуйте еще раз',
+        err
+    })
   });
 })
 
@@ -46,4 +54,28 @@ router.get('/', (req, res, next) =>{
         })
     });
 })
+function getDepartamentId(name){
+    return new Promise((resolve, reject)=>{
+        Departament.findOne({where: {name}})
+        .then(res=>{
+            if(res == null){
+                Departament.create({name}).then(res=>{
+                    resolve(res.dataValues.id)
+                })
+            }else{
+                resolve(res.dataValues.id)
+            }
+        })
+        .catch(err=>{
+            reject(err)
+        })
+    })
+}
+function generateAccessToken(user) {
+    let token =  jwt.sign({ userId: user.id, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
+    Token.create({
+        token
+    })
+    return token
+}
 module.exports = router

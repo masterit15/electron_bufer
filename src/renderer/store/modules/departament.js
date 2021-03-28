@@ -10,9 +10,13 @@ export default {
   },
   actions: {
     getDepartaments({commit}, data = {}){
-      let res = axios.get('http://localhost:5050/api/departament')
-
-      commit('setDepartaments', res.data.departaments)
+      axios.get('http://localhost:5050/api/departament')
+      .then(res=>{
+        commit('setDepartaments', res.data.departaments)
+      })
+      .catch(err=>{
+        console.log(err)
+      })
     }
   },
   getters: {

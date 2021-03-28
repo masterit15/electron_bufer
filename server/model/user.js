@@ -9,7 +9,7 @@ const User = sequelize.define('user', {
       allowNull: false
     },
     login: { type: Sequelize.STRING, allowNull: false},
-    avatar: { type: Sequelize.TEXT, allowNull: false},
+    avatar: { type: Sequelize.TEXT, allowNull: true},
     permission: {type: Sequelize.ENUM, values:['Администратор','Сотрудник'], defaultValue: 'Сотрудник'},
     username: { type: Sequelize.STRING, allowNull: false},
   })
