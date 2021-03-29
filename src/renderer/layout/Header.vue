@@ -1,14 +1,22 @@
 <template>
   <div id="header">
     <div class="user_container" @click="notice">
-      <avatar :username="username" :size="42"></avatar>
+      <div class="user">
+        <avatar :username="user.login" :size="42"></avatar>
+        {{user.login}}
+        <u class="dropdown">
+          <li>dropdown</li>
+          <li>dropdown</li>
+          <li @click="logout">Выйти</li>
+        </u>
+      </div>
       <div 
         v-bind:class="this.notifyed.length > 0 ? 'notice is_active' : 'notice'" ref="notice" 
         @click="shownotify=!shownotify"
         v-b-tooltip.hover :title="'Уводомлений: '+notifyed.length">
           <i class="fa fa-bell-o"></i>
           <span class="notice_count">{{ notifyed.length >= 99 ? 99 :  notifyed.length }}</span>
-        </div>
+      </div>
       <u class="notice_list" v-show="shownotify">
         <li v-for="(notice, i) in notifyed" :key="notice.title+'-'+i" class="notice_item">
         <div class="notice_item_wrap" :style="{backgroundColor: notice.bgColor, color: notice.color}">
@@ -21,14 +29,12 @@
   </div>
 </template>
 <script>
-import os from 'os'
-const username = os.userInfo().username
+import {mapGetters, mapActions} from 'vuex'
 import gsap from 'gsap'
 const tl = gsap.timeline()
 export default {
   data() {
     return {
-      username: username,
       shownotify: false,
       notifyed: [
         {title: "Test1", text: "werewrwer", icon: "fa-times", bgColor: '#f79696'+14, color: '#f79696'},
@@ -65,7 +71,11 @@ export default {
       tl.to(noti_item, { x: 100, opacity: 0, duration: .2, stagger: 0.1 })
     }
   },
+  computed: {
+    ...mapGetters(['user'])
+  },
   methods: {
+    ...mapActions(['logout']),
     notice(){
       const audio = new Audio('static/notify.mp3');
       // if (audio) {

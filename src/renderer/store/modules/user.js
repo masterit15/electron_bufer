@@ -1,32 +1,61 @@
 import axios from 'axios'
 export default {
   state: {
-    users: []
+    users: [],
+    user: JSON.parse(localStorage.getItem('user'))
   },
   mutations: {
     setUsers(state, users){
       state.users = users
+    },
+    setUser(state, user){
+      state.user = user
+    },
+    SOCKET_online(state, data){
+      let onlineUser = state.users.find(user=>Number(user.id) === Number(data.id))
+      onlineUser ? onlineUser.online = 'Y' : ''
+    },
+    SOCKET_offline(state, data){
+      let offlineUser = state.users.find(user=>Number(user.id) === Number(data.id))
+      offlineUser.online = 'N'
     }
   },
   actions: {
     getUsers({commit}, data = {}){
-      let res = axios.get('http://localhost:5050/api/user')
-      commit('setUsers', res.data.users)
+      axios.get('http://localhost:5050/api/user').then(res=>{
+        console.log('users', res.data.users)
+        commit('setUsers', res.data.users)
+      })
+      .catch(err=>{
+        console.log('getUsers error', err)
+      })
+      
     },
-    async addUsers({dispatch}, data = {}){
+    addUsers({commit}, data = {}){
       let params = {...data}
       axios.post('http://localhost:5050/api/user', params).then(res=>{
         console.log(res)
         let user = res.data.user
-        user.token = res.data.token
         localStorage.setItem('user', JSON.stringify(user))
+        commit('setUser', user)
       })
       .catch(err=>{
         console.log(err)
       })
     },
+    async logout({state}){
+      let user = await JSON.parse(localStorage.getItem('user'))
+      let res = await axios.delete('http://localhost:5050/api/user', {params:{token: user.token}})
+      if(res.data.success){
+        commit('setUser', [])
+        localStorage.removeItem('user')
+        delete axios.defaults.headers.common['Authorization']
+      }
+      return res.data.success
+    },
   },
   getters: {
-    users: state => state.users
+    users: state => state.users,
+    user: state => state.user
   }
 }

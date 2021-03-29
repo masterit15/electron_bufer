@@ -58,13 +58,8 @@ export default {
     }
   },
   mounted(){
-    let that = this
-    const refreshIntervalBg =setInterval(()=>{
-        fetch('https://picsum.photos/1200')
-        .then(res=>{
-          that.bgImage = res.url
-        })
-      }, 120000)
+    this.setIntervalBgcChange()
+    this.bodyFixed()
   },
   methods: {
     ...mapActions(['getDepartaments', 'addUsers']),
@@ -76,11 +71,22 @@ export default {
         departament: this.udepartament
       }
       this.addUsers(data)
-      // this.$db.insert(userInfo, function (err, newDoc) {   // Callback is optional
-      //     console.log(newDoc)
-      // });
       // this.$socket.emit("userJoined", userInfo)
       // this.$socket.emit("userRegister", userInfo)
+    },
+    bodyFixed(position='fixed'){
+      let body = document.querySelector('body')
+      body.style.position = position
+    },
+    setIntervalBgcChange(){
+      let that = this
+      let refreshIntervalBg = setInterval(()=>{
+          fetch('https://picsum.photos/1200')
+          .then(res=>{
+            that.bgImage = res.url
+          })
+        }, 120000)
+      return refreshIntervalBg
     },
     activeItem(item){
       console.log(item)
@@ -115,7 +121,8 @@ export default {
       })
     },
     beforeDestroy() {
-      clearInterval(refreshIntervalBg);
+      bodyFixed(position='relative')
+      clearInterval(this.setIntervalBgcChange());
     },
   }
 }

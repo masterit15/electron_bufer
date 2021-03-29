@@ -24,6 +24,11 @@ Vue.use(new VueSocketIO({
 import './sass/main.sass'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
+Vue.prototype.$http = axios
+if (localStorage.user) {
+  const tokenData = JSON.parse(localStorage.user)
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${tokenData.accessToken}`
+}
 
 Vue.prototype.$smalltalk = smalltalk
 Vue.prototype.$db = db

@@ -9,16 +9,22 @@ export default {
     }
   },
   actions: {
-    getFolders({commit}, data = {}){
-      let res = axios.get('http://localhost:5050/api/departament')
-      commit('setFolders', res.data.folders)
+    getFolders({commit}, departamentId = null){
+      axios.get('http://localhost:5050/api/folder', {params: {
+        departamentId
+      }})
+      .then(res=>{
+        commit('setFolders', res.data.folders)
+      })
+      .catch(err=>{
+        console.log('getFolders error', err)
+      })
     },
     addFolders({commit}, data = {}){
-      let res = axios.post('http://localhost:5050/api/departament', {params: {
+      let res = axios.post('http://localhost:5050/api/folder', {params: {
         ...data
       }
     })
-      commit('setFolders', res.data.folders)
     }
   },
   getters: {

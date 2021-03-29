@@ -12,5 +12,6 @@ const Departament = sequelize.define('departament', {
     name: { type: Sequelize.STRING, allowNull: false},
   })
 Departament.hasMany(User);
+Departament.hasMany(Folder);
 
 module.exports = Departament

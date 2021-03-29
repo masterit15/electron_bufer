@@ -8,8 +8,11 @@
       <i class="fa fa-search"></i>
       <input type="search" v-model="search" id="" placeholder="Поиск">
     </div>
-    <ul class="dir_list">
-      <li :class="activeDepartament == departament.id ? 'is_active' : ''" v-for="(departament, index) in departamentsList" :key="index" @click="dirClick(departament)">{{departament.name}}</li>
+    <ul v-if="!activeDepartament" class="departament_list">
+      <li :class="activeDepartament == departament.id ? 'is_active' : ''" v-for="(departament, index) in departamentsList" :key="index" @click="departamentClick(departament)">{{departament.name}}</li>
+    </ul>
+    <ul else class="folder_list">
+      <li :class="activeFolder == folder.id ? 'is_active' : ''" v-for="(folder, index) in folderList" :key="index" @click="folderClick(folder)">{{folder.name}}</li>
     </ul>
   </div>
 </template>
@@ -19,24 +22,35 @@ export default {
   data() {
     return {
       activeDepartament: null,
+      activeFolder: null,
       search: ''
     }
   },
   computed: {
-    ...mapGetters(['departaments']),
+    ...mapGetters(['departaments', 'folders']),
     departamentsList(){
       return this.departaments.filter(departament => {
         return departament.name.toLowerCase().includes(this.search.toLowerCase())
       })
+    },
+    folderList(){
+      return this.folders.filter(folder => {
+        return folder.name.toLowerCase().includes(this.search.toLowerCase())
+      })
     }
   },
-  mounted() {
-
+  created() {
+    this.getDepartaments()
   },
   methods: {
-    dirClick(departament){
+    ...mapActions(['getDepartaments', 'getFolders']),
+    departamentClick(departament){
       this.activeDepartament = departament.id
-      this.$emit('dir', dir)
+      this.getFolders(departament.id)
+    },
+    folderClick(folder){
+      activeFolder = folder.id
+      this.$emit('folder', departament)
     }
   },
 }

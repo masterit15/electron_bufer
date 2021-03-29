@@ -24,8 +24,18 @@ io.on('connection', socket => {
       departamentId
     })
   })
+  // срабатывает при входе
   socket.on('userJoined', data => {
     console.log(data)
+    socket.emit('online', data)
+  })
+  // срабатывает при выходе
+  socket.on('userLeft', data => {
+    console.log(data)
+    socket.emit('offline', data)
+    // let user = await User.findOne({ where: { id: data.userId } }); 
+    // user.online = "N";
+    // await user.save();
   })
   socket.on('disconnect', () => {
     console.log('disconnect')

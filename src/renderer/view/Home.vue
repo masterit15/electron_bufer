@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-3 p-0">
-          <app-sidebar v-on:dir="getDirContent"></app-sidebar>
+          <app-sidebar v-on:departament="getDirContent"></app-sidebar>
         </div>
         <div class="col-9 p-0">
           <div class="content">
@@ -42,7 +42,7 @@
                 Удалить
               </li>
             </context-menu>
-
+            <pre>{{users}}</pre>
             <div class="addcontent" v-if="showLoader">
               <DragDroup/>
             </div>
@@ -59,6 +59,7 @@ import AppHeader from "@/layout/Header";
 import ContextMenu from "@/components/ContextMenu";
 import DragDroup from "@/components/DragDroupUploader";
 import smalltalk from 'smalltalk'
+import {mapGetters} from 'vuex'
 function bytesToSize(bytes) {
   var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
   if (bytes == 0) return "0 Byte";
@@ -116,6 +117,9 @@ export default {
         { isActive: true, age: 38, first_name: "Jami", last_name: "Carney" },
       ],
     };
+  },
+  computed: {
+    ...mapGetters(['users'])
   },
   methods: {
     contextMenu(event, data){

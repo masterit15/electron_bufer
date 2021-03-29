@@ -28,6 +28,7 @@ router.post('/', async (req, res, next) =>{
 
 // метод получения департамента
 router.get('/', (req, res, next) =>{
+    console.log(req.params)
   Folder.findAll().then(folders=>{
       return res.status(201).json({ 
           success: true,

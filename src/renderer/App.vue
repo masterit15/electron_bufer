@@ -1,12 +1,13 @@
 <template>
   <div id="app">
-    <Form/>
-    <router-view></router-view>
+    <Form v-if="!user"/>
+    <router-view v-else></router-view>
   </div>
 </template>
 
 <script>
 import Form from "@/components/Form";
+import {mapGetters, mapActions} from 'vuex'
 export default {
   name: "bufer",
   sockets: {
@@ -15,7 +16,14 @@ export default {
     }
   },
   created(){
-    //this.$socket.emit("userJoined", userInfo)
+    this.getUsers()
+    this.$socket.emit("userJoined", this.user)
+  },
+  computed: {
+    ...mapGetters(['user'])
+  },
+  methods: {
+    ...mapActions(['getUsers'])
   },
   components: {
     Form,

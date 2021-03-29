@@ -9,7 +9,6 @@ const Folder = sequelize.define('folder', {
       allowNull: false
     },
     name: { type: Sequelize.STRING, allowNull: false},
-    path: { type: Sequelize.TEXT, allowNull: false},
   })
   Folder.hasMany(File);
 module.exports = Folder

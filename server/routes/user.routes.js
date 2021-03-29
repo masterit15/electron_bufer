@@ -1,8 +1,10 @@
 const { Router } = require('express')
 const router = Router()
+const auth = require('../middleware/auth.middleware')
 const User = require('../model/user')
 const Token = require('../model/token')
 const Departament = require('../model/departament')
+const Folder = require('../model/folder')
 const config = require('config')
 const jwt = require('jsonwebtoken')
 // метод добавления пользователя
@@ -21,11 +23,15 @@ router.post('/', async (req, res, next) =>{
       permission, 
       departamentId
   }).then(user=>{
-    const accessToken = generateAccessToken(user)
+    user.token = generateAccessToken(user)
+    Folder.create({
+        name: user.dataValues.username,
+        userId: user.dataValues.id,
+        departamentId: user.dataValues.departamentId
+    })
     return res.status(201).json({ 
         success: true,
         message: 'Пользователь создан',
-        token: accessToken,
         user
     })
   }).catch((err)=>{
@@ -38,8 +44,25 @@ router.post('/', async (req, res, next) =>{
   });
 })
 
-// метод получения пользователя
+// метод получения пользователей
 router.get('/', (req, res, next) =>{
+    User.findAll().then(users=>{
+        return res.status(201).json({ 
+            success: true,
+            message: 'Все пользователи',
+            users
+        })
+    }).catch((err)=>{
+        return res.status(500).json({
+            success: false,
+            message: 'Что-то пошло не так, попробуйте еще раз',
+            err
+        })
+    });
+})
+// метод получения пользователей
+router.delete('/', (req, res, next) =>{
+    const { token } = req.body
     User.findAll().then(users=>{
         return res.status(201).json({ 
             success: true,

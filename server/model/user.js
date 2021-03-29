@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require('../db')
 const Folder = require('./folder')
+const File = require('./file')
 const User = sequelize.define('user', {
     id: {
       type: Sequelize.INTEGER,
@@ -14,4 +15,5 @@ const User = sequelize.define('user', {
     username: { type: Sequelize.STRING, allowNull: false},
   })
 User.hasMany(Folder);
+User.hasMany(File);
 module.exports = User
