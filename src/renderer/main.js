@@ -20,7 +20,7 @@ Vue.use(new VueSocketIO({
     },
     // options: { path: "/my-app/" } //Optional options
 }))
-
+import 'simplebar'
 import './sass/main.sass'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))

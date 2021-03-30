@@ -3,7 +3,7 @@
     <div id="container">
       <app-sidebar v-on:departament="getDirContent"></app-sidebar>
       <div id="resizer"></div>
-      <div id="main" class="content">
+      <div id="main" class="content" data-simplebar>
         <app-header></app-header>
         <b-table hover :items="dirContent" :fields="fields">
           <template #cell(name)="data">
@@ -33,7 +33,9 @@
           <li @click.prevent="contextItemClick('rename')">Переименовать</li>
           <li @click.prevent="contextItemClick('delete')">Удалить</li>
         </context-menu>
-        <pre>{{ users }}</pre>
+        <pre>
+          {{ users }}
+          </pre>
         <div class="addcontent" v-if="showLoader">
           <DragDroup />
         </div>

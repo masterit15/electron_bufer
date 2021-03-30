@@ -1,15 +1,14 @@
 <template>
-https://github.com/johndyer24/electron-auto-update-example/blob/master/index.html
   <div id="app">
     <router-view></router-view>
     <div class="app_version">{{version}}</div>
-    <div id="notification" class="hidden">
+    <div id="notification" class="hidden" ref="notification">
       <p id="message"></p>
-      <button id="close-button" onClick="closeNotification()">
-        Close
+      <button id="close-button" @click="closeNotification" ref="close">
+        Закрыть
       </button>
-      <button id="restart-button" onClick="restartApp()" class="hidden">
-        Restart
+      <button id="restart-button" @click="restartApp" class="hidden" ref="restart">
+        Перезагрузить
       </button>
     </div>
   </div>
@@ -25,6 +24,12 @@ export default {
       console.log("socket connected");
     }
   },
+  data(){
+    return {
+      message: '',
+      version: ''
+    }
+  },
   created(){
     this.getUsers()
     this.$socket.emit("userJoined", this.user)
@@ -36,25 +41,15 @@ export default {
     ...mapActions(['getUsers']),
     chekUpdate(){
       let that = this 
-      const version = document.getElementById('version');
       ipcRenderer.send('app_version');
       ipcRenderer.on('app_version', (event, arg) => {
         ipcRenderer.removeAllListeners('app_version');
         that.version = 'Version ' + arg.version;
       });
-
-
-      const version = document.getElementById('version');
-      const notification = document.getElementById('notification');
-      const message = document.getElementById('message');
-      const restartButton = document.getElementById('restart-button');
-      
-      ipcRenderer.send('app_version');
-      ipcRenderer.on('app_version', (event, arg) => {
-        ipcRenderer.removeAllListeners('app_version');
-        version.innerText = 'Version ' + arg.version;
-      });
-
+      this.l
+      const notification = this.$refs.notification.target;
+      const restartButton = this.$refs.restart.target;
+      console.log('notification',notification)
       ipcRenderer.on('update_available', () => {
         ipcRenderer.removeAllListeners('update_available');
         that.message = 'Доступно новое обновление. Скачиваю прямо сейчас...';

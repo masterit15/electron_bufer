@@ -37,6 +37,11 @@ io.on('connection', socket => {
     // user.online = "N";
     // await user.save();
   })
+  // срабатывает при добавлении файла в папку
+  socket.on('userAddFiles', data => {
+    console.log('userJoined', data)
+    socket.emit('online', data)
+  })
   socket.on('disconnect', () => {
     console.log('disconnect')
   })

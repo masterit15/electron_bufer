@@ -1,31 +1,53 @@
 #sidebar
   height: 100%
   position: relative
+  overflow: hidden
   margin: 0
   padding: 0
   box-sizing: border-box
   min-width: 300px
-  & .folder_list
-    width: 100%
-    list-style-type: none
-    &_item
-      padding: 15px 25px
+  & .folder
+    &_list
       width: 100%
-      cursor: pointer
-      font-size: 1rem
-      &:hover,&.is_active
-        background-color: #eee
-      &_name
-        position: relative
+      list-style-type: none
+      &_head
+        cursor: pointer
         width: 100%
-        height: 100%
-        display: block
-        & .fa
-          position: absolute
-          right: 0
-          top: 0
-          bottom: 0
-          margin: auto
+        padding: 15px 20px
+        display: flex
+        justify-content: space-between
+        border-bottom: 1px solid tomato
+        &:hover
+          background-color: rgba(tomato,.3)
+        &_close
+          width: 100%
+          display: flex
+          justify-content: flex-start
+          height: 30px
+          line-height: 30px
+          white-space: nowrap
+          overflow: hidden
+          text-overflow: ellipsis
+          & .fa
+            margin-right: 15px
+            line-height: 30px
+      &_item
+        padding: 15px 25px
+        width: 100%
+        cursor: pointer
+        font-size: 1rem
+        &:hover,&.is_active
+          background-color: #eee
+        &_name
+          position: relative
+          width: 100%
+          height: 30px
+          line-height: 30px
+          display: flex 
+          font-size: 1rem
+          justify-content: space-between
+          & .fa
+            line-height: 30px
   & .search
     position: relative
     align-self: center

@@ -8,11 +8,12 @@
       <i class="fa fa-search"></i>
       <input type="search" v-model="search" id="" placeholder="Поиск" />
     </div>
-    <div class="folder_list_head" v-if="activeDepartament">
-      <span class="folder_list_head_close" @click="activeDepartament = null"><i class="fa fa-chevron-left"></i></span>
-      <h3 class="folder_list_head_title">{{activeDepartament}}</h3>
-    </div>
-    <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list">
+    <transition name="slide-fade">
+      <div class="folder_list_head" v-if="activeDepartament">
+        <span class="folder_list_head_close" @click="activeDepartament = null"><i class="fa fa-chevron-left"></i> {{activeDepartament}}</span>
+      </div>
+    </transition>
+    <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list" data-simplebar>
         <li
           class="folder_list_item"
           :class="activeDepartament == departament.id ? 'is_active' : ''"
@@ -23,7 +24,7 @@
           <span class="folder_list_item_name">{{ departament.name }} <i class="fa fa-chevron-right"></i></span>
         </li>
     </transition-group>
-    <transition-group v-else  name="slide-fade" tag="ul" class="folder_list">
+    <transition-group v-else  name="slide-fade" tag="ul" class="folder_list" data-simplebar>
         <li
           class="folder_list_item"
           :class="activeFolder == folder.id ? 'is_active' : ''"
@@ -51,6 +52,9 @@ export default {
   mounted() {
     const resizer = document.querySelector("#resizer");
     const sidebar = document.querySelector("#sidebar");
+    const header = document.querySelector('#header')
+    const main = document.querySelector('#main')
+
     const body    = document.querySelector('body')
     resizer.addEventListener("mousedown", (event) => {
       resizer.classList.add('is_active')
@@ -59,6 +63,7 @@ export default {
       document.addEventListener(
         "mouseup",
         () => {
+          
           resizer.classList.remove('is_active')
           body.classList.remove('nontextselect')
           document.removeEventListener("mousemove", resize, false);
@@ -71,7 +76,9 @@ export default {
       
       const size = `${e.x}px`;
       sidebar.style.flexBasis = size;
+      header.style.cssText = `width: ${main.offsetWidth}px`
     }
+    header.style.cssText = `width: ${main.offsetWidth}px`
     sidebar.style.flexBasis = "325px";
   },
   computed: {
