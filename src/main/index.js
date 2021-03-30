@@ -1,5 +1,5 @@
 import { app, ipcMain, BrowserWindow, powerMonitor } from 'electron'
-
+import { autoUpdater } from 'electron-updater';
 // import { Titlebar, Color } from 'custom-electron-titlebar'
 
 // new Titlebar({
@@ -60,6 +60,14 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  // mainWindow.loadFile('index.html');
+  // mainWindow.on('closed', function () {
+  //   mainWindow = null;
+  // });
+  mainWindow.once('ready-to-show', () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
   
 }
 
@@ -85,6 +93,21 @@ app.on('ready', () => {
   })
 })
 
+ipcMain.on('app_version', (event) => {
+  event.sender.send('app_version', { version: app.getVersion() });
+});
+
+autoUpdater.on('update-available', () => {
+  mainWindow.webContents.send('update_available');
+});
+
+autoUpdater.on('update-downloaded', () => {
+  mainWindow.webContents.send('update_downloaded');
+});
+
+ipcMain.on('restart_app', () => {
+  autoUpdater.quitAndInstall();
+});
 /**
  * Auto Updater
  *

@@ -34,6 +34,7 @@
           <span class="folder_list_item_name">{{ folder.name }} <i class="fa fa-chevron-right"></i></span>
         </li>
     </transition-group>
+    
   </div>
 </template>
 <script>
@@ -43,7 +44,8 @@ export default {
     return {
       activeDepartament: '',
       activeFolder: null,
-      search: "",
+      search: '',
+      version: ''
     };
   },
   mounted() {
@@ -100,6 +102,7 @@ export default {
       this.activeFolder = folder.id;
       this.$emit("folder", folder);
     },
+    
   },
 };
 </script>
