@@ -23,7 +23,6 @@ export default {
   actions: {
     getUsers({commit}, data = {}){
       axios.get('http://localhost:5050/api/user').then(res=>{
-        console.log('users', res.data.users)
         commit('setUsers', res.data.users)
       })
       .catch(err=>{
@@ -33,8 +32,7 @@ export default {
     },
     addUsers({commit}, data = {}){
       let params = {...data}
-      axios.post('http://localhost:5050/api/user', params).then(res=>{
-        console.log(res)
+      let res = axios.post('http://localhost:5050/api/user', params).then(res=>{
         let user = res.data.user
         localStorage.setItem('user', JSON.stringify(user))
         commit('setUser', user)
@@ -42,6 +40,7 @@ export default {
       .catch(err=>{
         console.log(err)
       })
+      return res
     },
     async logout({state}){
       let user = await JSON.parse(localStorage.getItem('user'))

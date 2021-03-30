@@ -1,7 +1,7 @@
 <template>
   <div id="home wrapper">
     <div id="container">
-      <app-sidebar></app-sidebar>
+      <app-sidebar v-on:folder="getFolder"></app-sidebar>
       <div id="resizer"></div>
       <div id="main" class="content" data-simplebar>
         <app-header></app-header>
@@ -193,7 +193,10 @@ export default {
             console.log("no");
           });
       }
-    }
+    },
+    getFolder(folder) {
+      console.log(folder)
+    },
   },
   components: {
     AppSidebar,

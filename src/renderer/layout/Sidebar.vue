@@ -35,7 +35,6 @@
           <span class="folder_list_item_name"><i class="fa fa-folder-o"></i> {{ folder.name }} <i class="fa fa-chevron-right"></i></span>
         </li>
     </transition-group>
-    
   </div>
 </template>
 <script>
@@ -54,7 +53,6 @@ export default {
     const sidebar = document.querySelector("#sidebar");
     const header = document.querySelector('#header')
     const main = document.querySelector('#main')
-
     const body    = document.querySelector('body')
     resizer.addEventListener("mousedown", (event) => {
       resizer.classList.add('is_active')
@@ -71,9 +69,7 @@ export default {
         false
       );
     });
-
     function resize(e) {
-      
       const size = `${e.x}px`;
       sidebar.style.flexBasis = size;
       header.style.cssText = `width: ${main.offsetWidth}px`
@@ -82,7 +78,7 @@ export default {
     sidebar.style.flexBasis = "325px";
   },
   computed: {
-    ...mapGetters(["departaments", "folders", "getFiles"]),
+    ...mapGetters(["departaments", "folders"]),
     departamentsList() {
       return this.departaments.filter((departament) => {
         return departament.name
@@ -100,13 +96,14 @@ export default {
     this.getDepartaments();
   },
   methods: {
-    ...mapActions(["getDepartaments", "getFolders"]),
+    ...mapActions(["getDepartaments", "getFolders", "getFiles"]),
     departamentClick(departament) {
       this.activeDepartament = departament.name;
       this.getFolders(departament.id);
     },
     folderClick(folder) {
-      this.getFiles(folder.id)
+      console.log(folder)
+      this.$emit("folder", folder);
     },
     
   },

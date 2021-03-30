@@ -12,7 +12,7 @@ const File = sequelize.define('file', {
     size: { type: Sequelize.INTEGER, allowNull: false},
     owner: { type: Sequelize.INTEGER, allowNull: false},
     mimeType: { type: Sequelize.STRING, allowNull: false},
-    
+    date: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
     originalName: { type: Sequelize.STRING, allowNull: false},
 
   })

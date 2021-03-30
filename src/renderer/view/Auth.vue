@@ -46,9 +46,6 @@ export default {
       bgImage: 'https://picsum.photos/1200'
     }
   },
-  mounted(){
-    this.getDepartaments()
-  },
   computed: {
     ...mapGetters(['departaments', 'users']),
     departamentList(){
@@ -59,6 +56,7 @@ export default {
   },
   mounted(){
     this.setIntervalBgcChange()
+    this.getDepartaments()
     this.bodyFixed()
   },
   methods: {
@@ -70,7 +68,8 @@ export default {
         avatar: this.uavatar,
         departament: this.udepartament
       }
-      this.addUsers(data)
+      let res = this.addUsers(data)
+      console.log(res)
       // this.$socket.emit("userJoined", userInfo)
       // this.$socket.emit("userRegister", userInfo)
     },
