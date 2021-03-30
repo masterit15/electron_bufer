@@ -32,7 +32,7 @@
           :key="folder.id+'fol'"
           @click="folderClick(folder)"
         >
-          <span class="folder_list_item_name">{{ folder.name }} <i class="fa fa-chevron-right"></i></span>
+          <span class="folder_list_item_name"><i class="fa fa-folder-o"></i> {{ folder.name }} <i class="fa fa-chevron-right"></i></span>
         </li>
     </transition-group>
     
@@ -82,7 +82,7 @@ export default {
     sidebar.style.flexBasis = "325px";
   },
   computed: {
-    ...mapGetters(["departaments", "folders"]),
+    ...mapGetters(["departaments", "folders", "getFiles"]),
     departamentsList() {
       return this.departaments.filter((departament) => {
         return departament.name
@@ -106,8 +106,7 @@ export default {
       this.getFolders(departament.id);
     },
     folderClick(folder) {
-      this.activeFolder = folder.id;
-      this.$emit("folder", folder);
+      this.getFiles(folder.id)
     },
     
   },

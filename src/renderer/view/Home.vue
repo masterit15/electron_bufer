@@ -1,7 +1,7 @@
 <template>
   <div id="home wrapper">
     <div id="container">
-      <app-sidebar v-on:departament="getDirContent"></app-sidebar>
+      <app-sidebar></app-sidebar>
       <div id="resizer"></div>
       <div id="main" class="content" data-simplebar>
         <app-header></app-header>
@@ -193,12 +193,7 @@ export default {
             console.log("no");
           });
       }
-    },
-    getDirContent(dir) {
-      this.showLoader = true;
-      this.dirPath = dir;
-      this.dirContent = [];
-    },
+    }
   },
   components: {
     AppSidebar,
