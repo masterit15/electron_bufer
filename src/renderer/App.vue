@@ -1,12 +1,10 @@
 <template>
   <div id="app">
-    <Form v-if="!user"/>
-    <router-view v-else></router-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import Form from "@/components/Form";
 import {mapGetters, mapActions} from 'vuex'
 export default {
   name: "bufer",
@@ -24,9 +22,6 @@ export default {
   },
   methods: {
     ...mapActions(['getUsers'])
-  },
-  components: {
-    Form,
-  },
+  }
 };
 </script>

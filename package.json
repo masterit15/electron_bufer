@@ -124,6 +124,7 @@
     "spectron": "^3.8.0",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
+    "vue-devtools": "^5.1.4",
     "vue-html-loader": "^1.2.4",
     "vue-loader": "^15.2.4",
     "vue-socket.io": "^3.0.10",

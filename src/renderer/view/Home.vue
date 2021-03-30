@@ -1,52 +1,41 @@
 <template>
-  <div id="home">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-3 p-0">
-          <app-sidebar v-on:departament="getDirContent"></app-sidebar>
-        </div>
-        <div class="col-9 p-0">
-          <div class="content">
-            <app-header></app-header>
-            <b-table hover :items="dirContent" :fields="fields">
-              <template #cell(name)="data">
-                <div class="rows" @contextmenu.prevent="contextMenu($event,data)">
-                  {{data.item.name}}
-                </div>
-              </template>
-                    <template #cell(createDateTime)="data">
-                <div class="rows" @contextmenu.prevent="contextMenu($event,data)">
-                  {{data.item.createDateTime}}
-                </div>
-              </template>
-                    <template #cell(changeDataTime)="data">
-                <div class="rows" @contextmenu.prevent="contextMenu($event,data)">
-                  {{data.item.changeDataTime}}
-                </div>
-              </template>
-                    <template #cell(size)="data">
-                <div class="rows" @contextmenu.prevent="contextMenu($event,data)">
-                  {{data.item.size}}
-                </div>
-              </template>
-            </b-table>
-
-            <context-menu :display="showContextMenu" :position="style">
-              <li @click.prevent="contextItemClick('notice')">
-                Уведомить
-              </li>
-              <li @click.prevent="contextItemClick('rename')">
-                Переименовать
-              </li>
-              <li @click.prevent="contextItemClick('delete')">
-                Удалить
-              </li>
-            </context-menu>
-            <pre>{{users}}</pre>
-            <div class="addcontent" v-if="showLoader">
-              <DragDroup/>
+  <div id="home wrapper">
+    <div id="container">
+      <app-sidebar v-on:departament="getDirContent"></app-sidebar>
+      <div id="resizer"></div>
+      <div id="main" class="content">
+        <app-header></app-header>
+        <b-table hover :items="dirContent" :fields="fields">
+          <template #cell(name)="data">
+            <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+              {{ data.item.name }}
             </div>
-          </div>
+          </template>
+          <template #cell(createDateTime)="data">
+            <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+              {{ data.item.createDateTime }}
+            </div>
+          </template>
+          <template #cell(changeDataTime)="data">
+            <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+              {{ data.item.changeDataTime }}
+            </div>
+          </template>
+          <template #cell(size)="data">
+            <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+              {{ data.item.size }}
+            </div>
+          </template>
+        </b-table>
+
+        <context-menu :display="showContextMenu" :position="style">
+          <li @click.prevent="contextItemClick('notice')">Уведомить</li>
+          <li @click.prevent="contextItemClick('rename')">Переименовать</li>
+          <li @click.prevent="contextItemClick('delete')">Удалить</li>
+        </context-menu>
+        <pre>{{ users }}</pre>
+        <div class="addcontent" v-if="showLoader">
+          <DragDroup />
         </div>
       </div>
     </div>
@@ -58,8 +47,8 @@ import AppSidebar from "@/layout/Sidebar";
 import AppHeader from "@/layout/Header";
 import ContextMenu from "@/components/ContextMenu";
 import DragDroup from "@/components/DragDroupUploader";
-import smalltalk from 'smalltalk'
-import {mapGetters} from 'vuex'
+import smalltalk from "smalltalk";
+import { mapGetters } from "vuex";
 function bytesToSize(bytes) {
   var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
   if (bytes == 0) return "0 Byte";
@@ -76,8 +65,8 @@ export default {
       showContextMenu: false,
       showLoader: false,
       style: {
-        top: '',
-        left: ''
+        top: "",
+        left: "",
       },
       fields: [
         {
@@ -119,27 +108,26 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['users'])
+    ...mapGetters(["users"]),
   },
   methods: {
-    contextMenu(event, data){
-      this.contextActiveItem = data
-      console.log(data)
-      this.style.top = event.clientY
-      this.style.left = event.clientX
+    contextMenu(event, data) {
+      this.contextActiveItem = data;
+      console.log(data);
+      this.style.top = event.clientY;
+      this.style.left = event.clientX;
       this.outsideClick(event.target);
-      this.showContextMenu = true
+      this.showContextMenu = true;
     },
     outsideClick(elem) {
-      let that = this
+      let that = this;
       function outsideClickListener(event) {
         if (!elem.contains(event.target) && isVisible(elem)) {
-          that.showContextMenu = false
-          document.removeEventListener('click', outsideClickListener);
+          that.showContextMenu = false;
+          document.removeEventListener("click", outsideClickListener);
         }
-        
       }
-      document.addEventListener('click', outsideClickListener);
+      document.addEventListener("click", outsideClickListener);
       function isVisible(elem) {
         //открыто ли условное окно
         return (
@@ -170,15 +158,14 @@ export default {
           )
           .then((newFileName) => {
             if (newFileName != data.file) {
-              
-                  this.$message(
-                    `Файл ${data.file} успешно переименован в ${
-                      newFileName + "." + fileExt
-                    }`,
-                    "",
-                    "success"
-                  );
-                  this.getDirContent(this.$path.resolve(this.dirPath));
+              this.$message(
+                `Файл ${data.file} успешно переименован в ${
+                  newFileName + "." + fileExt
+                }`,
+                "",
+                "success"
+              );
+              this.getDirContent(this.$path.resolve(this.dirPath));
             }
           })
           .catch(() => {
@@ -197,12 +184,8 @@ export default {
             }
           )
           .then(() => {
-              this.$message(
-                `Файл '${data.file}' успешно удален!`,
-                "",
-                "success"
-              );
-              this.getDirContent(this.$path.resolve(this.dirPath));
+            this.$message(`Файл '${data.file}' успешно удален!`, "", "success");
+            this.getDirContent(this.$path.resolve(this.dirPath));
           })
           .catch(() => {
             console.log("no");
@@ -210,17 +193,16 @@ export default {
       }
     },
     getDirContent(dir) {
-      this.showLoader = true
+      this.showLoader = true;
       this.dirPath = dir;
       this.dirContent = [];
-
     },
   },
   components: {
     AppSidebar,
     AppHeader,
     ContextMenu,
-    DragDroup
+    DragDroup,
   },
 };
 </script>

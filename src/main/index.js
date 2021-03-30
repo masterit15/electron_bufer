@@ -12,6 +12,13 @@ import { app, ipcMain, BrowserWindow, powerMonitor } from 'electron'
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
+app.on('ready', () => {
+  if (process.env.NODE_ENV !== 'production') {
+    require('vue-devtools').install()
+  }else{
+    require('vue-devtools').uninstall()
+  }
+})
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
@@ -39,10 +46,10 @@ function createWindow () {
     frame: true,
     visualEffectState: 'active',
     //vibrancy: "sidebar",
-    // vibrancyState: 'active',
+    //vibrancyState: 'active',
     //transparent: true,
-    backgroundColor: "#00000000",
-    titleBarStyle: "hidden",
+    title: 'Буфер',
+    titleBarStyle: 'default',
     webPreferences: {
       nodeIntegration: true,
       // nodeIntegrationInWorker: true

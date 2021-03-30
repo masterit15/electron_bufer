@@ -3,13 +3,13 @@
     <div class="user_container" @click="notice">
       <div class="user">
         <avatar :username="user.login" :size="42"></avatar>
-        {{user.login}}
-        <u class="dropdown">
+        <span class="user_name">{{user.username}}</span>
+      </div>
+        <!-- <u class="dropdown">
           <li>dropdown</li>
           <li>dropdown</li>
           <li @click="logout">Выйти</li>
-        </u>
-      </div>
+        </u> -->
       <div 
         v-bind:class="this.notifyed.length > 0 ? 'notice is_active' : 'notice'" ref="notice" 
         @click="shownotify=!shownotify"

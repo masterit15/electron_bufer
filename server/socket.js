@@ -26,12 +26,12 @@ io.on('connection', socket => {
   })
   // срабатывает при входе
   socket.on('userJoined', data => {
-    console.log(data)
+    console.log('userJoined', data)
     socket.emit('online', data)
   })
   // срабатывает при выходе
   socket.on('userLeft', data => {
-    console.log(data)
+    console.log('userLeft', data)
     socket.emit('offline', data)
     // let user = await User.findOne({ where: { id: data.userId } }); 
     // user.online = "N";

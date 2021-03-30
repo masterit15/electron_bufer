@@ -1,5 +1,5 @@
 <template>
-  <div class="form" :style="{backgroundImage: `url(${bgImage})`}">
+  <div class="form" :style="{backgroundImage: `url(${bgImage})`}" style="-webkit-app-region: drag">
     <div class="logo">
       <img src="../assets/logo.png" alt="logo">
       <h2>BUFER</h2>
