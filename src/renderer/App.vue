@@ -30,15 +30,7 @@ export default {
       version: ''
     }
   },
-  created(){
-    this.getUsers()
-    this.$socket.emit("userJoined", this.user)
-  },
-  computed: {
-    ...mapGetters(['user'])
-  },
   methods: {
-    ...mapActions(['getUsers']),
     chekUpdate(){
       let that = this 
       ipcRenderer.send('app_version');

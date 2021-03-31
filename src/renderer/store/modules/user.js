@@ -30,25 +30,27 @@ export default {
       })
       
     },
-    addUsers({commit}, data = {}){
+    async addUsers({commit}, data = {}){
       let params = {...data}
-      let res = axios.post('http://localhost:5050/api/user', params).then(res=>{
+      let postres = []
+      await axios.post('http://localhost:5050/api/user', params)
+      .then(res=>{
         let user = res.data.user
         localStorage.setItem('user', JSON.stringify(user))
         commit('setUser', user)
-        return res
+        postres = res.data
       })
       .catch(err=>{
-        return err
-        console.log(err)
+        postres = err
       })
-      return res
+      console.log('postres',postres)
+      
+      return postres
     },
     async logout({state}){
       let user = await JSON.parse(localStorage.getItem('user'))
       let res = await axios.delete('http://localhost:5050/api/user', {params:{token: user.token}})
       if(res.data.success){
-        commit('setUser', [])
         localStorage.removeItem('user')
         delete axios.defaults.headers.common['Authorization']
       }

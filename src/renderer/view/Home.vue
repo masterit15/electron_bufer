@@ -14,7 +14,7 @@
           </template>
           <template #cell(createDateTime)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              {{ data.item.createDateTime }}
+              {{ data.item.date | date('datetime')}}
             </div>
           </template>
           <template #cell(owner)="data">
@@ -101,6 +101,10 @@ export default {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   mounted() {
+    // if(user){
+    //   this.getUsers()
+    //   this.$socket.emit("userJoined", this.user)
+    // }
     $('.mCustomScrollbar').mCustomScrollbar({
       autoHideScrollbar: true,
       scrollbarPosition: "inside"

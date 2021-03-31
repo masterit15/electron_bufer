@@ -1,7 +1,7 @@
 <template>
   <div id="header">
     <div class="user_container">
-      <div class="user">
+      <div class="user" @click="Outh">
         <avatar :username="user.login" :size="42"></avatar>
         <span class="user_name">{{user.username}}</span>
       </div>
@@ -29,6 +29,12 @@ export default {
   },
   components: {
     Notifycation
+  },
+  methods: {
+    async Outh(){
+      // await this.logout()
+      this.$router.push('/auth')
+    }
   }
 }
 </script>

@@ -23,6 +23,7 @@ router.post('/', async (req, res, next) =>{
       departamentId
   }).then(user=>{
     user.token = generateAccessToken(user)
+    console.log(user)
     Folder.create({
         name: user.dataValues.username,
         userId: user.dataValues.id,

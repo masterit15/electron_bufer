@@ -10,6 +10,10 @@ import store from './store'
 import Avatar from 'vue-avatar'
 import VueSocketIO from 'vue-socket.io'
 import db from './db'
+
+import dateFilter from './filter/date.filter'
+Vue.filter('date', dateFilter)
+
 Vue.use(new VueSocketIO({
     debug: false,
     connection: 'http://localhost:5050',

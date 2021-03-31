@@ -4,7 +4,7 @@
       <img src="../assets/logo.png" alt="logo">
       <h2>BUFER</h2>
     </div>
-    <form @submit.prevent="authBufer" class="form_auth" >
+    <form @submit.prevent="authBufer" class="form_auth">
       <div class="form-field p-0">
         <div v-if="uavatar" id="ava" :style="{backgroundImage: `url(${uavatar})`}"><span class="delete_avatar" @click="uavatar = ''"><i class="fa fa-times"></i></span></div>
         <div v-else class="add_avatar" @click="addAvatar">
@@ -13,9 +13,10 @@
         </div>
       </div>
       <div class="form-field">
-        <input required type="text" v-model="udepartament" id="udepartament">
+        <input required type="text" ref="udep" v-model="udepartament" id="udepartament" @click="openDropdown = true">
         <label class="form-field-label" for="udepartament">Выберите свой департамент</label>
-        <ul class="form-dropdown" v-if="departamentList.length > 0">
+        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown mCustomScrollbar" data-mcs-theme="dark">
+          <input class="form-dropdown-search" type="text" v-model="searchdep">
           <li v-for="departament in departamentList" :key="departament.id" @click="activeItem(departament)">{{departament.name}}</li>
         </ul>
       </div>
@@ -39,39 +40,49 @@ const username = userInfo.username;
 export default {
   data(){
     return {
+      openDropdown: false,
       ulogin: '' || username,
       uname: '',
       uavatar: '',
       udepartament: '',
-      bgImage: 'https://picsum.photos/1200'
+      bgImage: 'https://picsum.photos/1200',
+      searchdep: ''
     }
   },
   computed: {
-    ...mapGetters(['departaments', 'users']),
+    ...mapGetters(['departaments']),
     departamentList(){
       return this.departaments.filter(departament=>{
-        return departament.name.toLowerCase().includes(this.udepartament.toLowerCase())
+        console.log(departament.name.toLowerCase().includes(this.searchdep.toLowerCase()))
+        return departament.name.toLowerCase().includes(this.searchdep.toLowerCase())
       })
     }
   },
   mounted(){
+    $('.mCustomScrollbar').mCustomScrollbar({
+      autoHideScrollbar: true,
+      scrollbarPosition: "inside"
+    })
     this.setIntervalBgcChange()
     this.getDepartaments()
     this.bodyFixed()
   },
   methods: {
     ...mapActions(['getDepartaments', 'addUsers']),
-    authBufer(){
+    async authBufer(){
       let data = {
         login: this.ulogin,
         username: this.uname,
         avatar: this.uavatar,
         departament: this.udepartament
       }
-      let res = this.addUsers(data)
-      console.log(res)
-      // this.$socket.emit("userJoined", userInfo)
-      // this.$socket.emit("userRegister", userInfo)
+      let res = await this.addUsers(data)
+      if(res.success){
+        this.$socket.emit("userJoined", userInfo)
+        this.bodyFixed(position='relative')
+        clearInterval(this.setIntervalBgcChange());
+        this.$router.push('/') 
+      }
     },
     bodyFixed(position='fixed'){
       let body = document.querySelector('body')
@@ -88,8 +99,10 @@ export default {
       return refreshIntervalBg
     },
     activeItem(item){
-      console.log(item)
+      console.log(item.name)
       this.udepartament = item.name
+      this.$refs.udep.value = item.name
+      this.openDropdown = false
     },
     addAvatar(){
       this.$refs.avatar.click()
@@ -120,7 +133,7 @@ export default {
       })
     },
     beforeDestroy() {
-      bodyFixed(position='relative')
+      this.bodyFixed(position='relative')
       clearInterval(this.setIntervalBgcChange());
     },
   }

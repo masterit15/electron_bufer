@@ -9,8 +9,8 @@
       <input type="search" v-model="search" id="" placeholder="Поиск" />
     </div>
     <transition name="slide-fade">
-      <div class="folder_list_head" v-if="activeDepartament">
-        <span class="folder_list_head_close" @click="activeDepartament = null"><i class="fa fa-chevron-left"></i> <i class="fa fa-folder-open-o" ></i>{{activeDepartament}} </span>
+      <div class="folder_list_head" v-if="activeDepartament" @click="activeDepartament = null">
+        <span class="folder_list_head_close" ><i class="fa fa-chevron-left"></i> <i class="fa fa-folder-open-o" ></i>{{activeDepartament}} </span>
       </div>
     </transition>
     <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list mCustomScrollbar" data-mcs-theme="dark">
