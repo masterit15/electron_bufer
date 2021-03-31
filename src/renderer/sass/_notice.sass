@@ -2,13 +2,15 @@
   width: 70px
   height: 100%
   cursor: pointer
-  border-left: 1px solid $border_color
+  // border-left: 1px solid $border_color
   position: relative
   margin: 0 20px
   color: rgba($color,.3)
   text-align: center
   font-size: 1.1rem
   z-index: 0
+  // .mCSB_scrollTools
+  //   right: 20px
   &_btn
     padding: 20px 0
     height: 45px
@@ -73,8 +75,7 @@
     list-style: none
     overflow-x: hidden
     overflow-y: auto
-    padding-left: 10px
-    padding-bottom: 80px
+    padding-bottom: 100px
     transform: translateX(380px)
     &.active
       transform: translateX(0px)
@@ -86,12 +87,15 @@
     width: 100%
     height: auto
     text-align: left
+    margin-left: 10px
     // opacity: 0
     // transform: translateX(100px)
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14)
+    box-shadow: -2px 2px 2px 0 rgba(0, 0, 0, 0.14)
+    &:last-child
+      margin-bottom: 20px
     &_close
       position: absolute
-      right: 10px
+      right: 25px
       top: 10px
       width: 30px
       height: 30px

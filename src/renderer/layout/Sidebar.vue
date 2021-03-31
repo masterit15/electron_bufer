@@ -13,7 +13,7 @@
         <span class="folder_list_head_close" @click="activeDepartament = null"><i class="fa fa-chevron-left"></i> <i class="fa fa-folder-open-o" ></i>{{activeDepartament}} </span>
       </div>
     </transition>
-    <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list" data-simplebar>
+    <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list mCustomScrollbar" data-mcs-theme="dark">
         <li
           class="folder_list_item"
           :class="activeDepartament == departament.id ? 'is_active' : ''"
@@ -21,10 +21,13 @@
           :key="departament.id+'dep'"
           @click="departamentClick(departament)"
         >
-          <span class="folder_list_item_name">{{ departament.name }} <i class="fa fa-chevron-right"></i></span>
+            <div class="folder_list_item_name">
+              <span class="folder_list_item_name_text"><i class="fa fa-folder-o"></i> {{ departament.name }}</span>
+              <span class="folder_list_item_name_icon"><i class="fa fa-chevron-right"></i></span>
+            </div>
         </li>
     </transition-group>
-    <transition-group v-else  name="slide-fade" tag="ul" class="folder_list" data-simplebar>
+    <transition-group v-else  name="slide-fade" tag="ul" class="folder_list mCustomScrollbar" data-mcs-theme="dark">
         <li
           class="folder_list_item"
           :class="isActiveFolder == folder.id ? 'is_active' : ''"
@@ -32,7 +35,10 @@
           :key="folder.id+'fol'"
           @click="folderClick(folder)"
         >
-          <span class="folder_list_item_name"><i class="fa fa-folder-o"></i> {{ folder.name }} <i class="fa fa-chevron-right"></i></span>
+          <div class="folder_list_item_name">
+            <span class="folder_list_item_name_text"><i class="fa fa-folder-o"></i> {{ folder.name }}</span>
+            <span class="folder_list_item_name_icon"><i class="fa fa-chevron-right"></i></span>
+          </div>
         </li>
     </transition-group>
   </div>
@@ -100,14 +106,16 @@ export default {
     this.getDepartaments();
   },
   methods: {
-    ...mapActions(["getDepartaments", "getFolders", "getFiles", "activeFolder"]),
+    ...mapActions(["getDepartaments", "getFolders", "getFiles", "activateFolder"]),
     departamentClick(departament) {
       this.activeDepartament = departament.name;
       this.getFolders(departament.id);
     },
     folderClick(folder) {
-      this.$emit("folder", folder);
-      this.activeFolder(folder.id)
+      // this.$emit("folder");
+      // this.activateFolder(folder)
+      this.$store.commit('setActiveFolder', folder)
+      this.getFiles(folder.id)
     },
     
   },

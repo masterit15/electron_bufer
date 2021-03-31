@@ -20,7 +20,6 @@ Vue.use(new VueSocketIO({
     },
     // options: { path: "/my-app/" } //Optional options
 }))
-import 'simplebar'
 import './sass/main.sass'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
@@ -29,6 +28,10 @@ if (localStorage.user) {
   const tokenData = JSON.parse(localStorage.user)
   Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${tokenData.accessToken}`
 }
+
+window.$ = window.jQuery = require('jquery');
+import 'jquery-mousewheel'
+import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min'
 
 Vue.prototype.$smalltalk = smalltalk
 Vue.prototype.$db = db

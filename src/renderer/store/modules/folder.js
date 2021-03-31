@@ -2,14 +2,14 @@ import axios from 'axios'
 export default {
   state: {
     folders: [],
-    activFolderId: null
+    activeFolderArr: []
   },
   mutations: {
     setFolders(state, folders){
       state.folders = folders
     },
-    setActiveFolder(state, folderId){
-      state.activFolderId = folderId
+    setActiveFolder(state, folder){
+      state.activeFolderArr = folder
     }
   },
   actions: {
@@ -30,12 +30,12 @@ export default {
       }
     })
     },
-    activeFolder({commit}, folderId){
-      commit('setActiveFolder', folderId)
+    activateFolder({commit}, folder){
+      commit('setActiveFolder', folder)
     }
   },
   getters: {
     folders: state => state.folders,
-    activFolderId: state => state.activFolderId
+    activeFolderArr: state => state.activeFolderArr
   }
 }

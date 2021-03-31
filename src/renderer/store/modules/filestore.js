@@ -33,6 +33,7 @@ export default {
     //   axios.post('http://localhost:5050/api/upload', data, config)
     //   return percentCompleted
     // }
+    
   },
   getters: {
     files: state => state.files

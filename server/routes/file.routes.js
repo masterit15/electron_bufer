@@ -7,17 +7,27 @@ const Folder = require('../model/folder')
 const File = require('../model/file')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
+const uploadDir = './uploads';
 
- 
 const storageConfig = multer.diskStorage({
   destination: (req, file, cb) =>{
-      cb(null, './uploads');
+      cb(null, uploadDir);
   },
   filename: (req, file, cb) =>{
       let fileExt = file.originalname.split('.').pop()
       cb(null, `${Date.now()}_${Math.floor(Math.random() * Math.floor(666))}.${fileExt}`);
   }
 });
+
+fs.stat(uploadDir, function(err) {
+  if (!err) {
+      //console.log(`Директория есть: ${uploadDir}`);
+  }
+  else if (err.code === 'ENOENT') {
+      fs.mkdirSync(uploadDir);
+  }
+});
+
 // функция загрузки файлов
 router.post('/', multer({storage:storageConfig}).array('files'), (req, res, next) => {
     let filedata = req.files; 

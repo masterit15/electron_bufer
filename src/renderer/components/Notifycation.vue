@@ -13,22 +13,22 @@
         notifyed.length >= 99 ? 99 : notifyed.length
       }}</span>
     </div>
-    <ul class="notice_list">
-      <li
-        v-for="(notice, i) in notifyed"
-        :key="notice.id"
-        class="notice_item"
-      >
-        <span class="notice_item_close"><i class="fa fa-times" @click="closeNotify($event, notice.id)"></i></span>
-        <div
-          class="notice_item_wrap"
-          :style="{ backgroundColor: notice.bgColor, color: notice.color }"
+      <ul class="notice_list mCustomScrollbar" data-mcs-theme="dark" >
+        <li
+          v-for="notice in notifyed"
+          :key="notice.id"
+          class="notice_item"
         >
-          <h6>{{ notice.title }}</h6>
-          <p>{{ notice.text }}</p>
-        </div>
-      </li>
-    </ul>
+          <span class="notice_item_close"><i class="fa fa-times" @click="closeNotify($event, notice.id)"></i></span>
+          <div
+            class="notice_item_wrap"
+            :style="{ backgroundColor: notice.bgColor, color: notice.color }"
+          >
+            <h6>{{ notice.title }}</h6>
+            <p>{{ notice.text }}</p>
+          </div>
+        </li>
+      </ul>
   </div>
 </template>
 <script>
@@ -125,6 +125,7 @@ export default {
     },
   },
   mounted() {
+    // $('.notice_list').mCustomScrollbar()
     if (!this.shownotify) {
       let noti_item = document.querySelectorAll(".notice_item");
       tl.to(noti_item, { x: 100, opacity: 0, duration: 0.2, stagger: 0.1 });

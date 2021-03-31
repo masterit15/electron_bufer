@@ -1,15 +1,15 @@
 <template>
   <div id="home wrapper">
     <div id="container">
-      <app-sidebar v-on:folder="getFolder"></app-sidebar>
+      <app-sidebar></app-sidebar>
       <div id="resizer"></div>
-      <div id="main" class="content" data-simplebar>
-        <app-header></app-header>
+      <app-header></app-header>
+      <div id="main" class="content mCustomScrollbar" >
         <b-table hover :items="files" :fields="fields">
           <template #cell(name)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
               <span class="file_icon" v-html="fileExt(data.item.name)"></span>
-              {{ data.item.name }}
+              {{ data.item.originalName }}
             </div>
           </template>
           <template #cell(createDateTime)="data">
@@ -24,6 +24,7 @@
           </template>
           <template #cell(size)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+              <a :href="data.item.path" rel="noopener noreferrer" download>Скачать</a>
               {{ bytesToSize(data.item.size) }}
             </div>
           </template>
@@ -32,12 +33,10 @@
         <context-menu :display="showContextMenu" :position="style">
           <li @click.prevent="contextItemClick('notice')">Уведомить</li>
           <li @click.prevent="contextItemClick('rename')">Переименовать</li>
-          <li @click.prevent="contextItemClick('delete')">Удалить</li>
+          <li v-if="activeFolderArr.id == user.id" @click.prevent="contextItemClick('delete')">Удалить</li>
         </context-menu>
-        <pre>
-          {{ users }}
-          </pre>
-          <DragDroup v-show="showLoader"/>
+        <pre>{{ activeFolderArr }}</pre>
+          <DragDroup v-show="activeFolderArr"/>
       </div>
     </div>
   </div>
@@ -99,7 +98,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["users", "files"]),
+    ...mapGetters(["users", "files", "user", "activeFolderArr"]),
+  },
+  mounted() {
+    $('.mCustomScrollbar').mCustomScrollbar({
+      autoHideScrollbar: true,
+      scrollbarPosition: "inside"
+    })
   },
   methods: {
     ...mapActions(['getFiles']),
@@ -213,11 +218,7 @@ export default {
           break;
       }
       return icon
-    },
-    getFolder(folder) {
-      this.showLoader = true
-      this.getFiles(folder.id)
-    },
+    }
   },
   components: {
     AppSidebar,

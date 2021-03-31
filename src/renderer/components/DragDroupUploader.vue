@@ -14,10 +14,7 @@
       </div>
       <div id="drag-file" class="add_btn" @click="clickInput">
         <input type="file" @change="addFiles" id="files_input" multiple />
-        <span class="file_text"
-          ><i class="fa fa-upload"></i> перетащите или кликните, чтобы
-          прикрепить файл(ы)</span
-        >
+        <span class="file_text">перетащите или кликните, что бы прикрепить файл(ы) <i class="fa fa-upload"></i> </span>
       </div>
     </div>
   </div>
@@ -73,7 +70,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['user', 'activFolderId'])
+    ...mapGetters(['user', 'activeFolderArr'])
   },
   methods: {
     ...mapActions(["getFiles"]),
@@ -89,7 +86,7 @@ export default {
     deleteFile(index) {
       this.files.splice(index, 1);
     },
-    uploadFiles() {
+    async uploadFiles() {
       let data = new FormData()
       let that = this
       for(const file of this.files){
@@ -100,7 +97,16 @@ export default {
           that.percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         }
       }
-      axios.post(`http://localhost:5050/api/file?folderId=${this.activFolderId}&owner=${this.user.id}`, data, config)
+      axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&owner=${this.user.id}`, data, config)
+      .then(res=>{
+        console.log('res', res.data.success)
+        if(res.data.success){
+          this.getFiles(this.activeFolderArr.id)
+        }
+      })
+      .catch(err=>{
+        console.log(err)
+      })
     },
   },
 };
