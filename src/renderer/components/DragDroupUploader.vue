@@ -1,28 +1,30 @@
 <template>
-  <div class="file_form">
-    <div class="file_prev" v-if="files.length > 0">
-      
-      <ul>
-        <li v-for="(file, index) in files" :key="index">
-          <i class="fa fa-file"></i> {{ file.name }}
-          <span class="file_delete" @click="deleteFile(index)"
-            ><i class="fa fa-times"></i
-          ></span>
-        </li>
-      </ul>
-      <button @click="uploadFiles">Загрузить</button>{{percent}}
-    </div>
-    <div id="drag-file" class="add_btn" @click="clickInput">
-      <input type="file" @change="addFiles" id="files_input" multiple />
-      <span class="file_text"
-        ><i class="fa fa-upload"></i> перетащите или кликните, чтобы прикрепить
-        файл(ы)</span
-      >
+  <div class="addfileform">
+    <div class="file_form">
+      <div class="file_prev" v-if="files.length > 0">
+        <ul>
+          <li v-for="(file, index) in files" :key="index">
+            <i class="fa fa-file"></i> {{ file.name }}
+            <span class="file_delete" @click="deleteFile(index)"
+              ><i class="fa fa-times"></i
+            ></span>
+          </li>
+        </ul>
+        <button @click="uploadFiles">Загрузить</button>{{ percent }}
+      </div>
+      <div id="drag-file" class="add_btn" @click="clickInput">
+        <input type="file" @change="addFiles" id="files_input" multiple />
+        <span class="file_text"
+          ><i class="fa fa-upload"></i> перетащите или кликните, чтобы
+          прикрепить файл(ы)</span
+        >
+      </div>
     </div>
   </div>
 </template>
 <script>
-import {mapActions} from 'vuex'
+import { mapActions, mapGetters } from "vuex";
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -70,9 +72,11 @@ export default {
       return false;
     };
   },
+  computed: {
+    ...mapGetters(['user', 'activFolderId'])
+  },
   methods: {
-    ...mapActions(['upload']),
-
+    ...mapActions(["getFiles"]),
     clickInput() {
       let input = document.getElementById("files_input");
       input.click();
@@ -85,10 +89,19 @@ export default {
     deleteFile(index) {
       this.files.splice(index, 1);
     },
-    uploadFiles(){
-      this.percent = this.upload(this.files)
-
-    }
+    uploadFiles() {
+      let data = new FormData()
+      let that = this
+      for(const file of this.files){
+        data.append('files', file)
+      }
+      const config = {
+        onUploadProgress: function(progressEvent) {
+          that.percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        }
+      }
+      axios.post(`http://localhost:5050/api/file?folderId=${this.activFolderId}&owner=${this.user.id}`, data, config)
+    },
   },
 };
 </script>
@@ -97,5 +110,4 @@ export default {
   display: none
 .file
   &_form
-
 </style>

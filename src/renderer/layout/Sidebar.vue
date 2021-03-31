@@ -10,7 +10,7 @@
     </div>
     <transition name="slide-fade">
       <div class="folder_list_head" v-if="activeDepartament">
-        <span class="folder_list_head_close" @click="activeDepartament = null"><i class="fa fa-chevron-left"></i> {{activeDepartament}}</span>
+        <span class="folder_list_head_close" @click="activeDepartament = null"><i class="fa fa-chevron-left"></i> <i class="fa fa-folder-open-o" ></i>{{activeDepartament}} </span>
       </div>
     </transition>
     <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list" data-simplebar>
@@ -27,7 +27,7 @@
     <transition-group v-else  name="slide-fade" tag="ul" class="folder_list" data-simplebar>
         <li
           class="folder_list_item"
-          :class="activeFolder == folder.id ? 'is_active' : ''"
+          :class="isActiveFolder == folder.id ? 'is_active' : ''"
           v-for="folder in folderList"
           :key="folder.id+'fol'"
           @click="folderClick(folder)"
@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       activeDepartament: '',
-      activeFolder: null,
+      isActiveFolder: null,
       search: '',
       version: ''
     };
@@ -53,6 +53,7 @@ export default {
     const sidebar = document.querySelector("#sidebar");
     const header = document.querySelector('#header')
     const main = document.querySelector('#main')
+    const drag = document.querySelector(".addfileform");
     const body    = document.querySelector('body')
     resizer.addEventListener("mousedown", (event) => {
       resizer.classList.add('is_active')
@@ -73,9 +74,12 @@ export default {
       const size = `${e.x}px`;
       sidebar.style.flexBasis = size;
       header.style.cssText = `width: ${main.offsetWidth}px`
+      drag.style.cssText = `width: ${main.offsetWidth}px`
     }
-    header.style.cssText = `width: ${main.offsetWidth}px`
     sidebar.style.flexBasis = "325px";
+    header.style.cssText = `width: ${main.offsetWidth}px`
+    drag.style.cssText = `width: ${main.offsetWidth}px`
+    
   },
   computed: {
     ...mapGetters(["departaments", "folders"]),
@@ -96,14 +100,14 @@ export default {
     this.getDepartaments();
   },
   methods: {
-    ...mapActions(["getDepartaments", "getFolders", "getFiles"]),
+    ...mapActions(["getDepartaments", "getFolders", "getFiles", "activeFolder"]),
     departamentClick(departament) {
       this.activeDepartament = departament.name;
       this.getFolders(departament.id);
     },
     folderClick(folder) {
-      console.log(folder)
       this.$emit("folder", folder);
+      this.activeFolder(folder.id)
     },
     
   },

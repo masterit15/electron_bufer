@@ -15,7 +15,6 @@ router.post('/', async (req, res, next) =>{
     if(candidate){
         return res.json({message: 'Такой пользователь уже существует'})
     }
-    console.log(departamentId)
     User.create({
       login, 
       username,
@@ -35,7 +34,6 @@ router.post('/', async (req, res, next) =>{
         user
     })
   }).catch((err)=>{
-      console.log('errrrr',err)
     return res.status(500).json({
         success: false,
         message: 'Что-то пошло не так, попробуйте еще раз',

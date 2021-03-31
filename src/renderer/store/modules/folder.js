@@ -1,11 +1,15 @@
 import axios from 'axios'
 export default {
   state: {
-    folders: []
+    folders: [],
+    activFolderId: null
   },
   mutations: {
     setFolders(state, folders){
       state.folders = folders
+    },
+    setActiveFolder(state, folderId){
+      state.activFolderId = folderId
     }
   },
   actions: {
@@ -25,9 +29,13 @@ export default {
         ...data
       }
     })
+    },
+    activeFolder({commit}, folderId){
+      commit('setActiveFolder', folderId)
     }
   },
   getters: {
-    folders: state => state.folders
+    folders: state => state.folders,
+    activFolderId: state => state.activFolderId
   }
 }

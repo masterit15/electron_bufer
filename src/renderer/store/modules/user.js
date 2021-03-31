@@ -36,8 +36,10 @@ export default {
         let user = res.data.user
         localStorage.setItem('user', JSON.stringify(user))
         commit('setUser', user)
+        return res
       })
       .catch(err=>{
+        return err
         console.log(err)
       })
       return res

@@ -1,49 +1,108 @@
-const { Router } = require('express')
+const {Router} = require('express')
+const multer  = require('multer')
 const router = Router()
+const fs = require('fs')
+const User = require('../model/user')
+const Folder = require('../model/folder')
+const File = require('../model/file')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
-const Files = require('../model/folder')
 
-// метод добавления департамента
-router.post('/', async (req, res, next) =>{
-    const {name} = req.body
-    const folder = await Files.findOne({where: {name}})
-    if(folder){
-        return res.json({message: 'Такой департамент уже существует'})
-    }
-    Files.create({
-      name, 
-  }).then(users=>{
-      return res.status(201).json({ 
-          success: true,
-          message: 'Раздел добавлен',
-          users
-      })
-  }).catch((err)=>{
-      return res.status(500).json({
+ 
+const storageConfig = multer.diskStorage({
+  destination: (req, file, cb) =>{
+      cb(null, './uploads');
+  },
+  filename: (req, file, cb) =>{
+      let fileExt = file.originalname.split('.').pop()
+      cb(null, `${Date.now()}_${Math.floor(Math.random() * Math.floor(666))}.${fileExt}`);
+  }
+});
+// функция загрузки файлов
+router.post('/', multer({storage:storageConfig}).array('files'), (req, res, next) => {
+    let filedata = req.files; 
+    const {folderId, owner} = req.query
+    if(!filedata){
+        res.status(404).json({
           success: false,
-          message: 'Что-то пошло не так, попробуйте еще раз',
-          err
-      })
-  });
+          message: 'Ошибка при загрузке файла',
+          err: filedata
+      });
+    }else{
+      addFiles(owner, folderId, filedata)
+      res.status(201).json({
+        success: true,
+        message: 'Файл загружен',
+        filedata
+    });
+    }
+});
+router.get('/', (req, res, next) => {
+  const { folderId } = req.query
+  File.findAll({where: {folderId}, raw:true}).then(files =>{
+    res.status(201).json({
+      success: true,
+      message: 'Все файлы раздела',
+      files
+    });
+  })
+  .catch(err => {
+    res.status(404).json({
+        success: false,
+        message: 'Ошибка, что то пошло не так!',
+        err
+    });
+  })
+})
+router.put('/', (req, res, next) => {
+  const { folderId } = req.query
+  File.findAll({where: {folderId}, raw:true}).then(files =>{
+    res.status(201).json({
+      success: true,
+      message: 'Все файлы раздела',
+      files
+    });
+  })
+  .catch(err => {
+    res.status(404).json({
+        success: false,
+        message: 'Ошибка, что то пошло не так!',
+        err
+    });
+  })
 })
 
-// метод получения департамента
-router.get('/', (req, res, next) =>{
-    const {folderId} = req.query
-    console.log(folderId)
-    Files.findAll({ where: { folderId } }).then(files=>{
-        return res.status(201).json({ 
-            success: true,
-            message: 'Все разделы',
-            files
-        })
-    }).catch((err)=>{
-        return res.status(500).json({
-            success: false,
-            message: 'Что-то пошло не так, попробуйте еще раз',
-            err
-        })
+router.delete('/', async (req, res, next) => {
+  const { folderId, id } = req.query
+  try {
+    const files = await File.findAll({where: {folderId, id}, raw:true})
+    for(const file of files){
+      fs.unlinkSync(file.path);
+    }
+    await File.destroy({where: { id }})
+    res.status(201).json({
+      success: true,
     });
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: 'Ошибка, что то пошло не так!',
+      error
+  });
+  }
 })
+// функция добавления загруженных файлов в базу
+async function addFiles(owner, folderId, files) {
+  for (const file of files) {
+    await File.create({
+      name: file.filename,
+      path: file.path,
+      size: file.size,
+      owner, 
+      mimeType: file.mimetype,
+      originalName: file.originalname,
+      folderId
+    })
+  }
+}
 module.exports = router

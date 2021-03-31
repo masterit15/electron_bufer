@@ -19,7 +19,7 @@ app.use (bodyParser.urlencoded({limit: '10mb', extended: true}))
 
 app.use('/api/user', require('./routes/user.routes'))
 app.use('/api/folder', require('./routes/folder.routes'))
-app.use('/api/upload', require('./routes/upload.routes'))
+app.use('/api/file', require('./routes/file.routes'))
 app.use('/api/departament', require('./routes/departament.routes'))
 
 if (process.env.NODE_ENV === 'production') {

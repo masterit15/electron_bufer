@@ -5,9 +5,10 @@
       <div id="resizer"></div>
       <div id="main" class="content" data-simplebar>
         <app-header></app-header>
-        <b-table hover :items="dirContent" :fields="fields">
+        <b-table hover :items="files" :fields="fields">
           <template #cell(name)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+              <span class="file_icon" v-html="fileExt(data.item.name)"></span>
               {{ data.item.name }}
             </div>
           </template>
@@ -16,14 +17,14 @@
               {{ data.item.createDateTime }}
             </div>
           </template>
-          <template #cell(changeDataTime)="data">
+          <template #cell(owner)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              {{ data.item.changeDataTime }}
+              {{ data.item.owner }}
             </div>
           </template>
           <template #cell(size)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              {{ data.item.size }}
+              {{ bytesToSize(data.item.size) }}
             </div>
           </template>
         </b-table>
@@ -36,9 +37,7 @@
         <pre>
           {{ users }}
           </pre>
-        <div class="addcontent" v-if="showLoader">
-          <DragDroup />
-        </div>
+          <DragDroup v-show="showLoader"/>
       </div>
     </div>
   </div>
@@ -50,19 +49,11 @@ import AppHeader from "@/layout/Header";
 import ContextMenu from "@/components/ContextMenu";
 import DragDroup from "@/components/DragDroupUploader";
 import smalltalk from "smalltalk";
-import { mapGetters } from "vuex";
-function bytesToSize(bytes) {
-  var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  if (bytes == 0) return "0 Byte";
-  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
-}
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "home",
   data() {
     return {
-      dirContent: [],
-      dirPath: "",
       contextActiveItem: null,
       showContextMenu: false,
       showLoader: false,
@@ -77,16 +68,14 @@ export default {
           sortable: true,
         },
         {
-          key: "createDateTime",
+          key: "createDate",
           label: "Дата создания",
           sortable: true,
         },
         {
-          key: "changeDateTime",
-          label: "Дата изменения",
+          key: "owner",
+          label: "Создатель",
           sortable: true,
-          // Variant applies to the whole column, including the header and footer
-          //variant: 'success'
         },
         {
           key: "size",
@@ -110,12 +99,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["users"]),
+    ...mapGetters(["users", "files"]),
   },
   methods: {
+    ...mapActions(['getFiles']),
     contextMenu(event, data) {
       this.contextActiveItem = data;
-      console.log(data);
       this.style.top = event.clientY;
       this.style.left = event.clientX;
       this.outsideClick(event.target);
@@ -187,15 +176,47 @@ export default {
           )
           .then(() => {
             this.$message(`Файл '${data.file}' успешно удален!`, "", "success");
-            this.getDirContent(this.$path.resolve(this.dirPath));
           })
           .catch(() => {
             console.log("no");
           });
       }
     },
+    bytesToSize(bytes) {
+      let sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+      if (bytes == 0) return "0 Byte";
+      let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+      return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+    },
+    fileExt(filename){
+      let ext = filename.split('.').pop()
+      let icon = ''
+      switch (ext.toLowerCase()) {
+        case 'zip':
+        case 'rar':
+        case '7zip':
+          icon = `<i class="fa fa-file-archive-o" style="color: #f7b731"></i>`
+          break;
+        case 'pdf':
+          icon = `<i class="fa fa-file-pdf-o" style="color: #eb3b5a"></i>`
+          break;
+        case 'doc':
+        case 'docx':
+          icon = `<i class="fa fa-file-word-o" style="color: #3867d6"></i>`
+          break;
+        case 'xls':
+        case 'xlsx':
+          icon = `<i class="fa-excel-o" style="color: #3867d6"></i>`
+          break;
+        default:
+          icon = `<i class="fa fa-file" style="color: #808080"></i>`
+          break;
+      }
+      return icon
+    },
     getFolder(folder) {
-      console.log(folder)
+      this.showLoader = true
+      this.getFiles(folder.id)
     },
   },
   components: {

@@ -4,35 +4,35 @@ export default {
     files: []
   },
   mutations: {
-    setFolders(state, files){
+    setFiles(state, files){
       state.files = files
     }
   },
   actions: {
     getFiles({commit}, folderId = null){
-      axios.get('http://localhost:5050/api/files', {params: {
+      axios.get('http://localhost:5050/api/file', {params: {
         folderId
       }})
       .then(res=>{
-        commit('setFolders', res.data.files)
+        commit('setFiles', res.data.files)
       })
       .catch(err=>{
         console.log('getFiles error', err)
       })
     },
-    addFiles({}, files) {
-      let percentCompleted
-      const config = {
-        onUploadProgress: function(progressEvent) {
-          percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          console.log(percentCompleted)
-        }
-      }
-      let data = new FormData()
-      data.append('files', files)
-      axios.post('http://localhost:5050/api/upload', data, config)
-      return percentCompleted
-    }
+    // addFiles({}, {folderId, files}) {
+    //   let percentCompleted
+    //   const config = {
+    //     onUploadProgress: function(progressEvent) {
+    //       percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+    //       console.log(percentCompleted)
+    //     }
+    //   }
+    //   let data = new FormData()
+    //   data.append('files', files)
+    //   axios.post('http://localhost:5050/api/upload', data, config)
+    //   return percentCompleted
+    // }
   },
   getters: {
     files: state => state.files
