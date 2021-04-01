@@ -35,7 +35,7 @@ if (localStorage.user) {
   const token = JSON.parse(localStorage.user).token
   Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
-
+window.console.log
 window.$ = window.jQuery = require('jquery');
 import 'jquery-mousewheel'
 import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min'

@@ -41,7 +41,6 @@ export default {
       this.l
       const notification = this.$refs.notification.target;
       const restartButton = this.$refs.restart.target;
-      console.log('notification',notification)
       ipcRenderer.on('update_available', () => {
         ipcRenderer.removeAllListeners('update_available');
         that.message = 'Доступно новое обновление. Скачиваю прямо сейчас...';

@@ -6,7 +6,7 @@ const db = new Datastore({ filename: dbFile, autoload: true });
 
 db.loadDatabase(function (error) {   
   if (error) {
-      console.log('FATAL: local database could not be loaded. Caused by: ' + error);
+      //console.log('FATAL: local database could not be loaded. Caused by: ' + error);
       throw error;
     }
     // console.log('INFO: local database loaded successfully.', db);

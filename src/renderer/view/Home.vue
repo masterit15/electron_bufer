@@ -5,9 +5,16 @@
       <div id="resizer"></div>
       <app-header></app-header>
       <div id="main" class="content mCustomScrollbar" >
+        <transition name="slide-down">
+          <div class="file_actions" v-show="fileActionPanel">
+              <button @click.prevent="actionEvent(option)('notice')">Уведомить</button>
+              <button @click.prevent="actionEvent(option)('rename')">Переименовать</button>
+              <button v-if="activeFolderArr.id == user.id" @click.prevent="actionEvent(option)('delete')">Удалить</button>
+          </div>
+        </transition>
         <b-table hover :items="files" :fields="fields">
           <template #cell(check)="data">
-            <input class="chekone" type="checkbox" :value="data.item.id">
+            <input @change="fileSelect($event)" class="cinput chekone" type="checkbox" :value="data.item.id">
           </template>
           <template #cell(name)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
@@ -33,12 +40,12 @@
           </template>
         </b-table>
 
-        <context-menu :display="showContextMenu" :position="style">
-          <li @click.prevent="contextItemClick('notice')">Уведомить</li>
-          <li @click.prevent="contextItemClick('rename')">Переименовать</li>
-          <li v-if="activeFolderArr.id == user.id" @click.prevent="contextItemClick('delete')">Удалить</li>
-        </context-menu>
-        <pre>{{ activeFolderArr }}</pre>
+          <context-menu :display="showContextMenu" :position="style">
+            <li @click.prevent="actionEvent('notice')">Уведомить</li>
+            <li @click.prevent="actionEvent('rename')">Переименовать</li>
+            <li v-if="activeFolderArr.id == user.id" @click.prevent="actionEvent('delete')">Удалить</li>
+          </context-menu>
+        <!-- <pre>{{ activeFolderArr }}</pre> -->
           <DragDroup v-show="activeFolderArr"/>
           
       </div>
@@ -60,6 +67,7 @@ export default {
       contextActiveItem: null,
       showContextMenu: false,
       showLoader: false,
+      fileActionPanel: false,
       style: {
         top: "",
         left: "",
@@ -67,7 +75,7 @@ export default {
       fields: [
         {
           key: "check",
-          label: "Действия",
+          label: "",
           class: 'chekall'
         },
         {
@@ -110,15 +118,25 @@ export default {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   mounted() {
-    let chekall = $('th.chekall[aria-colindex="1"]').html(`<input type="checkbox" name="" id="chekall">`)
+    // $('th.chekall[aria-colindex="1"]').html(`<input class="cinput" type="checkbox" name="" id="chekall">`)
+    let tableHead = document.querySelector('th.chekall[aria-colindex="1"]')
+    let inputOne = document.querySelector('.chekone')
+    tableHead.insertAdjacentHTML('afterbegin', `<input class="cinput" type="checkbox" name="" id="chekall">`)
+    let that = this
     $('#chekall').on('change', ()=>{
       if($('#chekall').is(':checked')){
         $('.chekone').prop('checked', true);
+        that.fileActionPanel = true
       }else{
         $('.chekone').prop('checked', false);
+        that.fileActionPanel = false
       }
     })
-    
+    if($('.chekone').is(':checked')){
+      this.fileActionPanel = true
+    }else{
+      this.fileActionPanel = false
+    }
     // if(user){
     //   this.getUsers()
     //   this.$socket.emit("userJoined", this.user)
@@ -130,6 +148,27 @@ export default {
   },
   methods: {
     ...mapActions(['getFiles']),
+    fileSelect(event){
+      if(event.target.checked){
+        this.fileActionPanel = true
+      }else{
+        this.fileActionPanel = false
+      }
+    },
+    actionEvent(option){
+      let tableHead = document.querySelector('th.chekall[aria-colindex="1"]')
+      let inputOne = document.querySelectorAll('.chekone')
+      inputOne.forEach(input=>{
+        console.log(input)
+      })
+      if (option == "notice") {
+        alert("notice")
+      } else if (option == "rename") {
+        alert("rename")
+      } else if (option == "delete") {
+        alert("delete")
+      }
+    },
     contextMenu(event, data) {
       this.contextActiveItem = data;
       this.style.top = event.clientY;

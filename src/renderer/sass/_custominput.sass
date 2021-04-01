@@ -1,0 +1,104 @@
+@supports (-webkit-appearance: none) or (-moz-appearance: none)
+  input.cinput
+    &[type=checkbox], &[type=radio]
+      height: 21px
+      outline: none
+      position: relative
+      -webkit-appearance: none
+      -moz-appearance: none
+      margin: 0
+      padding: 0
+      box-shadow: none
+      cursor: pointer
+      height: 21px
+      border: 1px solid #d6d6d6
+      background: #fff
+      transition: background 0.3s ease, border-color 0.3s ease
+
+    &[type=checkbox]:after, &[type=radio]:after
+      content: ""
+      display: block
+      left: 0
+      top: 0
+      position: absolute
+      transition: transform 0.3s ease, opacity 0.2s ease, filter 0.3s ease
+
+    &[type=checkbox]:checked, &[type=radio]:checked
+      background: #fff
+      border-color: tomato
+
+    &[type=checkbox]:checked:after, &[type=radio]:checked:after
+      filter: drop-shadow(0 1px 2px rgba(18, 22, 33, 0.1))
+      transition: opacity 0.3s ease, filter 0.3s ease, transform 0.6s cubic-bezier(0.175, 0.88, 0.32, 1.2)
+
+    &[type=checkbox]:disabled, &[type=radio]:disabled
+      cursor: not-allowed
+      opacity: 0.9
+      background: #f5f9ff
+
+    &[type=checkbox]:disabled:checked, &[type=radio]:disabled:checked
+      background: #e4ecfa
+      border-color: tomato
+
+    &[type=checkbox]:hover:not(:checked):not(:disabled), &[type=radio]:hover:not(:checked):not(:disabled)
+      border-color: $lightColor
+
+    &[type=checkbox]:not(.switch), &[type=radio]:not(.switch)
+      width: 21px
+
+    &[type=checkbox]:not(.switch):after, &[type=radio]:not(.switch):after
+      opacity: 0
+
+    &[type=checkbox]:not(.switch):checked:after, &[type=radio]:not(.switch):checked:after
+      opacity: 1
+
+    &[type=checkbox]
+      &:not(.switch)
+        border-radius: 6px
+
+        &:after
+          width: 5px
+          height: 9px
+          border: 2px solid tomato
+          border-top: 0
+          border-left: 0
+          left: 7px
+          top: 4px
+          transform: rotate(20deg)
+
+        &:checked:after
+          transform: rotate(43deg)
+
+      &.switch
+        width: 38px
+        border-radius: 11px
+
+        &:after
+          left: 2px
+          top: 2px
+          border-radius: 50%
+          width: 15px
+          height: 15px
+          background: tomato
+
+        &:checked:after
+          background: tomato
+          transform: translateX(17px)
+
+        &:disabled:not(:checked):after
+          opacity: 0.6
+
+    &[type=radio]
+      border-radius: 50%
+
+      &:after
+        width: 19px
+        height: 19px
+        border-radius: 50%
+        background: tomato
+        opacity: 0
+        transform: scale(0.7)
+
+      &:checked:after
+        background: tomato
+        transform: scale(0.5)
