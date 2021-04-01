@@ -51,14 +51,12 @@ router.get('/', async (req, res, next) => {
   const { folderId } = req.query
   try {
     const files = await File.findAll({where: {folderId}, raw:true})
-    console.log(files)
     res.status(201).json({
       success: true,
       message: 'Все файлы раздела',
       files
     });
   } catch (error) {
-    console.log(error)
     res.status(404).json({
       success: false,
       message: 'Ошибка, что то пошло не так!',
@@ -114,7 +112,8 @@ async function addFiles(ownerName,ownerId, folderId, files) {
       ownerName, 
       mimeType: file.mimetype,
       originalName: file.originalname,
-      folderId
+      folderId,
+      userId: ownerId
     })
   }
 }
