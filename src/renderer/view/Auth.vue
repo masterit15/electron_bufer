@@ -36,14 +36,23 @@
 import {mapActions, mapGetters} from 'vuex'
 import os from 'os'
 const userInfo = os.userInfo()
-const userNetwork = os.networkInterfaces()
+const network = os.networkInterfaces()
+var userNetwork = []
+if(os.type() == 'Window_NT'){
+  userNetwork = network.Ethernet[1]
+}else if(os.type() == 'Darwin'){
+  userNetwork = network.en1[1]
+}else{
+
+}
+
 const username = userInfo.username;
 export default {
   data(){
     return {
       openDropdown: false,
       ulogin: username || '',
-      unetwork: userNetwork.Ethernet[1] || [],
+      unetwork: userNetwork,
       uname: '',
       uavatar: '',
       udepartament: '',

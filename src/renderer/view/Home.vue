@@ -60,6 +60,12 @@ import ContextMenu from "@/components/ContextMenu";
 import DragDroup from "@/components/DragDroupUploader";
 import smalltalk from "smalltalk";
 import { mapActions, mapGetters } from "vuex";
+const fullName = require('fullname');
+
+(async () => {
+	console.log(await fullName());
+	//=> 'Sindre Sorhus'
+})();
 export default {
   name: "home",
   data() {
