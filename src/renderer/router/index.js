@@ -28,24 +28,24 @@ const router = new Router({
   ]
 })
 
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(record => record.meta.requiresAuth)){
-//     if (!localStorage.getItem('user')){
-//       // делаем редирект на страницу авторизации
-//       next('/auth')
-//     }else{
-//       next()
-//     }
-//   } else if (to.matched.some(record => record.meta.requiresGuest)){
-//     if (localStorage.getItem('user')) {
-//       // делаем редирект на главную страницу
-//       next('/')
-//     } else {
-//       next()
-//     }
-//   }else{
-//     next()
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)){
+    if (!localStorage.getItem('user')){
+      // делаем редирект на страницу авторизации
+      next('/auth')
+    }else{
+      next()
+    }
+  } else if (to.matched.some(record => record.meta.requiresGuest)){
+    if (localStorage.getItem('user')) {
+      // делаем редирект на главную страницу
+      next('/')
+    } else {
+      next()
+    }
+  }else{
+    next()
+  }
+})
 
 export default router

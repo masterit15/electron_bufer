@@ -13,11 +13,11 @@
         </div>
       </div>
       <div class="form-field">
-        <input required type="text" ref="udep" v-model="udepartament" id="udepartament" @click="openDropdown = true">
+        <input required type="text" ref="udep" v-model="udepartament" id="udepartament" @click="activeDrodown">
         <label class="form-field-label" for="udepartament">Выберите свой департамент</label>
-        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown mCustomScrollbar" data-mcs-theme="dark">
+        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown mCustomScrollbar" data-mcs-theme="dark" ref="dropdown">
           <input class="form-dropdown-search" type="text" v-model="searchdep">
-          <li v-for="departament in departamentList" :key="departament.id" @click="activeItem(departament)">{{departament.name}}</li>
+          <li v-for="departament in departamentList" :key="departament.id" @click="clickItem(departament)">{{departament.name}}</li>
         </ul>
       </div>
       <div class="form-field">
@@ -53,7 +53,6 @@ export default {
     ...mapGetters(['departaments']),
     departamentList(){
       return this.departaments.filter(departament=>{
-        console.log(departament.name.toLowerCase().includes(this.searchdep.toLowerCase()))
         return departament.name.toLowerCase().includes(this.searchdep.toLowerCase())
       })
     }
@@ -79,7 +78,7 @@ export default {
       let res = await this.addUsers(data)
       if(res.success){
         this.$socket.emit("userJoined", userInfo)
-        this.bodyFixed(position='relative')
+        this.bodyFixed('relative')
         clearInterval(this.setIntervalBgcChange());
         this.$router.push('/') 
       }
@@ -98,11 +97,35 @@ export default {
         }, 120000)
       return refreshIntervalBg
     },
-    activeItem(item){
-      console.log(item.name)
+    clickItem(item){
       this.udepartament = item.name
       this.$refs.udep.value = item.name
       this.openDropdown = false
+    },
+    activeDrodown(){
+      let dropdown = this.$refs.dropdown
+      this.outsideClick(dropdown)
+    },
+    outsideClick(elem) {
+      let that = this;
+      function outsideClickListener(event) {
+        if (!elem.contains(event.target) && isVisible(elem)) {
+          that.openDropdown = false;
+          document.removeEventListener("click", outsideClickListener);
+        }
+      }
+      document.addEventListener("click", outsideClickListener);
+      function isVisible(elem) {
+        //открыто ли условное окно
+        return (
+          !!elem &&
+          !!(
+            elem.offsetWidth ||
+            elem.offsetHeight ||
+            elem.getClientRects().length
+          )
+        );
+      }
     },
     addAvatar(){
       this.$refs.avatar.click()
@@ -133,7 +156,7 @@ export default {
       })
     },
     beforeDestroy() {
-      this.bodyFixed(position='relative')
+      this.bodyFixed('relative')
       clearInterval(this.setIntervalBgcChange());
     },
   }

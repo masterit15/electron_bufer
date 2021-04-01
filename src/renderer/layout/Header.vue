@@ -33,6 +33,7 @@ export default {
   methods: {
     async Outh(){
       // await this.logout()
+      localStorage.removeItem('user')
       this.$router.push('/auth')
     }
   }

@@ -97,9 +97,8 @@ export default {
           that.percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         }
       }
-      axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&owner=${this.user.id}`, data, config)
+      axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`, data, config)
       .then(res=>{
-        console.log('res', res.data.success)
         if(res.data.success){
           this.getFiles(this.activeFolderArr.id)
         }

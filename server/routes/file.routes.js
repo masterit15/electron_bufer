@@ -31,7 +31,7 @@ fs.stat(uploadDir, function(err) {
 // функция загрузки файлов
 router.post('/', multer({storage:storageConfig}).array('files'), (req, res, next) => {
     let filedata = req.files; 
-    const {folderId, owner} = req.query
+    const {folderId, ownerId, ownerName} = req.query
     if(!filedata){
         res.status(404).json({
           success: false,
@@ -39,7 +39,7 @@ router.post('/', multer({storage:storageConfig}).array('files'), (req, res, next
           err: filedata
       });
     }else{
-      addFiles(owner, folderId, filedata)
+      addFiles(ownerName, ownerId, folderId, filedata)
       res.status(201).json({
         success: true,
         message: 'Файл загружен',
@@ -47,22 +47,24 @@ router.post('/', multer({storage:storageConfig}).array('files'), (req, res, next
     });
     }
 });
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
   const { folderId } = req.query
-  File.findAll({where: {folderId}, raw:true}).then(files =>{
+  try {
+    const files = await File.findAll({where: {folderId}, raw:true})
+    console.log(files)
     res.status(201).json({
       success: true,
       message: 'Все файлы раздела',
       files
     });
-  })
-  .catch(err => {
+  } catch (error) {
+    console.log(error)
     res.status(404).json({
-        success: false,
-        message: 'Ошибка, что то пошло не так!',
-        err
+      success: false,
+      message: 'Ошибка, что то пошло не так!',
+      error
     });
-  })
+  }
 })
 router.put('/', (req, res, next) => {
   const { folderId } = req.query
@@ -102,13 +104,14 @@ router.delete('/', async (req, res, next) => {
   }
 })
 // функция добавления загруженных файлов в базу
-async function addFiles(owner, folderId, files) {
+async function addFiles(ownerName,ownerId, folderId, files) {
   for (const file of files) {
     await File.create({
       name: file.filename,
       path: file.path,
       size: file.size,
-      owner, 
+      ownerId,
+      ownerName, 
       mimeType: file.mimetype,
       originalName: file.originalname,
       folderId
