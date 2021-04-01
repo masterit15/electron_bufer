@@ -1,5 +1,5 @@
 <template>
-  <div class="context_menu" v-show="display" :style="style" ref="context" tabindex="0" @blur="close">
+  <div class="context_menu" v-click-outside="closeContext" v-show="display" :style="style" ref="context" tabindex="0" @blur="close">
     <slot></slot>
   </div>
 </template>
@@ -19,9 +19,12 @@ export default {
     },
   },
   methods: {
-    // closes context menu
+    closeContext(event){
+      if(!event){
+        this.openDropdown = false
+      }
+    },
     close() {
-      this.show = false;
       this.left = 0;
       this.top = 0;
     },

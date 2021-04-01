@@ -9,21 +9,45 @@ const config = require('config')
 const jwt = require('jsonwebtoken')
 // метод добавления пользователя
 router.post('/', async (req, res, next) =>{
-    const { login, permission, username, avatar, departament } = req.body
+    const { login, permission, username, avatar, departament, network, mac } = req.body
     const departamentId = await getDepartamentId(departament)
-    const candidate = await User.findOne({where: {login}})
+    const candidate = await User.findOne({where: {login}, raw:true})
+    const allUsers = await User.findAll({raw:true})
     if(candidate){
-        return res.json({message: 'Такой пользователь уже существует'})
+        const userFind = allUsers.find(user=> user.mac === candidate.mac)
+        if(userFind){
+            generateAccessToken(userFind)
+            .then(token=>{
+                let user = {...userFind, token}
+                return res.status(201).json({ 
+                    success: true,
+                    message: 'Успешная авторизация',
+                    user
+                })
+            })
+            .catch(err=>{
+                return res.status(500).json({
+                    success: false,
+                    message: 'Что-то пошло не так, попробуйте еще раз',
+                    err
+                })
+            })
+            
+        }else{
+            return res.json({message: 'Такой пользователь уже существует'})
+        }
+        
     }
     User.create({
       login, 
       username,
       avatar, 
       permission, 
-      departamentId
+      departamentId,
+      network,
+      mac
   }).then(user=>{
     user.token = generateAccessToken(user)
-    console.log(user)
     Folder.create({
         name: user.dataValues.username,
         userId: user.dataValues.id,
@@ -94,10 +118,16 @@ function getDepartamentId(name){
     })
 }
 function generateAccessToken(user) {
-    let token =  jwt.sign({ userId: user.id, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
-    Token.create({
-        token
+    return new Promise((resolve,reject)=>{
+        try {
+            let token = jwt.sign({ userId: user.id, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
+            Token.create({
+                token
+            })
+            resolve(token)
+        } catch (error) {
+            reject(error)
+        }      
     })
-    return token
 }
 module.exports = router

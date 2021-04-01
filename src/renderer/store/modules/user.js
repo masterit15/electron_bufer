@@ -2,7 +2,7 @@ import axios from 'axios'
 export default {
   state: {
     users: [],
-    user: JSON.parse(localStorage.getItem('user'))
+    user: [] || JSON.parse(localStorage.getItem('user'))
   },
   mutations: {
     setUsers(state, users){
@@ -43,8 +43,6 @@ export default {
       .catch(err=>{
         postres = err
       })
-      console.log('postres',postres)
-      
       return postres
     },
     async logout({state}){

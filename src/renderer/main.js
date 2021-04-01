@@ -9,6 +9,8 @@ import router from './router'
 import store from './store'
 import Avatar from 'vue-avatar'
 import VueSocketIO from 'vue-socket.io'
+import vClickOutside from 'v-click-outside'
+Vue.use(vClickOutside)
 import db from './db'
 
 import dateFilter from './filter/date.filter'
@@ -24,13 +26,14 @@ Vue.use(new VueSocketIO({
     },
     // options: { path: "/my-app/" } //Optional options
 }))
+
 import './sass/main.sass'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$http = axios
 if (localStorage.user) {
-  const tokenData = JSON.parse(localStorage.user)
-  Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${tokenData.accessToken}`
+  const token = JSON.parse(localStorage.user).token
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 
 window.$ = window.jQuery = require('jquery');

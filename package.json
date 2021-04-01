@@ -69,6 +69,7 @@
     "readdirp": "^3.5.0",
     "simplebar": "^5.3.0",
     "smalltalk": "^4.0.7",
+    "v-click-outside": "^3.1.2",
     "vue": "^2.5.16",
     "vue-avatar": "^2.3.3",
     "vue-context": "^6.0.0",

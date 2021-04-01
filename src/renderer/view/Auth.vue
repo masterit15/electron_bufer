@@ -13,9 +13,9 @@
         </div>
       </div>
       <div class="form-field">
-        <input required type="text" ref="udep" v-model="udepartament" id="udepartament" @click="activeDrodown">
+        <input required type="text" ref="udep" v-model="udepartament" id="udepartament" @click="openDropdown = true">
         <label class="form-field-label" for="udepartament">Выберите свой департамент</label>
-        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown mCustomScrollbar" data-mcs-theme="dark" ref="dropdown">
+        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown mCustomScrollbar" v-click-outside="closeDropdown" data-mcs-theme="dark" ref="dropdown" v-show="departamentList.length > 0">
           <input class="form-dropdown-search" type="text" v-model="searchdep">
           <li v-for="departament in departamentList" :key="departament.id" @click="clickItem(departament)">{{departament.name}}</li>
         </ul>
@@ -26,7 +26,7 @@
       </div>
       <div class="form-field">
         <input required type="text" v-model="uname" id="uname">
-        <label class="form-field-label" for="uname">Имя пользователя ( Название раздела )</label>
+        <label class="form-field-label" for="uname">ФИО ( Название Вашей папки )</label>
       </div>
       <input class="btn" type="submit" placeholder="Войти">
     </form>
@@ -36,12 +36,14 @@
 import {mapActions, mapGetters} from 'vuex'
 import os from 'os'
 const userInfo = os.userInfo()
+const userNetwork = os.networkInterfaces()
 const username = userInfo.username;
 export default {
   data(){
     return {
       openDropdown: false,
-      ulogin: '' || username,
+      ulogin: username || '',
+      unetwork: userNetwork.Ethernet[1] || [],
       uname: '',
       uavatar: '',
       udepartament: '',
@@ -73,7 +75,9 @@ export default {
         login: this.ulogin,
         username: this.uname,
         avatar: this.uavatar,
-        departament: this.udepartament
+        departament: this.udepartament,
+        network: this.unetwork,
+        mac: this.unetwork.mac
       }
       let res = await this.addUsers(data)
       if(res.success){
@@ -99,32 +103,13 @@ export default {
     },
     clickItem(item){
       this.udepartament = item.name
-      this.$refs.udep.value = item.name
-      this.openDropdown = false
-    },
-    activeDrodown(){
-      let dropdown = this.$refs.dropdown
-      this.outsideClick(dropdown)
-    },
-    outsideClick(elem) {
-      let that = this;
-      function outsideClickListener(event) {
-        if (!elem.contains(event.target) && isVisible(elem)) {
-          that.openDropdown = false;
-          document.removeEventListener("click", outsideClickListener);
-        }
+      if(this.udepartament.length > 0){
+        this.openDropdown = false
       }
-      document.addEventListener("click", outsideClickListener);
-      function isVisible(elem) {
-        //открыто ли условное окно
-        return (
-          !!elem &&
-          !!(
-            elem.offsetWidth ||
-            elem.offsetHeight ||
-            elem.getClientRects().length
-          )
-        );
+    },
+    closeDropdown(event){
+      if(!event){
+        this.openDropdown = false
       }
     },
     addAvatar(){

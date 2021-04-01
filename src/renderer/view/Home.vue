@@ -6,20 +6,23 @@
       <app-header></app-header>
       <div id="main" class="content mCustomScrollbar" >
         <b-table hover :items="files" :fields="fields">
+          <template #cell(check)="data">
+            <input class="chekone" type="checkbox" :value="data.item.id">
+          </template>
           <template #cell(name)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
               <span class="file_icon" v-html="fileExt(data.item.name)"></span>
               {{ data.item.originalName }}
             </div>
           </template>
-          <template #cell(createDateTime)="data">
+          <template #cell(createDate)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              {{ data.item.date | date('datetime')}}
+              {{ data.item.date | date('datetime') }}
             </div>
           </template>
-          <template #cell(owner)="data">
+          <template #cell(ownerName)="data">
             <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              {{ data.item.owner }}
+              {{ data.item.ownerName }}
             </div>
           </template>
           <template #cell(size)="data">
@@ -37,6 +40,7 @@
         </context-menu>
         <pre>{{ activeFolderArr }}</pre>
           <DragDroup v-show="activeFolderArr"/>
+          
       </div>
     </div>
   </div>
@@ -62,6 +66,11 @@ export default {
       },
       fields: [
         {
+          key: "check",
+          label: "Действия",
+          class: 'chekall'
+        },
+        {
           key: "name",
           label: "Имя файла",
           sortable: true,
@@ -72,7 +81,7 @@ export default {
           sortable: true,
         },
         {
-          key: "owner",
+          key: "ownerName",
           label: "Создатель",
           sortable: true,
         },
@@ -101,6 +110,15 @@ export default {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   mounted() {
+    let chekall = $('th.chekall[aria-colindex="1"]').html(`<input type="checkbox" name="" id="chekall">`)
+    $('#chekall').on('change', ()=>{
+      if($('#chekall').is(':checked')){
+        $('.chekone').prop('checked', true);
+      }else{
+        $('.chekone').prop('checked', false);
+      }
+    })
+    
     // if(user){
     //   this.getUsers()
     //   this.$socket.emit("userJoined", this.user)
