@@ -29,7 +29,18 @@ export default {
       percent: 0,
     };
   },
+  watch: {
+    percent(){
+      if(this.percent == 0 || this.percent == 1){
+        this.$electron.remote.getCurrentWindow().setProgressBar(-1)
+      }else{
+        this.$electron.remote.getCurrentWindow().setProgressBar(this.percent)
+      }
+    }
+  },
   mounted() {
+    // console.log(this.$electron.remote.getCurrentWindow().setProgressBar(-1))
+    
     let holder = document.getElementById("drag-file");
     holder.classList = "";
     // срабатывает, когда элемент будет перенесен на заданную зону (цель для переноса)
@@ -94,7 +105,7 @@ export default {
       }
       const config = {
         onUploadProgress: function(progressEvent) {
-          that.percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          that.percent = Math.round((progressEvent.loaded * 100) / progressEvent.total) / 100
         }
       }
       axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`, data, config)

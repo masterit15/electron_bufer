@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import { BootstrapVue, IconsPlugin, ToastPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 import smalltalk from '../../node_modules/smalltalk/lib/smalltalk'
@@ -12,6 +12,8 @@ import VueSocketIO from 'vue-socket.io'
 import vClickOutside from 'v-click-outside'
 Vue.use(vClickOutside)
 import db from './db'
+import messages from './plugins/messages'
+Vue.use(messages)
 
 import dateFilter from './filter/date.filter'
 Vue.filter('date', dateFilter)

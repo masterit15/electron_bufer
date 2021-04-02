@@ -13,9 +13,7 @@ if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 app.on('ready', () => {
-  if (process.env.NODE_ENV !== 'production') {
-    require('vue-devtools').install()
-  }else{
+  if (process.env.NODE_ENV == 'production') {
     require('vue-devtools').uninstall()
   }
 })

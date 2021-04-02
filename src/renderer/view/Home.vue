@@ -7,9 +7,9 @@
       <div id="main" class="content mCustomScrollbar" >
         <transition name="slide-down">
           <div class="file_actions" v-show="fileActionPanel">
-              <button @click.prevent="actionEvent(option)('notice')">Уведомить</button>
-              <button @click.prevent="actionEvent(option)('rename')">Переименовать</button>
-              <button v-if="activeFolderArr.id == user.id" @click.prevent="actionEvent(option)('delete')">Удалить</button>
+              <button @click.prevent="actionEvent('notice')">Уведомить</button>
+              <button @click.prevent="actionEvent('rename')">Переименовать</button>
+              <button v-if="activeFolderArr.id == user.id" @click.prevent="actionEvent('delete')">Удалить</button>
           </div>
         </transition>
         <b-table hover :items="files" :fields="fields">
@@ -47,7 +47,6 @@
           </context-menu>
         <!-- <pre>{{ activeFolderArr }}</pre> -->
           <DragDroup v-show="activeFolderArr"/>
-          
       </div>
     </div>
   </div>
@@ -162,17 +161,34 @@ export default {
       }
     },
     actionEvent(option){
-      let tableHead = document.querySelector('th.chekall[aria-colindex="1"]')
-      let inputOne = document.querySelectorAll('.chekone')
-      inputOne.forEach(input=>{
-        console.log(input)
-      })
+      // let tableHead = document.querySelector('th.chekall[aria-colindex="1"]')
+      // let inputOne = document.querySelectorAll('.chekone')
+      // inputOne.forEach(input=>{
+      //   console.log(input.value)
+      // })
       if (option == "notice") {
         alert("notice")
       } else if (option == "rename") {
         alert("rename")
       } else if (option == "delete") {
-        alert("delete")
+        smalltalk.confirm("Удаление", `Вы действительно хотите удалить файл(ы)?`,
+            {
+              buttons: {
+                ok: "Удалить",
+                cancel: "Отмена",
+              },
+            }
+          )
+          .then(() => {
+            this.$message(`Файл(ы) успешно удален(ы)!`, "", "success");
+          })
+          .catch(() => {
+            console.log("no");
+          });
+        let inputOne = document.querySelectorAll('.chekone')
+        inputOne.forEach(input=>{
+          console.log(input.value)
+        })
       }
     },
     contextMenu(event, data) {
