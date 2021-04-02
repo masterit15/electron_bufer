@@ -123,6 +123,8 @@ export default {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   mounted() {
+    let win = this.$electron.remote.getCurrentWindow()
+    
     // $('th.chekall[aria-colindex="1"]').html(`<input class="cinput" type="checkbox" name="" id="chekall">`)
     let tableHead = document.querySelector('th.chekall[aria-colindex="1"]')
     let inputOne = document.querySelector('.chekone')

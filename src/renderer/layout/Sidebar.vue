@@ -76,6 +76,7 @@ export default {
         false
       );
     });
+
     function resize(e) {
       const size = `${e.x}px`;
       sidebar.style.flexBasis = size;
@@ -85,7 +86,11 @@ export default {
     sidebar.style.flexBasis = "325px";
     header.style.cssText = `width: ${main.offsetWidth}px`
     drag.style.cssText = `width: ${main.offsetWidth}px`
-    
+    window.addEventListener('resize', function(e){
+      e.preventDefault();
+      header.style.cssText = `width: ${main.offsetWidth}px`
+      drag.style.cssText = `width: ${main.offsetWidth}px`
+    })
   },
   computed: {
     ...mapGetters(["departaments", "folders"]),
