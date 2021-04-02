@@ -111,6 +111,15 @@ export default {
       axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`, data, config)
       .then(res=>{
         if(res.data.success){
+          let data = {
+            userId: this.activeFolderArr.userId,
+            ownerName: this.user.username,
+            files: []
+          }
+          this.files.forEach(file=>{
+            data.files.push(file.name) 
+          })
+          this.$socket.emit("userAddFiles", data)
           this.getFiles(this.activeFolderArr.id)
         }
       })

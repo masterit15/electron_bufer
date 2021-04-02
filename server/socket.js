@@ -1,6 +1,7 @@
 const app = require('express')()
 const server = require('http').createServer(app)
 const User = require('./model/user')
+const Notice = require('./model/notice')
 const io = require('socket.io')(server, {
   cors: {
       origin: "http://localhost:9080",
@@ -24,23 +25,43 @@ io.on('connection', socket => {
       departamentId
     })
   })
+
   // срабатывает при входе
-  socket.on('userJoined', data => {
-    console.log('userJoined', data)
-    socket.emit('online', data)
+  socket.on('userJoined', async data => {
+      User.update(
+        { online: 'Y' },
+        { where: { id: data.id } }
+      )
+      .then(user =>
+        socket.emit('online', user)
+      )
+      .catch(err =>
+        console.log('userJoined err:', err)
+      )
   })
   // срабатывает при выходе
-  socket.on('userLeft', data => {
-    console.log('userLeft', data)
-    socket.emit('offline', data)
-    // let user = await User.findOne({ where: { id: data.userId } }); 
-    // user.online = "N";
-    // await user.save();
+  socket.on('userLeft', async data => {
+    User.update(
+      { online: 'N' },
+      { where: { id: data.id } }
+    )
+    .then(user =>
+      socket.emit('offline', user)
+    )
+    .catch(err =>
+      console.log('userLeft err:', err)
+    )
   })
+
+
   // срабатывает при добавлении файла в папку
   socket.on('userAddFiles', data => {
-    console.log('userJoined', data)
-    socket.emit('online', data)
+    Notice.create({
+      title: 'У Вас новый файл(ы)',
+      text: 'Перейдите в свою папку папку для ознакомления',
+      userId
+    })
+    socket.emit('noticeUser', data)
   })
   socket.on('disconnect', () => {
     console.log('disconnect')

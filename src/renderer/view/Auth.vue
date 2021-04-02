@@ -38,14 +38,13 @@ import os from 'os'
 const userInfo = os.userInfo()
 const network = os.networkInterfaces()
 var userNetwork = []
-if(os.type() == 'Window_NT'){
+if(os.type() == 'Windows_NT'){
   userNetwork = network.Ethernet[1]
 }else if(os.type() == 'Darwin'){
   userNetwork = network.en1[1]
 }else{
 
 }
-
 const username = userInfo.username;
 export default {
   data(){
@@ -61,7 +60,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['departaments']),
+    ...mapGetters(['departaments', 'user']),
     departamentList(){
       return this.departaments.filter(departament=>{
         return departament.name.toLowerCase().includes(this.searchdep.toLowerCase())
@@ -78,7 +77,7 @@ export default {
     this.bodyFixed()
   },
   methods: {
-    ...mapActions(['getDepartaments', 'addUsers']),
+    ...mapActions(['getDepartaments', 'addUsers', 'getUsers']),
     async authBufer(){
       let data = {
         login: this.ulogin,
@@ -90,9 +89,10 @@ export default {
       }
       let res = await this.addUsers(data)
       if(res.success){
-        this.$socket.emit("userJoined", userInfo)
+        this.$socket.emit("userJoined", this.user)
         this.bodyFixed('relative')
         clearInterval(this.setIntervalBgcChange());
+        this.getUsers()
         this.$router.push('/') 
       }
     },

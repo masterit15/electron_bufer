@@ -16,7 +16,8 @@ const User = sequelize.define('user', {
     username: { type: Sequelize.STRING, allowNull: false},
     network: { type: Sequelize.JSON, allowNull: false},
     mac: { type: Sequelize.STRING, allowNull: false},
-    lastauthorization: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
+    lastauthorization: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+    online: {type: Sequelize.ENUM, values:['Y','N'], defaultValue: 'N'},
   })
 User.hasMany(Folder);
 User.hasMany(File);

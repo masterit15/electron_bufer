@@ -14,57 +14,45 @@ router.post('/', async (req, res, next) =>{
     const candidate = await User.findOne({where: {login}, raw:true})
     const allUsers = await User.findAll({raw:true})
     if(candidate){
-        const userFind = allUsers.find(user=> user.mac === candidate.mac)
+        const userFind = allUsers.find(user=> (user.mac === candidate.mac && user.login === candidate.login))
         if(userFind){
-            generateAccessToken(userFind)
-            .then(token=>{
-                let user = {...userFind, token}
-                return res.status(201).json({ 
-                    success: true,
-                    message: 'Успешная авторизация',
-                    user
-                })
+            // let token = generateAccessToken(userFind)
+            // let user = {...userFind, token}
+            return res.status(200).json({ 
+                success: true,
+                message: 'Успешная авторизация',
+                user: userFind
             })
-            .catch(err=>{
-                return res.status(500).json({
-                    success: false,
-                    message: 'Что-то пошло не так, попробуйте еще раз',
-                    err
-                })
-            })
-            
-        }else{
-            return res.json({message: 'Такой пользователь уже существует'})
         }
-        
+    }else{
+        User.create({
+            login, 
+            username,
+            avatar, 
+            permission, 
+            departamentId,
+            network,
+            mac
+        }).then(user=>{
+            user.token = generateAccessToken(user)
+            Folder.create({
+                name: user.dataValues.username,
+                userId: user.dataValues.id,
+                departamentId: user.dataValues.departamentId
+            })
+            return res.json({ 
+                success: true,
+                message: 'Пользователь создан',
+                user
+            })
+        }).catch((err)=>{
+            return res.status(500).json({
+                success: false,
+                message: 'Что-то пошло не так, попробуйте еще раз',
+                err
+            })
+        });
     }
-    User.create({
-      login, 
-      username,
-      avatar, 
-      permission, 
-      departamentId,
-      network,
-      mac
-  }).then(user=>{
-    user.token = generateAccessToken(user)
-    Folder.create({
-        name: user.dataValues.username,
-        userId: user.dataValues.id,
-        departamentId: user.dataValues.departamentId
-    })
-    return res.status(201).json({ 
-        success: true,
-        message: 'Пользователь создан',
-        user
-    })
-  }).catch((err)=>{
-    return res.status(500).json({
-        success: false,
-        message: 'Что-то пошло не так, попробуйте еще раз',
-        err
-    })
-  });
 })
 
 // метод получения пользователей
@@ -117,17 +105,9 @@ function getDepartamentId(name){
         })
     })
 }
-function generateAccessToken(user) {
-    return new Promise((resolve,reject)=>{
-        try {
-            let token = jwt.sign({ userId: user.id, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
-            Token.create({
-                token
-            })
-            resolve(token)
-        } catch (error) {
-            reject(error)
-        }      
-    })
+async function generateAccessToken(user) {
+    let token = jwt.sign({ userId: user.id, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
+    await Token.create({token})
+    return token
 }
 module.exports = router

@@ -31,12 +31,12 @@
         <li
           class="folder_list_item"
           :class="isActiveFolder == folder.id ? 'is_active' : ''"
-          v-for="folder in folderList"
-          :key="folder.id+'fol'"
+          v-for="(folder, index) in folderList"
+          :key="index+'fol'"
           @click="folderClick(folder)"
         >
           <div class="folder_list_item_name">
-            <span class="folder_list_item_name_text"><i class="fa fa-folder-o"></i> {{ folder.name }}</span>
+            <span class="folder_list_item_name_text"><span v-html="online(folder.userId)"></span> {{ folder.name }}</span>
             <span class="folder_list_item_name_icon"><i class="fa fa-chevron-right"></i></span>
           </div>
         </li>
@@ -93,7 +93,7 @@ export default {
     })
   },
   computed: {
-    ...mapGetters(["departaments", "folders"]),
+    ...mapGetters(["departaments", "folders", "users"]),
     departamentsList() {
       return this.departaments.filter((departament) => {
         return departament.name
@@ -112,6 +112,13 @@ export default {
   },
   methods: {
     ...mapActions(["getDepartaments", "getFolders", "getFiles", "activateFolder"]),
+    online(userId){
+      let user = this.users.find(user=> user.id == userId)
+      if(user.online == 'Y'){
+          return '<i class="fa fa-folder" style="color:#7bd158"></i>'
+      }
+      return '<i class="fa fa-folder-o" style="color:#252831"></i>'
+    },
     departamentClick(departament) {
       this.activeDepartament = departament.name;
       this.getFolders(departament.id);

@@ -45,7 +45,7 @@
             <li @click.prevent="actionEvent('rename')">Переименовать</li>
             <li v-if="activeFolderArr.id == user.id" @click.prevent="actionEvent('delete')">Удалить</li>
           </context-menu>
-        <!-- <pre>{{ activeFolderArr }}</pre> -->
+        <pre>{{ users }}</pre>
           <DragDroup v-show="activeFolderArr"/>
       </div>
     </div>
@@ -144,17 +144,13 @@ export default {
     }else{
       this.fileActionPanel = false
     }
-    // if(user){
-    //   this.getUsers()
-    //   this.$socket.emit("userJoined", this.user)
-    // }
     $('.mCustomScrollbar').mCustomScrollbar({
       autoHideScrollbar: true,
       scrollbarPosition: "inside"
     })
   },
   methods: {
-    ...mapActions(['getFiles']),
+    ...mapActions(['getFiles', 'deleteFiles']),
     fileSelect(event){
       if(event.target.checked){
         this.fileActionPanel = true
@@ -173,6 +169,8 @@ export default {
       } else if (option == "rename") {
         alert("rename")
       } else if (option == "delete") {
+        let inputOne = document.querySelectorAll('.chekone')
+        let values = []
         smalltalk.confirm("Удаление", `Вы действительно хотите удалить файл(ы)?`,
             {
               buttons: {
@@ -182,15 +180,16 @@ export default {
             }
           )
           .then(() => {
+            inputOne.forEach(input=>{
+              values.push(input.value)
+              // console.log(input.value)
+            })
+            this.deleteFiles(values)
             this.$message(`Файл(ы) успешно удален(ы)!`, "", "success");
           })
           .catch(() => {
             console.log("no");
           });
-        let inputOne = document.querySelectorAll('.chekone')
-        inputOne.forEach(input=>{
-          console.log(input.value)
-        })
       }
     },
     contextMenu(event, data) {

@@ -20,6 +20,18 @@ export default {
         console.log('getFiles error', err)
       })
     },
+    deleteFiles({commit}, id = null){
+      console.log(id)
+      // axios.delete('http://localhost:5050/api/file', {params: {
+      //   id
+      // }})
+      // .then(res=>{
+      //   commit('setFiles', res.data.files)
+      // })
+      // .catch(err=>{
+      //   console.log('getFiles error', err)
+      // })
+    },
     // addFiles({}, {folderId, files}) {
     //   let percentCompleted
     //   const config = {

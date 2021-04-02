@@ -34,6 +34,7 @@ export default {
     async Outh(){
       // await this.logout()
       localStorage.removeItem('user')
+      this.$socket.emit("userLeft", this.user)
       this.$router.push('/auth')
     }
   }
