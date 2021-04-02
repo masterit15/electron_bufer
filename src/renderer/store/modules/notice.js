@@ -14,15 +14,24 @@ export default {
     SOCKET_noticeUser({dispatch}, userId){
       dispatch('getNotices', userId)
     },
-    getNotices({commit}, data = {}){
-      axios.get('http://localhost:5050/api/user').then(res=>{
+    getNotices({commit}, id){
+    axios.get('http://localhost:5050/api/notice', {params:{id}}).then(res=>{
         commit('setNotices', res.data.notices)
       })
       .catch(err=>{
         console.log('getNotices error', err)
       })
-      
-    }
+    },
+    deleteNotices({state,dispatch}, id){
+      axios.delete('http://localhost:5050/api/notice', {params:{id}}).then(res=>{
+          console.log(res.data)
+          dispatch('getNotices', state.user.id)
+          commit('setNotices', res.data.notices)
+        })
+        .catch(err=>{
+          console.log('getNotices error', err)
+        })
+      }
   },
   getters: {
     notices: state => state.notices,

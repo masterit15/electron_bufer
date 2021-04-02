@@ -2,28 +2,29 @@
   <div class="notice">
     <div
       class="notice_btn"
-      :class="notifyed.length > 0 ? 'is_active' : ''"
+      :class="notices.length > 0 ? 'is_active' : ''"
       ref="notice"
       @click="shownotify = !shownotify"
       v-b-tooltip.hover
-      :title="'Уводомлений: ' + notifyed.length"
+      :title="'Уводомлений: ' + notices.length"
     >
       <i class="fa fa-bell-o"></i>
       <span class="notice_count">{{
-        notifyed.length >= 99 ? 99 : notifyed.length
+        notices.length >= 99 ? 99 : notices.length
       }}</span>
     </div>
       <ul class="notice_list mCustomScrollbar" data-mcs-theme="dark" >
         <li
-          v-for="notice in notifyed"
+          v-for="notice in notices"
           :key="notice.id"
           class="notice_item"
         >
           <span class="notice_item_close"><i class="fa fa-times" @click="closeNotify($event, notice.id)"></i></span>
           <div
             class="notice_item_wrap"
-            :style="{ backgroundColor: notice.bgColor, color: notice.color }"
+            
           >
+          <!-- :style="{ backgroundColor: notice.bgColor, color: notice.color }" -->
             <h6>{{ notice.title }}</h6>
             <p>{{ notice.text }}</p>
           </div>
@@ -32,77 +33,13 @@
   </div>
 </template>
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import gsap from 'gsap'
 const tl = gsap.timeline()
 export default {
   data() {
     return {
       shownotify: false,
-      notifyed: [
-        {
-          id: 1,
-          title: "Test1",
-          text: "werewrwer",
-          bgColor: "#f79696" + 14,
-          color: "#f79696",
-        },
-        {
-          id: 2,
-          title: "Test2",
-          text: "werewrwer",
-          bgColor: "#ffc106" + 14,
-          color: "#ffc106",
-        },
-        {
-          id: 3,
-          title: "Test3",
-          text: "werewrwer",
-          bgColor: "#17b8a1" + 14,
-          color: "#17b8a1",
-        },
-        {
-          id: 4,
-          title: "Test1",
-          text: "werewrwer",
-          bgColor: "#f79696" + 14,
-          color: "#f79696",
-        },
-        {
-          id: 5,
-          title: "Test2",
-          text: "werewrwer",
-          bgColor: "#ffc106" + 14,
-          color: "#ffc106",
-        },
-        {
-          id: 6,
-          title: "Test3",
-          text: "werewrwer",
-          bgColor: "#17b8a1" + 14,
-          color: "#17b8a1",
-        },
-        {
-          id: 7,
-          title: "Test1",
-          text: "werewrwer",
-          bgColor: "#f79696" + 14,
-          color: "#f79696",
-        },
-        {
-          id: 8,
-          title: "Test2",
-          text: "werewrwer",
-          bgColor: "#ffc106" + 14,
-          color: "#ffc106",
-        },
-        {
-          id: 9,
-          title: "Test3",
-          text: "werewrwer",
-          bgColor: "#17b8a1" + 14,
-          color: "#17b8a1",
-        },
-      ],
     };
   },
   watch: {
@@ -130,25 +67,30 @@ export default {
       let noti_item = document.querySelectorAll(".notice_item");
       tl.to(noti_item, { x: 100, opacity: 0, duration: 0.2, stagger: 0.1 });
     }
+    this.getNotices(this.user.id)
+  },
+  computed: {
+    ...mapGetters(['notices', 'user']),
   },
   methods: {
-    notice() {
-      const audio = new Audio("static/notify.mp3");
-      // if (audio) {
-      //     audio.play();
-      // }
-      // let myNotification = new Notification("Title", {
-      //   body: this.username,
-      //   timeoutType: 'never',
-      //   audio: this.$path.join(__dirname, '/static/notify.mp3'),
-      //   hasReply: true
-      // });
-      // console.log(myNotification)
-      // myNotification.onclick = () => {
-      //   console.log('Notification clicked')
-      //   myNotification.close()
-      // }
-    },
+    ...mapActions(['getNotices', 'deleteNotices']),
+    // notice() {
+    //   const audio = new Audio("static/notify.mp3");
+    //   // if (audio) {
+    //   //     audio.play();
+    //   // }
+    //   // let myNotification = new Notification("Title", {
+    //   //   body: this.username,
+    //   //   timeoutType: 'never',
+    //   //   audio: this.$path.join(__dirname, '/static/notify.mp3'),
+    //   //   hasReply: true
+    //   // });
+    //   // console.log(myNotification)
+    //   // myNotification.onclick = () => {
+    //   //   console.log('Notification clicked')
+    //   //   myNotification.close()
+    //   // }
+    // },
     closeNotify(e, id) {
       let item = e.target.closest(".notice_item")
       let that = this;
@@ -157,9 +99,10 @@ export default {
         opacity: 0,
         duration: 0.2,
       }).then(res => {
-        that.notifyed  = that.notifyed.filter(noti=> {
-          return noti.id !== id;
-        });
+        // this.notices = this.notices.filter(noti=> {
+        //   return noti.id !== id;
+        // });
+        this.deleteNotices(id)
       });
     },
   },

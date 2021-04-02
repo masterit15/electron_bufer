@@ -56,10 +56,11 @@ io.on('connection', socket => {
 
   // срабатывает при добавлении файла в папку
   socket.on('userAddFiles', data => {
+    console.log(data)
     Notice.create({
-      title: 'У Вас новый файл(ы)',
+      title: `У Вас новый файл(ы) от ${data.ownerName}`,
       text: 'Перейдите в свою папку папку для ознакомления',
-      userId
+      userId: data.userId
     })
     socket.emit('noticeUser', data)
   })
