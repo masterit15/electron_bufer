@@ -16,12 +16,12 @@ router.post('/', async (req, res, next) =>{
     if(candidate){
         const userFind = allUsers.find(user=> (user.mac === candidate.mac && user.login === candidate.login))
         if(userFind){
-            // let token = generateAccessToken(userFind)
+            let token = generateAccessToken(userFind)
             // let user = {...userFind, token}
             return res.status(200).json({ 
                 success: true,
                 message: 'Успешная авторизация',
-                user: userFind
+                user: {...userFind, token}
             })
         }
     }else{

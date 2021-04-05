@@ -35,6 +35,7 @@ if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$http = axios
 if (localStorage.user) {
   const token = JSON.parse(localStorage.user).token
+  console.log(token);
   Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 window.console.log

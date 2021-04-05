@@ -49,7 +49,15 @@
       background: inherit
       filter: blur(8px)
       z-index: -1
-    
+    .btn
+      color: #fff
+      border: 2px solid tomato
+      width: 160px
+      margin: auto
+      z-index: 30
+      &:hover, &:focus, &:active
+        outline: none
+        color: #fff
 .form-dropdown
   position: absolute
   left: 0
@@ -80,15 +88,6 @@
     user-select: none
     &:hover
       background-color: rgba(tomato,0.3)
-.btn
-  color: #fff
-  border: 2px solid tomato
-  width: 160px
-  margin: auto
-  z-index: 30
-  &:hover, &:focus, &:active
-    outline: none
-    color: #fff
 .form-field
   font-size: 14px
   position: relative
