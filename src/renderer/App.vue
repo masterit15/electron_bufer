@@ -18,12 +18,25 @@
 const { ipcRenderer } = require('electron');
 import {mapGetters, mapActions} from 'vuex'
 export default {
+  sockets: {
+    connect: function () {
+      console.log("socket connected", this.$socket.id);
+      // this.user.sid = this.$socket.id
+      console.log('user', {...this.user, sid: this.$socket.id})
+    }
+  },
   name: "bufer",
   data(){
     return {
       message: '',
       version: ''
     }
+  },
+  created() {
+    this.chekUpdate()
+  },
+  computed: {
+    ...mapGetters(['user'])
   },
   methods: {
     chekUpdate(){
@@ -34,8 +47,8 @@ export default {
         that.version = 'Version ' + arg.version;
       });
       this.l
-      const notification = this.$refs.notification.target;
-      const restartButton = this.$refs.restart.target;
+      const notification = this.$refs.notification;
+      const restartButton = this.$refs.restart;
       ipcRenderer.on('update_available', () => {
         ipcRenderer.removeAllListeners('update_available');
         that.message = 'Доступно новое обновление. Скачиваю прямо сейчас...';

@@ -113,8 +113,8 @@ export default {
   methods: {
     ...mapActions(["getDepartaments", "getFolders", "getFiles", "activateFolder"]),
     online(userId){
-      let user = this.users.find(user=> user.id == userId)
-      if(user.online == 'Y'){
+      let user = this.users.find(user=>Number(user.id) === Number(userId))
+      if(user && user.online == 'Y'){
           return '<i class="fa fa-folder" style="color:#7bd158"></i>'
       }
       return '<i class="fa fa-folder-o" style="color:#252831"></i>'

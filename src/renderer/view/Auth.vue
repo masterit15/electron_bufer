@@ -35,6 +35,7 @@
 <script>
 import {mapActions, mapGetters} from 'vuex'
 import os from 'os'
+import { log } from 'util'
 const userInfo = os.userInfo()
 const network = os.networkInterfaces()
 var userNetwork = []
@@ -91,7 +92,7 @@ export default {
       }
       let res = await this.addUsers(data)
       if(res.success){
-        this.$socket.emit("userJoined", {...this.user, room: this.udepartament})
+        this.$socket.emit("userJoined", {...this.user, sid: this.$socket.id, room: this.udepartament})
         this.bodyFixed('relative')
         clearInterval(this.setIntervalBgcChange());
         this.getUsers()

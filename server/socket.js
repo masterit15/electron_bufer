@@ -16,27 +16,26 @@ const io = require('socket.io')(server, {
 })
 
 io.on('connection', socket => {
-  users.add({sid: socket.id})
-  console.log({sid: socket.id})
+
   // срабатывает при входе
   socket.on('userJoined', async data => {
-      socket.join(data.room);
-      users.add({...data, sid: socket.id})
+      users.add(data)
       User.update(
         { online: 'Y' },
         { where: { id: data.id } }
       )
       .then(res =>{
-        let user = users.get(data.sid)
-        // console.log(user)
+        let user = users.get(socket.id)
+        console.log(user)
         socket.broadcast.to(data.room).emit('noticeUser', data.id)
         io.emit('online', data.id)
-        //socket.emit('noticeUser', data.id);
+        socket.emit('noticeUser', data.id);
       })
       .catch(err =>
         console.log('userJoined err:', err)
       )
   })
+
   // срабатывает при выходе
   socket.on('userLeft', async data => {
     User.update(
@@ -51,7 +50,6 @@ io.on('connection', socket => {
     )
   })
 
-
   // срабатывает при добавлении файла в папку
   socket.on('userAddFiles', data => {
     Notice.create({
@@ -60,7 +58,7 @@ io.on('connection', socket => {
       userId: data.userId
     })
     let user = users.get(data.userId)
-    socket.broadcast.to(user.room).emit('noticeUser', user.id)
+    socket.broadcast.emit('noticeUser', user.id)
   })
 
   // срабатывает при прочтении уведомления

@@ -13,7 +13,6 @@ export default {
   actions: {
     SOCKET_noticeUser({dispatch}, userId){
       dispatch('getNotices', userId)
-      alert(`Пользователь ${userId} зашел`)
     },
     getNotices({commit}, id){
       axios.get('http://localhost:5050/api/notice', {params:{id}}).then(res=>{

@@ -13,13 +13,15 @@ export default {
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
-      console.log(id);
-      state.users[index].online = 'Y'
+      if(index >= 1){
+        state.users[index].online = 'Y'
+      }
     },
     SOCKET_offline(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
-      console.log(id);
-      state.users[index].online = 'N'
+      if(index >= 1){
+        state.users[index].online = 'N'
+      }
     },
   },
   actions: {

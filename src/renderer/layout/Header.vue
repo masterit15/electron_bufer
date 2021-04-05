@@ -35,20 +35,10 @@ export default {
   methods: {
     async Outh() {
       // await this.logout()
-<<<<<<< HEAD
       localStorage.removeItem("user");
       this.$socket.emit("userLeft", this.user);
       this.$router.push("/auth");
     },
   },
 };
-=======
-      localStorage.removeItem('user')
-      this.$socket.emit("userLeft", this.user)
-      // this.$store.replaceState({})
-      this.$router.push('/auth')
-    }
-  }
-}
->>>>>>> 48c32c0643262eb3be3c95b3a1086dcd08d1413b
 </script>

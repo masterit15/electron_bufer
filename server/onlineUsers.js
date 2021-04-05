@@ -3,30 +3,16 @@ class Users {
     this.users = []
   }
 
-  add(nowUser) {
-    console.log('userad', nowUser);
-    let index = this.users.findIndex(user => user.sid == nowUser.sid)
-    console.log('index', index);
-    if(index){
-      this.users[index] = nowUser
-    }else{
-      this.users.push(nowUser)
-    }
-    
+  add(user) {
+    this.users.push(user)
   }
 
-  get(sid) {
-    return this.users.find(user => user.sid === sid)
+  get(id) {
+    return this.users.find(user => user.id === id)
   }
 
   remove(sid) {
-    const user = this.get(sid)
-
-    if (user) {
-      this.users = this.users.filter(user => user.sid !== sid)
-    }
-
-    return user
+    return this.users = this.users.filter(user => user.sid !== sid)
   }
 
   getByRoom(room) {

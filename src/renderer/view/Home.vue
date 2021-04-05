@@ -1,4 +1,9 @@
-<template>
+sockets: {
+    connect: function () {
+      // this.$socket
+      console.log("socket connected", this.$socket);
+    }
+  },<template>
   <div id="home wrapper">
     <div id="container">
       <app-sidebar></app-sidebar>
@@ -67,11 +72,6 @@ const fullName = require('fullname');
 // 	//=> 'Sindre Sorhus'
 // })();
 export default {
-  sockets: {
-    connect: function () {
-      console.log("socket connected");
-    }
-  },
   name: "home",
   data() {
     return {
