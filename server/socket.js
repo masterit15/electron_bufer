@@ -2,6 +2,9 @@ const app = require('express')()
 const server = require('http').createServer(app)
 const User = require('./model/user')
 const Notice = require('./model/notice')
+const Users = require('./onlineUsers')
+const users = new Users()
+
 const io = require('socket.io')(server, {
   cors: {
       origin: "http://localhost:9080",
@@ -12,29 +15,24 @@ const io = require('socket.io')(server, {
   allowEIO3: true
 })
 
-const m = (name, text, id) => ({ name, text, id })
 io.on('connection', socket => {
-  socket.on('userRegister', data => {
-    console.log(data)
-    const {login, avatar, permission, username, departamentId} = data
-    User.create({
-      login, 
-      avatar, 
-      permission, 
-      username, 
-      departamentId
-    })
-  })
-
+  users.add({sid: socket.id})
+  console.log({sid: socket.id})
   // срабатывает при входе
   socket.on('userJoined', async data => {
+      socket.join(data.room);
+      users.add({...data, sid: socket.id})
       User.update(
         { online: 'Y' },
         { where: { id: data.id } }
       )
-      .then(user =>
-        socket.emit('online', user)
-      )
+      .then(res =>{
+        let user = users.get(data.sid)
+        // console.log(user)
+        socket.broadcast.to(data.room).emit('noticeUser', data.id)
+        io.emit('online', data.id)
+        //socket.emit('noticeUser', data.id);
+      })
       .catch(err =>
         console.log('userJoined err:', err)
       )
@@ -45,9 +43,9 @@ io.on('connection', socket => {
       { online: 'N' },
       { where: { id: data.id } }
     )
-    .then(user =>
-      socket.emit('offline', user)
-    )
+    .then(user =>{
+      io.emit('offline', data.id)
+    })
     .catch(err =>
       console.log('userLeft err:', err)
     )
@@ -56,16 +54,47 @@ io.on('connection', socket => {
 
   // срабатывает при добавлении файла в папку
   socket.on('userAddFiles', data => {
-    console.log(data)
     Notice.create({
       title: `У Вас новый файл(ы) от ${data.ownerName}`,
       text: 'Перейдите в свою папку папку для ознакомления',
       userId: data.userId
     })
-    socket.emit('noticeUser', data)
+    let user = users.get(data.userId)
+    socket.broadcast.to(user.room).emit('noticeUser', user.id)
   })
+
+  // срабатывает при прочтении уведомления
+  socket.on('notisRead', data => {
+    Notice.update(
+      { status: 'readit' },
+      { where: { id: data.id } }
+    )
+    .then(notices =>{
+      socket.emit('noticeUser', data.userId)
+    })
+    .catch(err =>
+      console.log('userLeft err:', err)
+    )
+    socket.emit('noticeUser', data.userId)
+  })
+
+  // срабатывает при удалении уведомления
+  socket.on('notisDelete', data => {
+    Notice.destroy({ where: { id: data.id }})
+    .then(notices=>{
+      socket.emit('noticeUser', data.userId)
+    })
+    .catch((err)=>{
+      console.log(err)
+    });
+    
+  })
+
   socket.on('disconnect', () => {
-    console.log('disconnect')
+    const user = users.remove(socket.id)
+    if (user) {
+      io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
+    }
   })
 })
 

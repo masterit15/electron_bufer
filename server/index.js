@@ -4,6 +4,8 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const config = require('config')
 const sequelize = require('./db')
+const logger = require('./loger')
+
 
 app.use(express.json({ extended: true }))
 app.use(cors())
@@ -38,8 +40,10 @@ async function start() {
         await sequelize.authenticate();
         server.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
         console.log('Connection has been established successfully.')
+        logger.warn(`Connection has been established successfully.`)
       } catch (error) {
         console.error('Unable to connect to the database:', error);
+        logger.warn(`Unable to connect to the database: ${error}`)
       }
 }
 start()

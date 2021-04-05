@@ -11,7 +11,6 @@ import Avatar from 'vue-avatar'
 import VueSocketIO from 'vue-socket.io'
 import vClickOutside from 'v-click-outside'
 Vue.use(vClickOutside)
-import db from './db'
 import messages from './plugins/messages'
 Vue.use(messages)
 
@@ -34,6 +33,7 @@ import './sass/main.sass'
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$http = axios
 if (localStorage.user) {
+  console.log(JSON.parse(localStorage.user));
   const token = JSON.parse(localStorage.user).token
   console.log(token);
   Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
@@ -44,7 +44,6 @@ import 'jquery-mousewheel'
 import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min'
 
 Vue.prototype.$smalltalk = smalltalk
-Vue.prototype.$db = db
 Vue.config.productionTip = false
 Vue.component('Avatar', Avatar)
 /* eslint-disable no-new */

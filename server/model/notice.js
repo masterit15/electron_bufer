@@ -9,6 +9,7 @@ const Notice = sequelize.define('notice', {
     },
     title: { type: Sequelize.STRING, allowNull: false},
     text: { type: Sequelize.TEXT, allowNull: true},
-    date: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
+    date: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+    status: {type: Sequelize.ENUM, values:['readit','unread'], defaultValue: 'unread'},
   })
 module.exports = Notice
