@@ -2,7 +2,8 @@ const Sequelize = require("sequelize");
 const sequelize = require('../db')
 const Folder = require('./folder')
 const Notice = require('./notice')
-const File = require('./file')
+const File = require('./file');
+const Token = require("./token");
 const User = sequelize.define('user', {
     id: {
       type: Sequelize.INTEGER,
@@ -22,5 +23,5 @@ const User = sequelize.define('user', {
 User.hasMany(Folder);
 User.hasMany(File);
 User.hasMany(Notice);
-
+User.hasMany(Token);
 module.exports = User

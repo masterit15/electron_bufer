@@ -5,6 +5,7 @@
       <div id="resizer"></div>
       <app-header></app-header>
       <div id="main" class="content mCustomScrollbar" >
+        <pre>{{ users }}</pre>
         <transition name="slide-down">
           <div class="file_actions" v-show="fileActionPanel">
               <button @click.prevent="actionEvent('notice')">Уведомить</button>
@@ -45,7 +46,7 @@
             <li @click.prevent="actionEvent('rename')">Переименовать</li>
             <li v-if="activeFolderArr.id == user.id" @click.prevent="actionEvent('delete')">Удалить</li>
           </context-menu>
-        <pre>{{ users }}</pre>
+        
           <DragDroup v-show="activeFolderArr"/>
       </div>
     </div>
@@ -61,11 +62,16 @@ import smalltalk from "smalltalk";
 import { mapActions, mapGetters } from "vuex";
 const fullName = require('fullname');
 
-(async () => {
-	console.log(await fullName());
-	//=> 'Sindre Sorhus'
-})();
+// (async () => {
+// 	console.log(await fullName());
+// 	//=> 'Sindre Sorhus'
+// })();
 export default {
+  sockets: {
+    connect: function () {
+      console.log("socket connected");
+    }
+  },
   name: "home",
   data() {
     return {
@@ -139,11 +145,14 @@ export default {
         that.fileActionPanel = false
       }
     })
-    if($('.chekone').is(':checked')){
-      this.fileActionPanel = true
-    }else{
-      this.fileActionPanel = false
-    }
+    $('.chekone').on('change', ()=>{
+      if($('.chekone').is(':checked')){
+        this.fileActionPanel = true
+      }else{
+        this.fileActionPanel = false
+      }
+    })
+    
     $('.mCustomScrollbar').mCustomScrollbar({
       autoHideScrollbar: true,
       scrollbarPosition: "inside"
@@ -295,8 +304,12 @@ export default {
           break;
         case 'xls':
         case 'xlsx':
-          icon = `<i class="fa-excel-o" style="color: #3867d6"></i>`
+          icon = `<i class="fa fa-excel-o" style="color: #3867d6"></i>`
           break;
+        case 'sql':
+          icon = `<i class="fa fa-database" style="color: #f7b731"></i>`
+          break;
+          
         default:
           icon = `<i class="fa fa-file" style="color: #808080"></i>`
           break;

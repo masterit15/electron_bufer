@@ -11,23 +11,18 @@ export default {
     setUser(state, user){
       state.user = user
     },
-    // SOCKET_online(state, data){
-    //   let onlineUser = state.users.find(user=>Number(user.id) === Number(data.id))
-    //   console.log(onlineUser)
-    //   onlineUser ? onlineUser.online = 'Y' : ''
-    // },
-    // SOCKET_offline(state, data){
-    //   let offlineUser = state.users.find(user=>Number(user.id) === Number(data.id))
-    //   offlineUser.online = 'N'
-    // }
+    SOCKET_online(state, id){
+      let index = state.users.findIndex(user=>Number(user.id) == Number(id))
+      console.log(id);
+      state.users[index].online = 'Y'
+    },
+    SOCKET_offline(state, id){
+      let index = state.users.findIndex(user=>Number(user.id) == Number(id))
+      console.log(id);
+      state.users[index].online = 'N'
+    },
   },
   actions: {
-    SOCKET_online({dispatch}){
-      dispatch('getUsers')
-    },
-    SOCKET_offline({dispatch}){
-      dispatch('getUsers')
-    },
     getUsers({commit}, data = {}){
       axios.get('http://localhost:5050/api/user').then(res=>{
         commit('setUsers', res.data.users)

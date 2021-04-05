@@ -10,7 +10,7 @@
           <li>dropdown</li>
           <li @click="logout">Выйти</li>
         </u> -->
-      <Notifycation />
+      <Notifycation/>
     </div>
   </div>
 </template>
@@ -35,6 +35,7 @@ export default {
       // await this.logout()
       localStorage.removeItem('user')
       this.$socket.emit("userLeft", this.user)
+      // this.$store.replaceState({})
       this.$router.push('/auth')
     }
   }

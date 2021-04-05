@@ -19,11 +19,6 @@ const { ipcRenderer } = require('electron');
 import {mapGetters, mapActions} from 'vuex'
 export default {
   name: "bufer",
-  sockets: {
-    connect: function () {
-      console.log("socket connected");
-    }
-  },
   data(){
     return {
       message: '',

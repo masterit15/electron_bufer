@@ -59,6 +59,9 @@ export default {
       searchdep: ''
     }
   },
+  created(){
+    this.getDepartaments()
+  },
   computed: {
     ...mapGetters(['departaments', 'user']),
     departamentList(){
@@ -73,7 +76,6 @@ export default {
       scrollbarPosition: "inside"
     })
     this.setIntervalBgcChange()
-    this.getDepartaments()
     this.bodyFixed()
   },
   methods: {
@@ -89,7 +91,7 @@ export default {
       }
       let res = await this.addUsers(data)
       if(res.success){
-        this.$socket.emit("userJoined", this.user)
+        this.$socket.emit("userJoined", {...this.user, room: this.udepartament})
         this.bodyFixed('relative')
         clearInterval(this.setIntervalBgcChange());
         this.getUsers()
