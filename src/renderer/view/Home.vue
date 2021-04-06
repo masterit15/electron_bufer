@@ -14,7 +14,7 @@
           </div>
         </transition>
         <b-table hover :items="files" :fields="fields">
-          <template v-slot:head(check)="data">
+          <template v-slot:head(check)="">
             <input @change="chekedFiles($event)" class="cinput" type="checkbox" ref="chekone">
           </template>
           <template #cell(check)="data">
