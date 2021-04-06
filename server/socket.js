@@ -16,19 +16,23 @@ const io = require('socket.io')(server, {
 })
 
 io.on('connection', socket => {
-  console.log('sid', socket.id)
   // срабатывает при входе
+  socket.on('join_room', function(room){
+    // console.log('join_room',room);
+    //Вот здесь ты можешь подключить сокет к нужной тебе комнате
+    socket.join(room);
+    // socket.broadcast.to(room).emit('test', 'dsfsfsdfsfsdsdf')// отправит всем в этой комнате (кроме себя), что подключился новый пользователь
+  })
+
   socket.on('userJoined', async data => {
-      users.add(data)
+      socket.join(data.room)
       User.update(
         { online: 'Y' },
         { where: { id: data.id } }
       )
       .then(res =>{
-        let user = users.get(data.id)
-        socket.broadcast.to(data.room).emit('noticeUser', data.id)
-        io.emit('online', data.id)
-        //socket.emit('noticeUser', data.id);
+        io.sockets.in(data.room).emit('noticeUser', data.id);
+        socket.broadcast.to(data.room).emit('online', data.id)
       })
       .catch(err =>
         console.log('userJoined err:', err)
@@ -42,7 +46,10 @@ io.on('connection', socket => {
       { where: { id: data.id } }
     )
     .then(user =>{
-      io.emit('offline', data.id)
+      // io.emit('offline', data.id)
+      console.log('userLeft', data)
+      socket.broadcast.to(data.room).emit('offline', data.id)
+      // socket.broadcast.to(data.room).emit('online', data.id)
     })
     .catch(err =>
       console.log('userLeft err:', err)
@@ -56,26 +63,27 @@ io.on('connection', socket => {
       text: 'Перейдите в свою папку папку для ознакомления',
       userId: data.userId
     })
+    console.log(data.sid);
     socket.broadcast.to(data.sid).emit('noticeUser', data.id);
   })
 
   // срабатывает при прочтении уведомления
-  socket.on('notisRead', data => {
+  socket.on('noticeRead', data=> {
     Notice.update(
       { status: 'readit' },
-      { where: { id: data.id } }
+      { where: { id: data.noticeId } }
     )
     .then(notices =>{
+      // console.log(notices);
       socket.emit('noticeUser', data.userId)
     })
     .catch(err =>
       console.log('userLeft err:', err)
     )
-    socket.emit('noticeUser', data.userId)
   })
 
   // срабатывает при удалении уведомления
-  socket.on('notisDelete', data => {
+  socket.on('noticeDelete', data => {
     Notice.destroy({ where: { id: data.id }})
     .then(notices=>{
       socket.emit('noticeUser', data.userId)
@@ -88,7 +96,6 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     const user = users.remove(socket.id)
-    console.log(user)
     if (user) {
       io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
     }

@@ -44,6 +44,23 @@ router.get('/', (req, res, next) =>{
     });
 })
 
+router.put('/', (req, res, next) =>{
+    const {id} = req.query
+    console.log(req);
+    Notice.findAll({ where: { id } }).then(notices=>{
+        return res.status(201).json({ 
+            success: true,
+            message: 'Все разделы',
+            notices
+        })
+    }).catch((err)=>{
+        return res.status(500).json({
+            success: false,
+            message: 'Что-то пошло не так, попробуйте еще раз',
+            err
+        })
+    });
+})
 router.delete('/', (req, res, next)=>{
     const {id} = req.query
     Notice.destroy({ where: { id }})

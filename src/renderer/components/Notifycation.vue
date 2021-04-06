@@ -55,7 +55,7 @@ export default {
     shownotify() {
       let noti_item = document.querySelectorAll(".notice_item");
       let notify_list = document.querySelector(".notice_list");
-      if (this.shownotify) {
+      if (this.shownotify && noti_item.length > 0) {
         notify_list.classList.add("active");
         tl.to(noti_item, { x: 0, opacity: 1, duration: 0.2, stagger: 0.1 });
       } else {
@@ -71,9 +71,8 @@ export default {
     }
   },
   mounted() {
-    // $('.notice_list').mCustomScrollbar()
-    if (!this.shownotify) {
-      let noti_item = document.querySelectorAll(".notice_item");
+    let noti_item = document.querySelectorAll(".notice_item");
+    if (!this.shownotify && noti_item.length > 0) {
       tl.to(noti_item, { x: 100, opacity: 0, duration: 0.2, stagger: 0.1 });
     }
   },
@@ -168,8 +167,12 @@ export default {
         let notices = this.notices.filter(noti=> {
           return noti.id !== id;
         });
+        let data ={
+          noticeId: id,
+          userId: this.user.id
+        }
         this.$store.commit('setNotices', notices)
-        this.updateNotices(id)
+        this.$socket.emit("noticeRead", data)
       });
     },
   },

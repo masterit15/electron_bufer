@@ -16,7 +16,7 @@ router.post('/', async (req, res, next) =>{
     if(candidate){
         const userFind = allUsers.find(user=> (user.mac === candidate.mac && user.login === candidate.login))
         if(userFind){
-            let token = generateAccessToken(userFind)
+            let {token} = await Token.findOne({where: { userId: userFind.id }, raw: true})
             return res.status(200).json({ 
                 success: true,
                 message: 'Успешная авторизация',
@@ -106,15 +106,11 @@ function getDepartamentId(name){
     })
 }
 async function generateAccessToken(user) {
-    const arrToken = await Token.findOne({where: { userId: user.id }, raw: true})
-    if(!arrToken){
-        let token = jwt.sign({ userId: user.id, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
+        let token = jwt.sign({ userId: user.id, userId: user.mac, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
         await Token.create({
             token,
             userId: user.id
         })
         return token
-    }
-    return arrToken.token
 }
 module.exports = router

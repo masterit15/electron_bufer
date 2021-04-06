@@ -8,7 +8,7 @@ export default {
   mutations: {
     setNotices(state, notices){
       state.notices = notices
-    }
+    },
   },
   actions: {
     SOCKET_noticeUser({dispatch}, userId){
@@ -22,9 +22,8 @@ export default {
         console.log('getNotices error', err)
       })
     },
-    updateNotices({state,dispatch}, id){
+    updateNotices({dispatch}, id){
       axios.put('http://localhost:5050/api/notice', {params:{id}}).then(res=>{
-          console.log(res.data)
           // commit('setNotices', res.data.notices)
         })
         .catch(err=>{

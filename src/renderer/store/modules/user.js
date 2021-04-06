@@ -2,7 +2,8 @@ import axios from 'axios'
 export default {
   state: {
     users: [],
-    user: JSON.parse(localStorage.getItem('user')) || []
+    user: JSON.parse(localStorage.getItem('user')) || [],
+    notimessage: {}
   },
   mutations: {
     setUsers(state, users){
@@ -11,25 +12,39 @@ export default {
     setUser(state, user){
       state.user = user
     },
-    addSidUser(state, sid){
-      state.user.sid = sid
+    addSidUser(state, data){
+      console.log('addSidUser',data)
+      let storageUser = JSON.parse(localStorage.getItem('user'))
+        storageUser.sid = data.sid
+        storageUser.room = data.room
+        localStorage.setItem('user', JSON.stringify(storageUser))
+        state.user.sid = data.sid
+        state.user.room = data.room
       let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
-      //console.log(state.users[index]);
-      if(index >= 0){
-        state.users[index].sid = sid
+      if(index !== -1){
+        state.users[index].sid = data.sid
+        state.users[index].room = data.room
+        state.users.forEach((user, i) => {
+          state.users[i].room = data.room
+        });
       }
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
-      if(index >= 1){
+      if(index !== -1){
+        state.notimessage = { text: '', title: `Пользователь ${state.users[index].username} вошел`, variant: 'success' }
         state.users[index].online = 'Y'
       }
     },
     SOCKET_offline(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
-      if(index >= 1){
+      if(index !== -1){
+        state.notimessage = { text: '', title: `Пользователь ${state.users[index].username} вышел`, variant: 'warning' }
         state.users[index].online = 'N'
       }
+    },
+    SOCKET_test(state, id){
+      state.notimessage = { text: '', title: `Пользователь ${id} вышел`, variant: 'danger' }
     },
   },
   actions: {
@@ -69,6 +84,7 @@ export default {
   },
   getters: {
     users: state => state.users,
-    user: state => state.user
+    user: state => state.user,
+    notimessage: state => state.notimessage
   }
 }

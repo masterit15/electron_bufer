@@ -5,7 +5,7 @@
       <div id="resizer"></div>
       <app-header></app-header>
       <div id="main" class="content mCustomScrollbar" >
-        <!-- <pre>{{ users }}</pre> -->
+        <pre>{{ user }}</pre>
         <transition name="slide-down">
           <div class="file_actions" v-show="fileActionPanel">
               <button @click.prevent="actionEvent('notice')">Уведомить</button>
@@ -47,7 +47,7 @@
           <context-menu :display="showContextMenu" :position="style">
             <li @click.prevent="actionEvent('notice')">Уведомить</li>
             <li @click.prevent="actionEvent('rename')">Переименовать</li>
-            <li v-if="activeFolderArr.id == user.id" @click.prevent="actionEvent('delete')">Удалить</li>
+            <li v-if="activeFolderArr.id == user.id || activeFolderArr.ownerId == user.id" @click.prevent="actionEvent('delete')">Удалить</li>
           </context-menu>
         
           <DragDroup v-show="activeFolderArr"/>
@@ -64,11 +64,6 @@ import DragDroup from "@/components/DragDroupUploader";
 import smalltalk from "smalltalk";
 import { mapActions, mapGetters } from "vuex";
 const fullName = require('fullname');
-
-// (async () => {
-// 	console.log(await fullName());
-// 	//=> 'Sindre Sorhus'
-// })();
 export default {
   name: "home",
   data() {
@@ -126,7 +121,6 @@ export default {
   },
   watch: {
     fileSelectArr(){
-      console.log(this.fileSelectArr);
       if(this.fileSelectArr.length > 0){
         this.fileActionPanel = true
       }else{

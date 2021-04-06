@@ -96,7 +96,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['user', 'activeFolderArr'])
+    ...mapGetters(['users','user', 'activeFolderArr'])
   },
   methods: {
     ...mapActions(["getFiles"]),
@@ -127,14 +127,15 @@ export default {
       axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`, data, config)
       .then(res=>{
         if(res.data.success){
+          let user = this.users.find(user=>user.id==this.activeFolderArr.userId)
           let data = {
-            userId: this.activeFolderArr.userId,
-            ownerName: this.user.username,
+            ...user,
             files: []
           }
           this.files.forEach(file=>{
             data.files.push(file.name) 
           })
+          console.log(data)
           this.getFiles(this.activeFolderArr.id)
           this.$socket.emit("userAddFiles", data)
         }

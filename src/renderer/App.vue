@@ -1,13 +1,18 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <div class="app_version">{{version}}</div>
+    <div class="app_version">{{ version }}</div>
     <div id="notification" class="hidden" ref="notification">
       <p id="message"></p>
       <button id="close-button" @click="closeNotification" ref="close">
         Закрыть
       </button>
-      <button id="restart-button" @click="restartApp" class="hidden" ref="restart">
+      <button
+        id="restart-button"
+        @click="restartApp"
+        class="hidden"
+        ref="restart"
+      >
         Перезагрузить
       </button>
     </div>
@@ -15,60 +20,72 @@
 </template>
 
 <script>
-const { ipcRenderer } = require('electron');
-import {mapGetters, mapActions} from 'vuex'
+const { ipcRenderer } = require("electron");
+import { mapGetters } from "vuex";
 export default {
   sockets: {
     connect: function () {
-      this.$store.commit('addSidUser', this.$socket.id)
+      this.$socket.emit('join_room', this.user.departamentName);
+      this.$store.commit("addSidUser", {sid: this.$socket.id, room: this.user.departamentName});
     },
     disconnect() {
-      console.log('App.vue: client disconnected...');
-    }
+      console.log("Пользователь отключился");
+    },
   },
   name: "bufer",
-  data(){
+  data() {
     return {
-      message: '',
-      version: ''
-    }
+      message: "",
+      version: "",
+    };
   },
   created() {
-    this.chekUpdate()
+    this.chekUpdate();
+  },
+  watch: {
+    noticeMessages() {
+      let {title, text, variant} = this.notimessage
+      this.$message(title, text, variant);
+    },
   },
   computed: {
-    ...mapGetters(['user'])
+    ...mapGetters(["user", "notimessage"]),
+    noticeMessages() {
+      return this.notimessage;
+    },
   },
+
   methods: {
-    chekUpdate(){
-      let that = this 
-      ipcRenderer.send('app_version');
-      ipcRenderer.on('app_version', (event, arg) => {
-        ipcRenderer.removeAllListeners('app_version');
-        that.version = 'Version ' + arg.version;
+    chekUpdate() {
+      let that = this;
+      ipcRenderer.send("app_version");
+      ipcRenderer.on("app_version", (event, arg) => {
+        ipcRenderer.removeAllListeners("app_version");
+        that.version = "Version " + arg.version;
       });
-      this.l
+      this.l;
       const notification = this.$refs.notification;
       const restartButton = this.$refs.restart;
-      ipcRenderer.on('update_available', () => {
-        ipcRenderer.removeAllListeners('update_available');
-        that.message = 'Доступно новое обновление. Скачиваю прямо сейчас...';
-        notification.classList.remove('hidden');
+      ipcRenderer.on("update_available", () => {
+        ipcRenderer.removeAllListeners("update_available");
+        that.message = "Доступно новое обновление. Скачиваю прямо сейчас...";
+        notification.classList.remove("hidden");
       });
 
-      ipcRenderer.on('update_downloaded', () => {
-        ipcRenderer.removeAllListeners('update_downloaded');
-        that.message = 'Обновление Загружено. Он будет установлен при перезагрузке. Перезагрузить сейчас?';
-        restartButton.classList.remove('hidden');
-        notification.classList.remove('hidden');
+      ipcRenderer.on("update_downloaded", () => {
+        ipcRenderer.removeAllListeners("update_downloaded");
+        that.message =
+          "Обновление Загружено. Он будет установлен при перезагрузке. Перезагрузить сейчас?";
+        restartButton.classList.remove("hidden");
+        notification.classList.remove("hidden");
       });
     },
     closeNotification() {
-      notification.classList.add('hidden');
+      notification.classList.add("hidden");
     },
     restartApp() {
-      ipcRenderer.send('restart_app');
-    }
-  }
+      ipcRenderer.send("restart_app");
+    },
+  },
 };
 </script>

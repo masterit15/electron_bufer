@@ -24,10 +24,10 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters(["user"]),
+    ...mapGetters(['user', 'users']),
   },
   methods: {
-    ...mapActions(["logout"]),
+    ...mapActions(['logout']),
   },
   components: {
     Notifycation,

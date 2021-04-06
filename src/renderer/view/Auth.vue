@@ -45,7 +45,9 @@ if(os.type() == 'Windows_NT'){
   userNetwork = network.en1[1]
 }else{
 
+
 }
+
 const username = userInfo.username;
 export default {
   data(){
@@ -56,7 +58,7 @@ export default {
       uname: '',
       uavatar: '',
       udepartament: '',
-      bgImage: 'https://picsum.photos/1200',
+      bgImage: `static/img/${Math.floor(Math.random() * 5) + 1}.jpg`,
       searchdep: ''
     }
   },
@@ -76,7 +78,6 @@ export default {
       autoHideScrollbar: true,
       scrollbarPosition: "inside"
     })
-    this.setIntervalBgcChange()
     this.bodyFixed()
   },
   methods: {
@@ -92,27 +93,16 @@ export default {
       }
       let res = await this.Auth(data)
       if(res.success){
-        this.$store.commit('addSidUser', this.$socket.id)
-        this.$socket.emit("userJoined", {...this.user, sid: this.$socket.id, room: this.udepartament})
+        await this.getUsers()
         this.bodyFixed('relative')
-        clearInterval(this.setIntervalBgcChange());
-        this.getUsers()
+        this.$store.commit("addSidUser", {sid: this.$socket.id, room: this.user.departamentName});
+        this.$socket.emit("userJoined", {...this.user, sid: this.$socket.id, room: this.udepartament})
         this.$router.push('/') 
       }
     },
     bodyFixed(position='fixed'){
       let body = document.querySelector('body')
       body.style.position = position
-    },
-    setIntervalBgcChange(){
-      let that = this
-      let refreshIntervalBg = setInterval(()=>{
-          fetch('https://picsum.photos/1200')
-          .then(res=>{
-            that.bgImage = res.url
-          })
-        }, 120000)
-      return refreshIntervalBg
     },
     clickItem(item){
       this.udepartament = item.name
@@ -155,7 +145,6 @@ export default {
     },
     beforeDestroy() {
       this.bodyFixed('relative')
-      clearInterval(this.setIntervalBgcChange());
     },
   }
 }
