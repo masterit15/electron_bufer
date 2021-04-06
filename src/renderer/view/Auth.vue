@@ -80,7 +80,7 @@ export default {
     this.bodyFixed()
   },
   methods: {
-    ...mapActions(['getDepartaments', 'addUsers', 'getUsers']),
+    ...mapActions(['getDepartaments', 'Auth', 'getUsers']),
     async authBufer(){
       let data = {
         login: this.ulogin,
@@ -90,8 +90,9 @@ export default {
         network: this.unetwork,
         mac: this.unetwork.mac
       }
-      let res = await this.addUsers(data)
+      let res = await this.Auth(data)
       if(res.success){
+        this.$store.commit('addSidUser', this.$socket.id)
         this.$socket.emit("userJoined", {...this.user, sid: this.$socket.id, room: this.udepartament})
         this.bodyFixed('relative')
         clearInterval(this.setIntervalBgcChange());

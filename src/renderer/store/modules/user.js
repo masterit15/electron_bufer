@@ -2,7 +2,7 @@ import axios from 'axios'
 export default {
   state: {
     users: [],
-    user: [] || JSON.parse(localStorage.getItem('user'))
+    user: JSON.parse(localStorage.getItem('user')) || []
   },
   mutations: {
     setUsers(state, users){
@@ -10,6 +10,14 @@ export default {
     },
     setUser(state, user){
       state.user = user
+    },
+    addSidUser(state, sid){
+      state.user.sid = sid
+      let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
+      //console.log(state.users[index]);
+      if(index >= 0){
+        state.users[index].sid = sid
+      }
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
@@ -34,7 +42,7 @@ export default {
       })
       
     },
-    async addUsers({commit}, data = {}){
+    async Auth({commit}, data = {}){
       let params = {...data}
       let postres = []
       await axios.post('http://localhost:5050/api/user', params)

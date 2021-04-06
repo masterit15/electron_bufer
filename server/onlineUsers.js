@@ -8,7 +8,7 @@ class Users {
   }
 
   get(id) {
-    return this.users.find(user => user.id === id)
+    return this.users.find(user => Number(user.id) === Number(id))
   }
 
   remove(sid) {

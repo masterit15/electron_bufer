@@ -16,7 +16,7 @@ const io = require('socket.io')(server, {
 })
 
 io.on('connection', socket => {
-
+  console.log('sid', socket.id)
   // срабатывает при входе
   socket.on('userJoined', async data => {
       users.add(data)
@@ -25,11 +25,10 @@ io.on('connection', socket => {
         { where: { id: data.id } }
       )
       .then(res =>{
-        let user = users.get(socket.id)
-        console.log(user)
+        let user = users.get(data.id)
         socket.broadcast.to(data.room).emit('noticeUser', data.id)
         io.emit('online', data.id)
-        socket.emit('noticeUser', data.id);
+        //socket.emit('noticeUser', data.id);
       })
       .catch(err =>
         console.log('userJoined err:', err)
@@ -57,8 +56,7 @@ io.on('connection', socket => {
       text: 'Перейдите в свою папку папку для ознакомления',
       userId: data.userId
     })
-    let user = users.get(data.userId)
-    socket.broadcast.emit('noticeUser', user.id)
+    socket.broadcast.to(data.sid).emit('noticeUser', data.id);
   })
 
   // срабатывает при прочтении уведомления
@@ -90,6 +88,7 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     const user = users.remove(socket.id)
+    console.log(user)
     if (user) {
       io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
     }

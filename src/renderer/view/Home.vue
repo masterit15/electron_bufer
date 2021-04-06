@@ -1,16 +1,11 @@
-sockets: {
-    connect: function () {
-      // this.$socket
-      console.log("socket connected", this.$socket);
-    }
-  },<template>
+<template>
   <div id="home wrapper">
     <div id="container">
       <app-sidebar></app-sidebar>
       <div id="resizer"></div>
       <app-header></app-header>
       <div id="main" class="content mCustomScrollbar" >
-        <pre>{{ users }}</pre>
+        <!-- <pre>{{ users }}</pre> -->
         <transition name="slide-down">
           <div class="file_actions" v-show="fileActionPanel">
               <button @click.prevent="actionEvent('notice')">Уведомить</button>
@@ -19,6 +14,9 @@ sockets: {
           </div>
         </transition>
         <b-table hover :items="files" :fields="fields">
+          <template v-slot:head(check)="data">
+            <input @change="chekedFiles($event)" class="cinput" type="checkbox" ref="chekone">
+          </template>
           <template #cell(check)="data">
             <input @change="fileSelect($event)" class="cinput chekone" type="checkbox" :value="data.item.id">
           </template>
@@ -79,6 +77,7 @@ export default {
       showContextMenu: false,
       showLoader: false,
       fileActionPanel: false,
+      fileSelectArr: [],
       style: {
         top: "",
         left: "",
@@ -125,34 +124,22 @@ export default {
       ],
     };
   },
+  watch: {
+    fileSelectArr(){
+      console.log(this.fileSelectArr);
+      if(this.fileSelectArr.length > 0){
+        this.fileActionPanel = true
+      }else{
+        this.fileActionPanel = false
+        this.$refs.chekone.checked = false
+      }
+    }
+  },
   computed: {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   mounted() {
     let win = this.$electron.remote.getCurrentWindow()
-    
-    // $('th.chekall[aria-colindex="1"]').html(`<input class="cinput" type="checkbox" name="" id="chekall">`)
-    let tableHead = document.querySelector('th.chekall[aria-colindex="1"]')
-    let inputOne = document.querySelector('.chekone')
-    tableHead.insertAdjacentHTML('afterbegin', `<input class="cinput" type="checkbox" name="" id="chekall">`)
-    let that = this
-    $('#chekall').on('change', ()=>{
-      if($('#chekall').is(':checked')){
-        $('.chekone').prop('checked', true);
-        that.fileActionPanel = true
-      }else{
-        $('.chekone').prop('checked', false);
-        that.fileActionPanel = false
-      }
-    })
-    $('.chekone').on('change', ()=>{
-      if($('.chekone').is(':checked')){
-        this.fileActionPanel = true
-      }else{
-        this.fileActionPanel = false
-      }
-    })
-    
     $('.mCustomScrollbar').mCustomScrollbar({
       autoHideScrollbar: true,
       scrollbarPosition: "inside"
@@ -162,17 +149,12 @@ export default {
     ...mapActions(['getFiles', 'deleteFiles']),
     fileSelect(event){
       if(event.target.checked){
-        this.fileActionPanel = true
+        this.fileSelectArr.push(event.target.value)
       }else{
-        this.fileActionPanel = false
+        this.fileSelectArr = this.fileSelectArr.filter(file=>file !== event.target.value)
       }
     },
     actionEvent(option){
-      // let tableHead = document.querySelector('th.chekall[aria-colindex="1"]')
-      // let inputOne = document.querySelectorAll('.chekone')
-      // inputOne.forEach(input=>{
-      //   console.log(input.value)
-      // })
       if (option == "notice") {
         alert("notice")
       } else if (option == "rename") {
@@ -285,6 +267,21 @@ export default {
       if (bytes == 0) return "0 Byte";
       let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
       return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+    },
+    chekedFiles(event){
+      let inputOne = document.querySelectorAll('.chekone')
+      this.fileSelectArr = []
+      if(event.target.checked){
+        inputOne.forEach(input=>{
+          input.checked = true
+          this.fileSelectArr.push(input.value)
+        })
+      }else{
+        inputOne.forEach(input=>{
+          input.checked = false
+          event.target.checked = false
+        })
+      }
     },
     fileExt(filename){
       let ext = filename.split('.').pop()

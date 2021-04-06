@@ -20,9 +20,10 @@ import {mapGetters, mapActions} from 'vuex'
 export default {
   sockets: {
     connect: function () {
-      console.log("socket connected", this.$socket.id);
-      // this.user.sid = this.$socket.id
-      console.log('user', {...this.user, sid: this.$socket.id})
+      this.$store.commit('addSidUser', this.$socket.id)
+    },
+    disconnect() {
+      console.log('App.vue: client disconnected...');
     }
   },
   name: "bufer",

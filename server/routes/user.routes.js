@@ -10,14 +10,13 @@ const jwt = require('jsonwebtoken')
 // метод добавления пользователя
 router.post('/', async (req, res, next) =>{
     const { login, permission, username, avatar, departament, network, mac } = req.body
-    const departamentId = await getDepartamentId(departament)
+    const departamentArr = await getDepartamentId(departament)
     const candidate = await User.findOne({where: {login}, raw:true})
     const allUsers = await User.findAll({raw:true})
     if(candidate){
         const userFind = allUsers.find(user=> (user.mac === candidate.mac && user.login === candidate.login))
         if(userFind){
             let token = generateAccessToken(userFind)
-            // let user = {...userFind, token}
             return res.status(200).json({ 
                 success: true,
                 message: 'Успешная авторизация',
@@ -30,7 +29,8 @@ router.post('/', async (req, res, next) =>{
             username,
             avatar, 
             permission, 
-            departamentId,
+            departamentId: departamentArr.id,
+            departamentName: departamentArr.name,
             network,
             mac
         }).then(user=>{
@@ -94,10 +94,10 @@ function getDepartamentId(name){
         .then(res=>{
             if(res == null){
                 Departament.create({name}).then(res=>{
-                    resolve(res.dataValues.id)
+                    resolve(res.dataValues)
                 })
             }else{
-                resolve(res.dataValues.id)
+                resolve(res.dataValues)
             }
         })
         .catch(err=>{
@@ -106,8 +106,8 @@ function getDepartamentId(name){
     })
 }
 async function generateAccessToken(user) {
-    const userToken = await Token.findOne({where: { userId: user.id }, raw: true})
-    if(!userToken){
+    const arrToken = await Token.findOne({where: { userId: user.id }, raw: true})
+    if(!arrToken){
         let token = jwt.sign({ userId: user.id, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
         await Token.create({
             token,
@@ -115,7 +115,6 @@ async function generateAccessToken(user) {
         })
         return token
     }
-    
-    return userToken
+    return arrToken.token
 }
 module.exports = router
