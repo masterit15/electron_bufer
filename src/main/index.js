@@ -1,5 +1,5 @@
-import { app, ipcMain, BrowserWindow, powerMonitor } from 'electron'
-import { autoUpdater } from 'electron-updater';
+import { app, dialog, ipcMain, BrowserWindow, powerMonitor } from 'electron'
+// import { autoUpdater } from 'electron-updater';
 // import { Titlebar, Color } from 'custom-electron-titlebar'
 
 // new Titlebar({
@@ -12,11 +12,13 @@ import { autoUpdater } from 'electron-updater';
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
-app.on('ready', () => {
-  if (process.env.NODE_ENV == 'production') {
-    require('vue-devtools').uninstall()
-  }
-})
+// app.on('ready', () => {
+//   if (process.env.NODE_ENV == 'production') {
+//     require('vue-devtools').uninstall()
+//   }else{
+//     require('vue-devtools').install()
+//   }
+// })
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
@@ -27,12 +29,6 @@ function createWindow () {
   /**
    * Initial window options
    */
-  // mainWindow = new BrowserWindow({
-  //   height: 563,
-  //   useContentSize: true,
-  //   width: 1000
-  // })
-
   mainWindow = new BrowserWindow({
     useContentSize: true,
     width: 1000,
@@ -43,9 +39,6 @@ function createWindow () {
     opacity: 1,
     frame: true,
     visualEffectState: 'active',
-    //vibrancy: "sidebar",
-    //vibrancyState: 'active',
-    //transparent: true,
     title: 'Буфер',
     titleBarStyle: 'default',
     webPreferences: {
@@ -59,14 +52,9 @@ function createWindow () {
     mainWindow = null
   })
 
-  // mainWindow.loadFile('index.html');
-  // mainWindow.on('closed', function () {
-  //   mainWindow = null;
+  // mainWindow.once('ready-to-show', () => {
+  //   autoUpdater.checkForUpdatesAndNotify();
   // });
-  mainWindow.once('ready-to-show', () => {
-    autoUpdater.checkForUpdatesAndNotify();
-  });
-  
 }
 
 app.on('ready', createWindow)
@@ -83,29 +71,32 @@ app.on('activate', () => {
   }
 })
 app.on('ready', () => {
+  autoUpdater.checkForUpdates()
   powerMonitor.on('suspend', () => {
     console.log('Ушел в сон!')
   })
   powerMonitor.on('resume', () => {
     console.log('Проснулся!')
   })
+
 })
 
-ipcMain.on('app_version', (event) => {
-  event.sender.send('app_version', { version: app.getVersion() });
-});
+// ipcMain.on('app_version', (event) => {
+//   event.sender.send('app_version', { version: app.getVersion() });
+// });
 
-autoUpdater.on('update-available', () => {
-  mainWindow.webContents.send('update_available');
-});
+// autoUpdater.on('update-available', () => {
+//   mainWindow.webContents.send('update_available');
+// });
 
-autoUpdater.on('update-downloaded', () => {
-  mainWindow.webContents.send('update_downloaded');
-});
+// autoUpdater.on('update-downloaded', () => {
+//   mainWindow.webContents.send('update_downloaded');
+// });
 
-ipcMain.on('restart_app', () => {
-  autoUpdater.quitAndInstall();
-});
+// ipcMain.on('restart_app', () => {
+//   autoUpdater.quitAndInstall();
+// });
+
 /**
  * Auto Updater
  *
@@ -114,14 +105,30 @@ ipcMain.on('restart_app', () => {
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
  */
 
-/*
-import { autoUpdater } from 'electron-updater'
+// import { autoUpdater } from 'electron-updater'
 
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall()
-})
+// autoUpdater.on('update-downloaded', () => {
+//   autoUpdater.quitAndInstall()
+// })
 
-app.on('ready', () => {
-  if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
-})
- */
+// app.on('ready', () => {
+//   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
+// })
+
+// const { autoUpdater } = require('electron-updater');
+
+// autoUpdater.on('update-downloaded', (info) => {
+//   const dialogOpts = {
+//     type: 'info',
+//     buttons: ['Перезагрузить', 'Обновить'],
+//     title: 'Обновление BUFER',
+//     detail: 'Была загружена новая версия. Перезапустите приложение, чтобы применить обновления.'
+//   };
+
+//   dialog.showMessageBox(dialogOpts, (response) => {
+//     if (response === 0) { 
+//       autoUpdater.quitAndInstall();
+//     }
+//   });
+// });
+
