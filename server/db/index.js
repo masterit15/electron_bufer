@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize("bufer", "root", "root", {
+const config = require('config')
+const sequelize = new Sequelize(config.get('db.name'), config.get('db.login'), config.get('db.password'), {
   dialect: "mysql",
   host: "127.0.0.1",
   define: {

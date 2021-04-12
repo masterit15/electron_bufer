@@ -1,3 +1,3 @@
 module.exports = {
-  AUTH_TOKEN: '',
+  AUTH_TOKEN: '123456789',
 }

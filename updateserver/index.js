@@ -1,61 +1,32 @@
-const path = require('path');
+
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const morgan = require('morgan');
-
-const { AUTH_TOKEN } = require('./config');
-
 const app = express();
+const cors = require('cors')
+const bodyParser = require('body-parser')
+const PORT = 5080;
 
-const PORT = 3030;
-const FILES_STORE = path.join(__dirname, 'files/');
 
 app.use(fileUpload());
 app.use(morgan('dev'));
 
-app.get('/ping', (req, res) => {
-  const authToken = req.get('Authorization');
-  if (!authToken || authToken !== AUTH_TOKEN) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-  return res.status(200).json({ message: 'Server is up!' });
-});
+app.use(express.json({ extended: true }))
+app.use(cors())
 
-app.post('/upload', (req, res) => {
-  const authToken = req.get('Authorization');
-  if (!authToken || authToken !== AUTH_TOKEN) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+app.use (bodyParser.json({limit: '10mb', extended: true}))
+app.use (bodyParser.urlencoded({limit: '10mb', extended: true}))
 
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).json({ message: 'No files were uploaded.' });
-  }
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*") // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+    next()
+})
 
-  const files = req.files.File;
-
-  if (Array.isArray(files)) {
-    for (let index = 0; index < files.length; index += 1) {
-      const file = files[index];
-      const path = `${FILES_STORE}${file.name}`;
-      file.mv(path, (err) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({ message: 'An error occured during upload, please try again' });
-        }
-      });
-    }
-  } else {
-    const path = `${FILES_STORE}${files.name}`;
-    files.mv(path, (err) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).json({ message: 'An error occured during upload, please try again' });
-      }
-    });
-  }
-
-  return res.status(200).json({ message: 'Files were uploaded' });
-});
+// app.use('/update', require('./routes/update.routes'))
+app.use('/upload', require('./routes/upload.routes'))
+app.use('/update', express.static('files'));
 
 app.listen(PORT, () => {
   console.log(`Express server listening on port ${PORT}`);

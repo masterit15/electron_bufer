@@ -1,26 +1,13 @@
-import { app, dialog, ipcMain, BrowserWindow, powerMonitor } from 'electron'
-// import { autoUpdater } from 'electron-updater';
-// import { Titlebar, Color } from 'custom-electron-titlebar'
+import { app, dialog, BrowserWindow, powerMonitor, ipcMain } from 'electron'
 
-// new Titlebar({
-// 	backgroundColor: Color.fromHex('#ECECEC')
-// });
-/**
- * Set `__static` path to static files in production
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
- */
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
-// app.on('ready', () => {
-//   if (process.env.NODE_ENV == 'production') {
-//     require('vue-devtools').uninstall()
-//   }else{
-//     require('vue-devtools').install()
-//   }
-// })
+
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+
 let mainWindow
+
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
@@ -43,7 +30,9 @@ function createWindow () {
     titleBarStyle: 'default',
     webPreferences: {
       nodeIntegration: true,
-      // nodeIntegrationInWorker: true
+      //nodeIntegrationInWorker: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
     }
   })
   mainWindow.setMenu(null)
@@ -52,9 +41,9 @@ function createWindow () {
     mainWindow = null
   })
 
-  // mainWindow.once('ready-to-show', () => {
-  //   autoUpdater.checkForUpdatesAndNotify();
-  // });
+  mainWindow.once('ready-to-show', () => {
+    autoUpdater.checkForUpdates()
+  });
 }
 
 app.on('ready', createWindow)
@@ -71,7 +60,6 @@ app.on('activate', () => {
   }
 })
 app.on('ready', () => {
-  autoUpdater.checkForUpdates()
   powerMonitor.on('suspend', () => {
     console.log('Ушел в сон!')
   })
@@ -81,54 +69,63 @@ app.on('ready', () => {
 
 })
 
-// ipcMain.on('app_version', (event) => {
-//   event.sender.send('app_version', { version: app.getVersion() });
-// });
-
-// autoUpdater.on('update-available', () => {
-//   mainWindow.webContents.send('update_available');
-// });
-
-// autoUpdater.on('update-downloaded', () => {
-//   mainWindow.webContents.send('update_downloaded');
-// });
-
-// ipcMain.on('restart_app', () => {
-//   autoUpdater.quitAndInstall();
-// });
-
 /**
  * Auto Updater
- *
- * Uncomment the following code below and install `electron-updater` to
- * support auto updating. Code Signing with a valid certificate is required.
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
  */
 
-// import { autoUpdater } from 'electron-updater'
+const { AppImageUpdater, MacUpdater, NsisUpdater } = require("electron-updater")
 
-// autoUpdater.on('update-downloaded', () => {
-//   autoUpdater.quitAndInstall()
+var options
+
+if (process.env.NODE_ENV === 'production'){
+  options = {
+    requestHeaders: {
+        // Any request headers to include here
+        Authorization: 'Basic 123456789'
+    },
+    provider: 'generic',
+    url: 'http://10.20.0.41:5080/update/'
+  }
+}else{
+  options = {
+    requestHeaders: {
+        // Any request headers to include here
+        Authorization: 'Basic 123456789'
+    },
+    provider: 'generic',
+    url: 'http://localhost:5080/update/'
+  }
+}
+
+var autoUpdater
+
+if (process.platform === "win32") {
+    autoUpdater = new NsisUpdater(options)
+}
+else if (process.platform === "darwin") {
+    autoUpdater = new MacUpdater(options)
+}
+else {
+    autoUpdater = new AppImageUpdater(options)
+}
+
+autoUpdater.on('update-available', (e) => {
+  mainWindow.webContents.send('update_available');
+});
+autoUpdater.on('update-downloaded', (e) => {
+  mainWindow.webContents.send('update_downloaded', e);
+});
+
+// autoUpdater.on('download-progress', (progressObj) => {
+//   let log_message = "Download speed: " + progressObj.bytesPerSecond;
+//   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+//   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+//   mainWindow.webContents.send('download-progress', log_message);
 // })
 
-// app.on('ready', () => {
-//   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
-// })
-
-// const { autoUpdater } = require('electron-updater');
-
-// autoUpdater.on('update-downloaded', (info) => {
-//   const dialogOpts = {
-//     type: 'info',
-//     buttons: ['Перезагрузить', 'Обновить'],
-//     title: 'Обновление BUFER',
-//     detail: 'Была загружена новая версия. Перезапустите приложение, чтобы применить обновления.'
-//   };
-
-//   dialog.showMessageBox(dialogOpts, (response) => {
-//     if (response === 0) { 
-//       autoUpdater.quitAndInstall();
-//     }
-//   });
-// });
-
+ipcMain.on('app_version', (event) => {
+  event.sender.send('app_version', { version: app.getVersion() });
+});
+ipcMain.on('restart_app', () => {
+  autoUpdater.quitAndInstall();
+});

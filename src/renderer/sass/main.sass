@@ -101,6 +101,47 @@ body
       background-color: tomato
       color: #fff
       transition: all .3 ease
+.app_version
+  position: fixed
+  left: 20px
+  bottom: 20px
+  background-color: #fff
+  width: auto
+  border-radius: 30px
+  text-align: center
+  color: #000
+#updatenotification
+  position: fixed
+  right: 20px
+  bottom: 20px
+  padding: 20px
+  background-color: #fff
+  width: 350px
+  height: 140px
+  border-radius: 5px
+  color: #000
+  box-shadow: $shadow
+  display: flex
+  justify-content: space-between
+  flex-direction: column
+  font-size: 0.9rem
+  z-index: 9999
+  #actionblock
+    display: flex
+    justify-content: space-around
+    flex-direction: row
+  & #button
+    &-restart, &-close
+      background-color: transparent
+      border-radius: 5px
+      padding: 5px 15px
+      font-weight: bold
+    &-restart
+      border: 2px solid tomato
+    &-close
+      border: 2px solid #333
+  .hidden
+    display: none
 .slide-fade-enter-active
   transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1)
 .slide-fade-enter,

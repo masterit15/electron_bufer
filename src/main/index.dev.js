@@ -13,14 +13,14 @@
 // Install `vue-devtools`
 require('electron').app.on('ready', () => {
   require('electron-debug')({ showDevTools: true })
-  let installExtension = require('electron-devtools-installer')
-  installExtension.default(installExtension.VUEJS_DEVTOOLS)
-    .then(() => {
-      // require('vue-devtools').install()
-    })
-    .catch(err => {
-      console.log('Unable to install `vue-devtools`: \n', err)
-    })
+  // let installExtension = require('electron-devtools-installer')
+  // installExtension.default(installExtension.VUEJS_DEVTOOLS)
+  //   .then(() => {
+  //     // require('vue-devtools').install()
+  //   })
+  //   .catch(err => {
+  //     console.log('Unable to install `vue-devtools`: \n', err)
+  //   })
 })
 
 // Require `main` process to boot app

@@ -2,19 +2,16 @@
   <div id="app">
     <router-view></router-view>
     <div class="app_version">{{ version }}</div>
-    <div id="notification" class="hidden" ref="notification">
-      <p id="message"></p>
-      <button id="close-button" @click="closeNotification" ref="close">
+    <div id="updatenotification" v-show="updateNotification">
+      <p id="message">{{message}}</p>
+      <div id="actionblock">
+      <button id="button-close" @click="closeNotification">
         Закрыть
       </button>
-      <button
-        id="restart-button"
-        @click="restartApp"
-        class="hidden"
-        ref="restart"
-      >
+      <button id="button-restart" @click="restartApp">
         Перезагрузить
       </button>
+      </div>
     </div>
   </div>
 </template>
@@ -36,10 +33,12 @@ export default {
   data() {
     return {
       message: "",
+      messageTitle: "",
       version: "",
+      updateNotification: false
     };
   },
-  created() {
+  mounted() {
     this.chekUpdate();
   },
   watch: {
@@ -63,25 +62,28 @@ export default {
         ipcRenderer.removeAllListeners("app_version");
         that.version = "Version " + arg.version;
       });
-      this.l;
-      const notification = this.$refs.notification;
-      const restartButton = this.$refs.restart;
+      const restartButton = document.querySelector('#button-restart');
       ipcRenderer.on("update_available", () => {
         ipcRenderer.removeAllListeners("update_available");
-        that.message = "Доступно новое обновление. Скачиваю прямо сейчас...";
-        notification.classList.remove("hidden");
+        that.messageTitle = "Доступно новое обновление."
+        that.message = "Скачиваю прямо сейчас...";
+        that.updateNotification = true
       });
-
-      ipcRenderer.on("update_downloaded", () => {
+      ipcRenderer.on("download-progress", (text) => {
+        ipcRenderer.removeAllListeners("update_available");
+        that.message = text;
+        that.updateNotification = true
+      });
+      ipcRenderer.on("update_downloaded", (e) => {
         ipcRenderer.removeAllListeners("update_downloaded");
-        that.message =
-          "Обновление Загружено. Он будет установлен при перезагрузке. Перезагрузить сейчас?";
+        that.messageTitle = "Обновление скачано"
+        that.message = "Обновление будет установлен при перезагрузке. Перезагрузить сейчас?";
         restartButton.classList.remove("hidden");
-        notification.classList.remove("hidden");
+        // that.updateNotification = false
       });
     },
     closeNotification() {
-      notification.classList.add("hidden");
+      this.updateNotification = false
     },
     restartApp() {
       ipcRenderer.send("restart_app");
