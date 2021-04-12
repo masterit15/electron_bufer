@@ -3,14 +3,11 @@
     <router-view></router-view>
     <div class="app_version">{{ version }}</div>
     <div id="updatenotification" v-show="updateNotification">
-      <p id="message">{{message}}</p>
+      <h5 id="messagetitle">{{ messageTitle }}</h5>
+      <p id="message">{{ message }}</p>
       <div id="actionblock">
-      <button id="button-close" @click="closeNotification">
-        Закрыть
-      </button>
-      <button id="button-restart" @click="restartApp">
-        Перезагрузить
-      </button>
+      <button id="button-close" @click="closeNotification">Закрыть</button>
+      <button id="button-restart" @click="restartApp">Перезагрузить</button>
       </div>
     </div>
   </div>
@@ -65,16 +62,11 @@ export default {
       const restartButton = document.querySelector('#button-restart');
       ipcRenderer.on("update_available", () => {
         ipcRenderer.removeAllListeners("update_available");
-        that.messageTitle = "Доступно новое обновление."
+        that.messageTitle = "Доступно обновление."
         that.message = "Скачиваю прямо сейчас...";
         that.updateNotification = true
       });
-      ipcRenderer.on("download-progress", (text) => {
-        ipcRenderer.removeAllListeners("update_available");
-        that.message = text;
-        that.updateNotification = true
-      });
-      ipcRenderer.on("update_downloaded", (e) => {
+      ipcRenderer.on("update_downloaded", () => {
         ipcRenderer.removeAllListeners("update_downloaded");
         that.messageTitle = "Обновление скачано"
         that.message = "Обновление будет установлен при перезагрузке. Перезагрузить сейчас?";

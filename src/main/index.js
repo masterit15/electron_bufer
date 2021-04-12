@@ -109,11 +109,11 @@ else {
     autoUpdater = new AppImageUpdater(options)
 }
 
-autoUpdater.on('update-available', (e) => {
+autoUpdater.on('update-available', () => {
   mainWindow.webContents.send('update_available');
 });
-autoUpdater.on('update-downloaded', (e) => {
-  mainWindow.webContents.send('update_downloaded', e);
+autoUpdater.on('update-downloaded', () => {
+  mainWindow.webContents.send('update_downloaded');
 });
 
 // autoUpdater.on('download-progress', (progressObj) => {

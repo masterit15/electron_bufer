@@ -5,7 +5,7 @@
       <div id="resizer"></div>
       <app-header></app-header>
       <div id="main" class="content mCustomScrollbar" >
-        <pre>{{ user }}</pre>
+        <pre>{{ users }}</pre>
         <transition name="slide-down">
           <div class="file_actions" v-show="fileActionPanel">
               <button @click.prevent="actionEvent('notice')">Уведомить</button>

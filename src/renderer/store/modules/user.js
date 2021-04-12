@@ -13,13 +13,14 @@ export default {
       state.user = user
     },
     addSidUser(state, data){
-      console.log('addSidUser',data)
       let storageUser = JSON.parse(localStorage.getItem('user'))
         storageUser.sid = data.sid
         storageUser.room = data.room
+        storageUser.online = 'Y'
         localStorage.setItem('user', JSON.stringify(storageUser))
         state.user.sid = data.sid
         state.user.room = data.room
+        state.user.online = 'Y'
       let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
       if(index !== -1){
         state.users[index].sid = data.sid
@@ -31,6 +32,7 @@ export default {
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
+      console.log(id);
       if(index !== -1){
         state.notimessage = { text: '', title: `Пользователь ${state.users[index].username} вошел`, variant: 'success' }
         state.users[index].online = 'Y'

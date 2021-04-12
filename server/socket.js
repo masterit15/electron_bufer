@@ -32,7 +32,7 @@ io.on('connection', socket => {
       )
       .then(res =>{
         io.sockets.in(data.room).emit('noticeUser', data.id);
-        socket.broadcast.to(data.room).emit('online', data.id)
+        socket.emit('online', data.id)
       })
       .catch(err =>
         console.log('userJoined err:', err)
@@ -46,10 +46,7 @@ io.on('connection', socket => {
       { where: { id: data.id } }
     )
     .then(user =>{
-      // io.emit('offline', data.id)
-      console.log('userLeft', data)
       socket.broadcast.to(data.room).emit('offline', data.id)
-      // socket.broadcast.to(data.room).emit('online', data.id)
     })
     .catch(err =>
       console.log('userLeft err:', err)
