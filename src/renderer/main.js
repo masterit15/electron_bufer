@@ -13,13 +13,20 @@ import vClickOutside from 'v-click-outside'
 Vue.use(vClickOutside)
 import messages from './plugins/messages'
 Vue.use(messages)
-
 import dateFilter from './filter/date.filter'
 Vue.filter('date', dateFilter)
 
+var baseURL = ''
+
+if(process.env.NODE_ENV === 'production'){
+  baseURL = 'http://10.20.0.41:5050/api/'
+}else{
+  baseURL = 'http://localhost:5050/api/'
+}
+
 Vue.use(new VueSocketIO({
     debug: false,
-    connection: 'http://localhost:5050',
+    connection: baseURL,
     vuex: {
         store,
         actionPrefix: 'SOCKET_',
@@ -32,6 +39,9 @@ import './sass/main.sass'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$http = axios
+Vue.prototype.$http.defaults.baseURL = baseURL
+
+
 if (localStorage.user) {
   const token = JSON.parse(localStorage.user).token
   Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`

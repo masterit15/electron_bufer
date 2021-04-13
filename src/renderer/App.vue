@@ -57,7 +57,7 @@ export default {
       ipcRenderer.send("app_version");
       ipcRenderer.on("app_version", (event, arg) => {
         ipcRenderer.removeAllListeners("app_version");
-        that.version = "Version " + arg.version;
+        that.version = "Версия " + arg.version;
       });
       const restartButton = document.querySelector('#button-restart');
       ipcRenderer.on("update_available", () => {

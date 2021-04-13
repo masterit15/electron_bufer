@@ -300,7 +300,15 @@ export default {
         case 'sql':
           icon = `<i class="fa fa-database" style="color: #f7b731"></i>`
           break;
-          
+        case 'exe':
+          icon = `<i class="fa fa-cog" style="color: #808080"></i>`
+          break;  
+        case 'gif':
+        case 'png':
+        case 'jpeg':
+        case 'jpg':
+          icon = `<i class="fa fa-file-image-o" style="color: #00b894"></i>`
+          break;
         default:
           icon = `<i class="fa fa-file" style="color: #808080"></i>`
           break;

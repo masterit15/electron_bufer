@@ -3,21 +3,18 @@
     <div class="file_form">
       <div class="file_prev" v-show="files.length > 0">
         <div class="file_prev_wrap">
-          <div class="file_prev_list">
+          <div class="file_prev_list mCustomScrollbar">
             <ul>
               <li v-for="(file, index) in files" :key="index">
-                <i class="fa fa-file"></i> {{ file.name }}
+                <span class="file_name">
+                  <i class="fa fa-file"></i> 
+                  {{ file.name }}
+                </span>
                 <span class="file_delete" @click="deleteFile(index)"
                   ><i class="fa fa-times"></i
                 ></span>
               </li>
             </ul>
-          </div>
-          <div class="file_prev_uploader">
-              <div class="file_prev_uploader_percent">{{ percentFull }} %</div>
-              <svg viewBox="0 0 100 100" style="display: block; width: 100%;">
-                <path d="M 50,50 m 0,-47.5 a 47.5,47.5 0 1 1 0,95 a 47.5,47.5 0 1 1 0,-95" stroke="#ddd" stroke-width="5" fill-opacity="0"></path>
-                <path class='xpath' d="M 50,50 m 0,-47.5 a 47.5,47.5 0 1 1 0,95 a 47.5,47.5 0 1 1 0,-95" stroke="#ff6347" stroke-width="5" fill-opacity="0" style="stroke-dasharray: 300, 300; stroke-dashoffset: 300;"></path></svg>
           </div>
         </div>
         <button @click="uploadFiles">Загрузить</button>
@@ -27,6 +24,23 @@
         <span class="file_text">перетащите или кликните, что бы прикрепить файл(ы) <i class="fa fa-upload"></i> </span>
       </div>
     </div>
+    <transition name="fade">
+      <div class="loader" v-show="loader">
+        <div class="file_prev_uploader">
+          <div class="file_prev_uploader_percent">{{ percentFull }} %</div>
+          <svg viewBox="0 0 100 100" style="display: block; width: 100%;">
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ffaa78" />
+                <stop offset="100%" stop-color="#ff7b78" />
+              </linearGradient>
+            </defs>
+            <path d="M 50,50 m 0,-47.5 a 47.5,47.5 0 1 1 0,95 a 47.5,47.5 0 1 1 0,-95" stroke="#ddd" stroke-width="5" fill-opacity="0"></path>
+            <path class='xpath' d="M 50,50 m 0,-47.5 a 47.5,47.5 0 1 1 0,95 a 47.5,47.5 0 1 1 0,-95" stroke="url(#gradient)" stroke-width="5" fill-opacity="0" style="stroke-dasharray: 300, 300; stroke-dashoffset: 300;"></path>
+          </svg>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 <script>
@@ -37,7 +51,8 @@ export default {
     return {
       files: [],
       percent: 0,
-      percentFull: 0
+      percentFull: 0,
+      loader: false
     };
   },
   watch: {
@@ -47,9 +62,22 @@ export default {
       dashOffset.style.strokeDashoffset = `${(dashArray-(dashArray*this.percentFull/100))}px`
       if(this.percent == 0 || this.percent == 1){
         this.$electron.remote.getCurrentWindow().setProgressBar(-1)
+        let that = this
+        function done() {
+          return new Promise(function(resolve, reject) {
+            setTimeout(()=>{
+              that.loader = false
+              resolve(that.loader)
+            }, 200)
+          });
+        }
+        done().then(res=>{
+          if(!res) this.files = []
+        })
+        
       }else{
         this.$electron.remote.getCurrentWindow().setProgressBar(this.percent)
-        
+        this.loader = true
       }
     }
   },
@@ -135,7 +163,6 @@ export default {
           this.files.forEach(file=>{
             data.files.push(file.name) 
           })
-          console.log(data)
           this.getFiles(this.activeFolderArr.id)
           this.$socket.emit("userAddFiles", data)
         }
