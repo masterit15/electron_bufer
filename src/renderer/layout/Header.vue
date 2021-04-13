@@ -23,6 +23,9 @@ export default {
   data() {
     return {};
   },
+  mounted(){
+    console.log(this.user);
+  },
   computed: {
     ...mapGetters(['user', 'users']),
   },
@@ -33,11 +36,21 @@ export default {
     Notifycation,
   },
   methods: {
+    resetState(){
+      let state = this.$store.state;
+      let newState = {};
+      Object.keys(state).forEach(key => {
+        newState[key] = []; // or = initialState[key]
+      });
+      this.$store.replaceState(newState);
+    },
     async Outh() {
       // await this.logout()
       localStorage.removeItem("user");
       this.$socket.emit("userLeft", this.user);
+      // this.resetState()
       this.$router.push("/auth");
+
     },
   },
 };

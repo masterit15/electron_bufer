@@ -1,5 +1,8 @@
 import { app, dialog, BrowserWindow, powerMonitor, ipcMain } from 'electron'
+import path from 'path'
+import vueDevtools from 'vue-devtools'
 
+vueDevtools.path = path.resolve(__dirname, '../../node_modules/vue-devtools/vender')
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
@@ -12,10 +15,11 @@ const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
-function createWindow () {
+function createWindow() {
   /**
    * Initial window options
    */
+   
   mainWindow = new BrowserWindow({
     useContentSize: true,
     width: 1000,
@@ -44,6 +48,7 @@ function createWindow () {
   mainWindow.once('ready-to-show', () => {
     autoUpdater.checkForUpdates()
   });
+ 
 }
 
 app.on('ready', createWindow)
@@ -59,7 +64,12 @@ app.on('activate', () => {
     createWindow()
   }
 })
-app.on('ready', () => {
+app.on('ready', async() => {
+  if (process.env.NODE_ENV !== 'production') { // change !== to ===
+    vueDevtools.install()
+  }else{
+    vueDevtools.uninstall()
+  }
   powerMonitor.on('suspend', () => {
     console.log('Ушел в сон!')
   })
@@ -77,20 +87,21 @@ const { AppImageUpdater, MacUpdater, NsisUpdater } = require("electron-updater")
 
 var options
 
-if (process.env.NODE_ENV === 'production'){
+if (process.env.NODE_ENV === 'production') {
   options = {
     requestHeaders: {
-        // Any request headers to include here
-        Authorization: 'Basic 123456789'
+      // Any request headers to include here
+      Authorization: 'Basic 123456789'
     },
     provider: 'generic',
     url: 'http://10.20.0.41:5080/update/'
   }
-}else{
+} else {
+  
   options = {
     requestHeaders: {
-        // Any request headers to include here
-        Authorization: 'Basic 123456789'
+      // Any request headers to include here
+      Authorization: 'Basic 123456789'
     },
     provider: 'generic',
     url: 'http://localhost:5080/update/'
@@ -100,13 +111,13 @@ if (process.env.NODE_ENV === 'production'){
 var autoUpdater
 
 if (process.platform === "win32") {
-    autoUpdater = new NsisUpdater(options)
+  autoUpdater = new NsisUpdater(options)
 }
 else if (process.platform === "darwin") {
-    autoUpdater = new MacUpdater(options)
+  autoUpdater = new MacUpdater(options)
 }
 else {
-    autoUpdater = new AppImageUpdater(options)
+  autoUpdater = new AppImageUpdater(options)
 }
 
 autoUpdater.on('update-available', () => {

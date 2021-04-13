@@ -10,7 +10,7 @@ export default {
   },
   actions: {
     getDepartaments({commit}, data = {}){
-      axios.get('http://localhost:5050/api/departament')
+      axios.get('departament')
       .then(res=>{
         commit('setDepartaments', res.data.departaments)
       })

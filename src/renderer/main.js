@@ -13,6 +13,7 @@ import vClickOutside from 'v-click-outside'
 Vue.use(vClickOutside)
 import messages from './plugins/messages'
 Vue.use(messages)
+
 import dateFilter from './filter/date.filter'
 Vue.filter('date', dateFilter)
 
@@ -23,6 +24,8 @@ if(process.env.NODE_ENV === 'production'){
 }else{
   baseURL = 'http://localhost:5050/api/'
 }
+
+Vue.config.devtools = true
 
 Vue.use(new VueSocketIO({
     debug: false,

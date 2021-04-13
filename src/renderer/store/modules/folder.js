@@ -14,7 +14,8 @@ export default {
   },
   actions: {
     getFolders({commit}, departamentId = null){
-      axios.get('http://localhost:5050/api/folder', {params: {
+      console.log(departamentId)
+      axios.get('folder', {params: {
         departamentId
       }})
       .then(res=>{
@@ -25,7 +26,7 @@ export default {
       })
     },
     addFolders({commit}, data = {}){
-      let res = axios.post('http://localhost:5050/api/folder', {params: {
+      let res = axios.post('folder', {params: {
         ...data
       }
     })

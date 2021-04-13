@@ -15,7 +15,7 @@
 
 <script>
 const { ipcRenderer } = require("electron");
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   sockets: {
     connect: function () {
@@ -40,14 +40,16 @@ export default {
   },
   watch: {
     noticeMessages() {
-      let {title, text, variant} = this.notimessage
-      this.$message(title, text, variant);
+      if(this.notimessage) {
+        let {title, text, variant} = this.notimessage
+        this.$message(title, text, variant);
+      }
     },
   },
   computed: {
     ...mapGetters(["user", "notimessage"]),
     noticeMessages() {
-      return this.notimessage;
+      return this.notimessage || '';
     },
   },
 

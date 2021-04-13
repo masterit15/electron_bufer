@@ -10,7 +10,7 @@ export default {
   },
   actions: {
     getFiles({commit}, folderId = null){
-      axios.get('http://localhost:5050/api/file', {params: {
+      axios.get('file', {params: {
         folderId
       }})
       .then(res=>{

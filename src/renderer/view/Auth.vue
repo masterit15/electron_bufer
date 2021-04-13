@@ -62,15 +62,20 @@ export default {
       searchdep: ''
     }
   },
-  created(){
-    this.getDepartaments()
+  async created(){
+    // await this.getUsers()
+    await this.getDepartaments()
   },
   computed: {
-    ...mapGetters(['departaments', 'user']),
+    ...mapGetters(['departaments', 'user', 'users']),
     departamentList(){
-      return this.departaments.filter(departament=>{
-        return departament.name.toLowerCase().includes(this.searchdep.toLowerCase())
-      })
+      if(this.departaments !== undefined && this.departaments.length > 0){
+        return this.departaments.filter(departament=>{
+          return departament.name.toLowerCase().includes(this.searchdep.toLowerCase())
+        })
+      }else{
+        return []
+      }
     }
   },
   mounted(){

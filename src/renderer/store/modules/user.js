@@ -13,22 +13,23 @@ export default {
       state.user = user
     },
     addSidUser(state, data){
-      let storageUser = JSON.parse(localStorage.getItem('user'))
-        storageUser.sid = data.sid
-        storageUser.room = data.room
-        storageUser.online = 'Y'
-        localStorage.setItem('user', JSON.stringify(storageUser))
-        state.user.sid = data.sid
-        state.user.room = data.room
-        state.user.online = 'Y'
-      let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
-      if(index !== -1){
-        state.users[index].sid = data.sid
-        state.users[index].room = data.room
-        state.users.forEach((user, i) => {
-          state.users[i].room = data.room
-        });
-      }
+      // let storageUser = JSON.parse(localStorage.getItem('user'))
+      //   storageUser.sid = data.sid
+      //   storageUser.room = data.room
+      //   storageUser.online = 'Y'
+      //   localStorage.setItem('user', JSON.stringify(storageUser))
+      //   state.user.sid = data.sid
+      //   state.user.room = data.room
+      //   state.user.online = 'Y'
+      //   console.log(state.users);
+      // let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
+      // if(index !== -1){
+      //   state.users[index].sid = data.sid
+      //   state.users[index].room = data.room
+      //   state.users.forEach((user, i) => {
+      //     state.users[i].room = data.room
+      //   });
+      // }
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
@@ -52,6 +53,7 @@ export default {
   actions: {
     getUsers({commit}, data = {}){
       axios.get('user').then(res=>{
+        console.log(res.data.users);
         commit('setUsers', res.data.users)
       })
       .catch(err=>{

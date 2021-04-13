@@ -15,7 +15,7 @@ export default {
       dispatch('getNotices', userId)
     },
     getNotices({commit}, id){
-      axios.get('http://localhost:5050/api/notice', {params:{id}}).then(res=>{
+      axios.get('notice', {params:{id}}).then(res=>{
         commit('setNotices', res.data.notices)
       })
       .catch(err=>{
@@ -23,7 +23,7 @@ export default {
       })
     },
     updateNotices({dispatch}, id){
-      axios.put('http://localhost:5050/api/notice', {params:{id}}).then(res=>{
+      axios.put('notice', {params:{id}}).then(res=>{
           // commit('setNotices', res.data.notices)
         })
         .catch(err=>{
@@ -31,7 +31,7 @@ export default {
         })
       },
     deleteNotices({state,dispatch}, id){
-      axios.delete('http://localhost:5050/api/notice', {params:{id}}).then(res=>{
+      axios.delete('notice', {params:{id}}).then(res=>{
           console.log(res.data)
           // commit('setNotices', res.data.notices)
         })
