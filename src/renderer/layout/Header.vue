@@ -38,17 +38,19 @@ export default {
   methods: {
     resetState(){
       let state = this.$store.state;
-      let newState = {};
+      let newState = [];
+      
       Object.keys(state).forEach(key => {
-        newState[key] = []; // or = initialState[key]
+        newState.push(`${key}s`) // or = initialState[key]
       });
-      this.$store.replaceState(newState);
+      console.log(newState);
+      this.$store.replaceState({...newState});
     },
     async Outh() {
       // await this.logout()
       localStorage.removeItem("user");
       this.$socket.emit("userLeft", this.user);
-      // this.resetState()
+      this.resetState()
       this.$router.push("/auth");
 
     },
