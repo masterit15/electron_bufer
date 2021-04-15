@@ -54,47 +54,17 @@ export default {
       version: ''
     };
   },
+  // created() {
+  //   this.getDepartaments();
+  // },
   mounted() {
-    const resizer = document.querySelector("#resizer");
-    const sidebar = document.querySelector("#sidebar");
-    const header = document.querySelector('#header')
-    const main = document.querySelector('#main')
-    const drag = document.querySelector(".addfileform");
-    const body    = document.querySelector('body')
-    resizer.addEventListener("mousedown", (event) => {
-      resizer.classList.add('is_active')
-      body.classList.add('nontextselect')
-      document.addEventListener("mousemove", resize, false);
-      document.addEventListener(
-        "mouseup",
-        () => {
-          
-          resizer.classList.remove('is_active')
-          body.classList.remove('nontextselect')
-          document.removeEventListener("mousemove", resize, false);
-        },
-        false
-      );
-    });
-
-    function resize(e) {
-      const size = `${e.x}px`;
-      sidebar.style.flexBasis = size;
-      header.style.cssText = `width: ${main.offsetWidth}px`
-      drag.style.cssText = `width: ${main.offsetWidth}px`
-    }
-    sidebar.style.flexBasis = "325px";
-    header.style.cssText = `width: ${main.offsetWidth}px`
-    drag.style.cssText = `width: ${main.offsetWidth}px`
-    window.addEventListener('resize', function(e){
-      e.preventDefault();
-      header.style.cssText = `width: ${main.offsetWidth}px`
-      drag.style.cssText = `width: ${main.offsetWidth}px`
-    })
+    
+    this.resizeContent()
   },
   computed: {
     ...mapGetters(["departaments", "folders", "users"]),
     departamentsList() {
+      console.log(this.departaments);
       return this.departaments.filter((departament) => {
         return departament.name
           .toLowerCase()
@@ -106,9 +76,6 @@ export default {
         return folder.name.toLowerCase().includes(this.search.toLowerCase());
       });
     },
-  },
-  created() {
-    this.getDepartaments();
   },
   methods: {
     ...mapActions(["getDepartaments", "getFolders", "getFiles", "activateFolder"]),
@@ -129,7 +96,44 @@ export default {
       this.$store.commit('setActiveFolder', folder)
       this.getFiles(folder.id)
     },
-    
+    resizeContent(){
+      const resizer = document.querySelector("#resizer");
+      const sidebar = document.querySelector("#sidebar");
+      const header = document.querySelector('#header')
+      const main = document.querySelector('#main')
+      const drag = document.querySelector(".addfileform");
+      const body    = document.querySelector('body')
+      resizer.addEventListener("mousedown", (event) => {
+        resizer.classList.add('is_active')
+        body.classList.add('nontextselect')
+        document.addEventListener("mousemove", resize, false);
+        document.addEventListener(
+          "mouseup",
+          () => {
+            
+            resizer.classList.remove('is_active')
+            body.classList.remove('nontextselect')
+            document.removeEventListener("mousemove", resize, false);
+          },
+          false
+        );
+      });
+
+      function resize(e) {
+        const size = `${e.x}px`;
+        sidebar.style.flexBasis = size;
+        header.style.cssText = `width: ${main.offsetWidth}px`
+        drag.style.cssText = `width: ${main.offsetWidth}px`
+      }
+      sidebar.style.flexBasis = "325px";
+      header.style.cssText = `width: ${main.offsetWidth}px`
+      drag.style.cssText = `width: ${main.offsetWidth}px`
+      window.addEventListener('resize', function(e){
+        e.preventDefault();
+        header.style.cssText = `width: ${main.offsetWidth}px`
+        drag.style.cssText = `width: ${main.offsetWidth}px`
+      })
+    }
   },
 };
 </script>

@@ -10,6 +10,7 @@ import store from './store'
 import Avatar from 'vue-avatar'
 import VueSocketIO from 'vue-socket.io'
 import vClickOutside from 'v-click-outside'
+
 Vue.use(vClickOutside)
 import messages from './plugins/messages'
 Vue.use(messages)
@@ -39,7 +40,7 @@ Vue.use(new VueSocketIO({
 }))
 
 import './sass/main.sass'
-
+Vue.config.devtools = process.env.NODE_ENV === 'development'
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$http = axios
 Vue.prototype.$http.defaults.baseURL = baseURL

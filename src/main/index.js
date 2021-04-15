@@ -1,8 +1,5 @@
-import { app, dialog, BrowserWindow, powerMonitor, ipcMain } from 'electron'
-import path from 'path'
-import vueDevtools from 'vue-devtools'
+import { app, dialog, BrowserWindow, powerMonitor, ipcMain, session } from 'electron'
 
-vueDevtools.path = path.resolve(__dirname, '../../node_modules/vue-devtools/vender')
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
@@ -16,10 +13,6 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`
 
 function createWindow() {
-  /**
-   * Initial window options
-   */
-   
   mainWindow = new BrowserWindow({
     useContentSize: true,
     width: 1000,
@@ -65,11 +58,6 @@ app.on('activate', () => {
   }
 })
 app.on('ready', async() => {
-  if (process.env.NODE_ENV !== 'production') { // change !== to ===
-    vueDevtools.install()
-  }else{
-    vueDevtools.uninstall()
-  }
   powerMonitor.on('suspend', () => {
     console.log('Ушел в сон!')
   })
@@ -94,7 +82,7 @@ if (process.env.NODE_ENV === 'production') {
       Authorization: 'Basic 123456789'
     },
     provider: 'generic',
-    url: 'http://10.20.0.41:5080/update/'
+    url: 'http://10.20.0.41:3000/update/'
   }
 } else {
   
@@ -104,7 +92,7 @@ if (process.env.NODE_ENV === 'production') {
       Authorization: 'Basic 123456789'
     },
     provider: 'generic',
-    url: 'http://localhost:5080/update/'
+    url: 'http://localhost:5050/update/'
   }
 }
 

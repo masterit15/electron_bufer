@@ -13,11 +13,10 @@
         </div>
       </div>
       <div class="form-field">
-        <input required type="text" ref="udep" v-model="udepartament" id="udepartament" @click="openDropdown = true">
+        <input required type="text" @input="searchDepartament" v-model="udepartament" id="udepartament" @click="searchDepartament">
         <label class="form-field-label" for="udepartament">Выберите свой департамент</label>
-        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown mCustomScrollbar" v-click-outside="closeDropdown" data-mcs-theme="dark" ref="dropdown" v-show="departamentList.length > 0">
-          <input class="form-dropdown-search" type="text" v-model="searchdep">
-          <li v-for="departament in departamentList" :key="departament.id" @click="clickItem(departament)">{{departament.name}}</li>
+        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown mCustomScrollbar" v-click-outside="closeDropdown" data-mcs-theme="dark" ref="dropdown" v-show="deparr.length > 0">
+          <li v-for="departament in deparr" :key="departament.id" @click="clickItem(departament)">{{departament.name}}</li>
         </ul>
       </div>
       <div class="form-field">
@@ -35,7 +34,6 @@
 <script>
 import {mapActions, mapGetters} from 'vuex'
 import os from 'os'
-import { log } from 'util'
 const userInfo = os.userInfo()
 const network = os.networkInterfaces()
 var userNetwork = []
@@ -47,11 +45,11 @@ if(os.type() == 'Windows_NT'){
 
 
 }
-
 const username = userInfo.username;
 export default {
   data(){
     return {
+      deparr: [],
       openDropdown: false,
       ulogin: username || '',
       unetwork: userNetwork,
@@ -63,15 +61,17 @@ export default {
     }
   },
   async created(){
-    // await this.getUsers()
-    await this.getDepartaments()
+    let res = await this.getDepartaments()
+    this.deparr = res.departaments
+    this.$store.commit('setDepartaments', res.departaments)
   },
   computed: {
     ...mapGetters(['departaments', 'user', 'users']),
     departamentList(){
+      console.log(this.departaments);
       if(this.departaments !== undefined && this.departaments.length > 0){
         return this.departaments.filter(departament=>{
-          return departament.name.toLowerCase().includes(this.searchdep.toLowerCase())
+          return departament.name.toLowerCase().includes(this.udepartament.toLowerCase())
         })
       }else{
         return []
@@ -87,6 +87,13 @@ export default {
   },
   methods: {
     ...mapActions(['getDepartaments', 'Auth', 'getUsers']),
+    async searchDepartament(){
+      this.openDropdown = true
+      // // this.getDepartaments()
+      // await this.getDepartaments({name: this.udepartament})
+      // let res = await this.getDepartaments()
+      // this.$store.commit('setDepartaments', res.departaments)
+    },
     async authBufer(){
       let data = {
         login: this.ulogin,

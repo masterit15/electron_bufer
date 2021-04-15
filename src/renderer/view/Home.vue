@@ -5,12 +5,11 @@
       <div id="resizer"></div>
       <app-header></app-header>
       <div id="main" class="content mCustomScrollbar" >
-        <pre>{{ users }}</pre>
         <transition name="slide-down">
           <div class="file_actions" v-show="fileActionPanel">
               <button @click.prevent="actionEvent('notice')">Уведомить</button>
               <button @click.prevent="actionEvent('rename')">Переименовать</button>
-              <button v-if="activeFolderArr.id == user.id" @click.prevent="actionEvent('delete')">Удалить</button>
+              <button v-if="activeFolderArr && (activeFolderArr.id == user.id)" @click.prevent="actionEvent('delete')">Удалить</button>
           </div>
         </transition>
         <b-table hover :items="files" :fields="fields">
@@ -47,7 +46,7 @@
           <context-menu :display="showContextMenu" :position="style">
             <li @click.prevent="actionEvent('notice')">Уведомить</li>
             <li @click.prevent="actionEvent('rename')">Переименовать</li>
-            <li v-if="activeFolderArr.id == user.id || activeFolderArr.ownerId == user.id" @click.prevent="actionEvent('delete')">Удалить</li>
+            <li v-if="activeFolderArr && (activeFolderArr.id == user.id || activeFolderArr.ownerId == user.id)" @click.prevent="actionEvent('delete')">Удалить</li>
           </context-menu>
         
           <DragDroup v-show="activeFolderArr"/>
@@ -132,7 +131,10 @@ export default {
   computed: {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
-  mounted() {
+  async mounted() {
+    await this.getDepartaments()
+    // await this.getFolders()
+    await this.getUsers()
     let win = this.$electron.remote.getCurrentWindow()
     $('.mCustomScrollbar').mCustomScrollbar({
       autoHideScrollbar: true,
@@ -140,7 +142,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getFiles', 'deleteFiles']),
+    ...mapActions(['getDepartaments', 'getUsers', 'getFolders', 'getFiles', 'deleteFiles']),
     fileSelect(event){
       if(event.target.checked){
         this.fileSelectArr.push(event.target.value)

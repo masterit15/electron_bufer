@@ -19,6 +19,7 @@ app.use(function (req, res, next) {
 app.use (bodyParser.json({limit: '10mb', extended: true}))
 app.use (bodyParser.urlencoded({limit: '10mb', extended: true}))
 
+app.use('/update', express.static('update'));
 app.use('/api/user', require('./routes/user.routes'))
 app.use('/api/folder', require('./routes/folder.routes'))
 app.use('/api/notice', require('./routes/notice.routes'))
@@ -33,7 +34,7 @@ if (process.env.NODE_ENV === 'production') {
       res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'))
   })
 }
-const PORT = config.get('port') || 5050
+const PORT = config.get('port') || 3000
 
 async function start() {
     try {

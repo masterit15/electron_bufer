@@ -2,7 +2,7 @@ import axios from 'axios'
 export default {
   state: {
     users: [],
-    user: JSON.parse(localStorage.getItem('user')) || [],
+    user: JSON.parse(localStorage.getItem('user')),
     notimessage: {}
   },
   mutations: {
@@ -13,27 +13,26 @@ export default {
       state.user = user
     },
     addSidUser(state, data){
-      // let storageUser = JSON.parse(localStorage.getItem('user'))
-      //   storageUser.sid = data.sid
-      //   storageUser.room = data.room
-      //   storageUser.online = 'Y'
-      //   localStorage.setItem('user', JSON.stringify(storageUser))
-      //   state.user.sid = data.sid
-      //   state.user.room = data.room
-      //   state.user.online = 'Y'
-      //   console.log(state.users);
-      // let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
-      // if(index !== -1){
-      //   state.users[index].sid = data.sid
-      //   state.users[index].room = data.room
-      //   state.users.forEach((user, i) => {
-      //     state.users[i].room = data.room
-      //   });
-      // }
+      let storageUser = JSON.parse(localStorage.getItem('user'))
+        storageUser.sid = data.sid
+        storageUser.room = data.room
+        storageUser.online = 'Y'
+        localStorage.setItem('user', JSON.stringify(storageUser))
+        // state.user.sid = data.sid
+        // state.user.room = data.room
+        // state.user.online = 'Y'
+        console.log(state.users);
+      let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
+      if(index !== -1){
+        state.users[index].sid = data.sid
+        state.users[index].room = data.room
+        state.users.forEach((user, i) => {
+          state.users[i].room = data.room
+        });
+      }
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
-      console.log(id);
       if(index !== -1){
         state.notimessage = { text: '', title: `Пользователь ${state.users[index].username} вошел`, variant: 'success' }
         state.users[index].online = 'Y'
@@ -53,13 +52,11 @@ export default {
   actions: {
     getUsers({commit}, data = {}){
       axios.get('user').then(res=>{
-        console.log(res.data.users);
         commit('setUsers', res.data.users)
       })
       .catch(err=>{
         console.log('getUsers error', err)
       })
-      
     },
     async Auth({commit}, data = {}){
       let params = {...data}
@@ -88,7 +85,7 @@ export default {
   },
   getters: {
     users: state => state.users,
-    user: state => state.user,
+    user: state => JSON.parse(localStorage.getItem('user')), //state.user,
     notimessage: state => state.notimessage
   }
 }

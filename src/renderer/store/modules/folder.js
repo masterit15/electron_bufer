@@ -2,7 +2,7 @@ import axios from 'axios'
 export default {
   state: {
     folders: [],
-    activeFolderArr: []
+    activeFolderArr: null
   },
   mutations: {
     setFolders(state, folders){

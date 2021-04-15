@@ -174,9 +174,3 @@ export default {
   },
 };
 </script>
-<style lang="sass">
-#files_input
-  display: none
-.file
-  &_form
-</style>

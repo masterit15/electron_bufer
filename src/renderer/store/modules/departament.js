@@ -9,14 +9,18 @@ export default {
     }
   },
   actions: {
-    getDepartaments({commit}, data = {}){
-      axios.get('departament')
+    async getDepartaments({commit}, data = {}){
+      let result
+      await axios.get('departament', {params:{...data}})
       .then(res=>{
+        result = res.data
         commit('setDepartaments', res.data.departaments)
       })
       .catch(err=>{
         console.log(err)
       })
+      console.log('getDepartaments', result);
+      return result
     }
   },
   getters: {

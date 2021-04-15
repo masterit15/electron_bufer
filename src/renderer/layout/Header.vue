@@ -23,14 +23,11 @@ export default {
   data() {
     return {};
   },
-  mounted(){
-    console.log(this.user);
-  },
   computed: {
     ...mapGetters(['user', 'users']),
   },
   methods: {
-    ...mapActions(['logout']),
+    ...mapActions(['logout', 'getDepartaments', 'getUsers']),
   },
   components: {
     Notifycation,
@@ -40,17 +37,20 @@ export default {
       let state = this.$store.state;
       let newState = {};
       Object.keys(state).forEach(key => {
-        newState[key] = []; // or = initialState[key]
+        if(key !== 'departament'){
+          // newState.push(`${key}s`)
+          newState[`${key}s`] = []
+        }
       });
+      console.log(newState);
       this.$store.replaceState(newState);
     },
     async Outh() {
       // await this.logout()
+      this.resetState()
       localStorage.removeItem("user");
       this.$socket.emit("userLeft", this.user);
-      // this.resetState()
       this.$router.push("/auth");
-
     },
   },
 };
