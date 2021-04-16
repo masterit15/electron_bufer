@@ -68,14 +68,9 @@ export default {
   computed: {
     ...mapGetters(['departaments', 'user', 'users']),
     departamentList(){
-      console.log(this.departaments);
-      if(this.departaments !== undefined && this.departaments.length > 0){
-        return this.departaments.filter(departament=>{
-          return departament.name.toLowerCase().includes(this.udepartament.toLowerCase())
-        })
-      }else{
-        return []
-      }
+      return this.departaments.filter(departament=>{
+        return departament.name.toLowerCase().includes(this.udepartament.toLowerCase())
+      })
     }
   },
   mounted(){

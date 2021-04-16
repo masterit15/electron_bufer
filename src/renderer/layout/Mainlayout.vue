@@ -1,6 +1,5 @@
 <template>
   <div id="home wrapper">
-    <pre>{{users}}</pre>
     <div id="container">
       <app-sidebar></app-sidebar>
       <div id="resizer"></div>
@@ -21,7 +20,6 @@ export default {
   async created(){
     await this.getDepartaments();
     await this.getUsers();
-    console.log('users', this.users);
   },
   watch: {
     fileSelectArr() {

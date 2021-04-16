@@ -4,7 +4,6 @@ import modules from './modules'
 import { createPersistedState } from 'vuex-electron'
 
 Vue.use(Vuex)
-console.log(modules);
 export default new Vuex.Store({
   modules,
   plugins: [

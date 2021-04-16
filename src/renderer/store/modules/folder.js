@@ -14,7 +14,6 @@ export default {
   },
   actions: {
     getFolders({commit}, departamentId = null){
-      console.log(departamentId)
       axios.get('folder', {params: {
         departamentId
       }})

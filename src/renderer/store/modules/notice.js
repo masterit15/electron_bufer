@@ -24,7 +24,7 @@ export default {
     },
     updateNotices({dispatch}, id){
       axios.put('notice', {params:{id}}).then(res=>{
-          // commit('setNotices', res.data.notices)
+          commit('setNotices', res.data.notices)
         })
         .catch(err=>{
           console.log('getNotices error', err)
@@ -32,8 +32,7 @@ export default {
       },
     deleteNotices({state,dispatch}, id){
       axios.delete('notice', {params:{id}}).then(res=>{
-          console.log(res.data)
-          // commit('setNotices', res.data.notices)
+          commit('setNotices', res.data.notices)
         })
         .catch(err=>{
           console.log('getNotices error', err)

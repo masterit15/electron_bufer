@@ -21,7 +21,6 @@ export default {
       })
     },
     deleteFiles({commit}, id = null){
-      console.log(id)
       axios.delete('http://localhost:5050/api/file', {params: {
         id
       }})

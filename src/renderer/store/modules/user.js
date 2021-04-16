@@ -8,7 +8,6 @@ export default {
   mutations: {
     setUsers(state, users){
       state.users = users
-      console.log(state.users)
     },
     setUser(state, user){
       state.user = user
@@ -22,7 +21,6 @@ export default {
         // state.user.sid = data.sid
         // state.user.room = data.room
         // state.user.online = 'Y'
-        console.log(state.users);
       if(state.users !== undefined){
         let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
         if(index !== -1){
@@ -87,7 +85,7 @@ export default {
     },
   },
   getters: {
-    users: state => {console.log('state', state.users);},
+    users: state => state.users,
     user: state => state.user,
     notimessage: state => state.notimessage
   }
