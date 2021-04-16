@@ -57,7 +57,8 @@ router.post('/', async (req, res, next) =>{
 
 // метод получения пользователей
 router.get('/', (req, res, next) =>{
-    User.findAll().then(users=>{
+    User.findAll({raw: true}).then(users=>{
+        console.log('getusers', users);
         return res.status(201).json({ 
             success: true,
             message: 'Все пользователи',

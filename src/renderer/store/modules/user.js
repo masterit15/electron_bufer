@@ -8,6 +8,7 @@ export default {
   mutations: {
     setUsers(state, users){
       state.users = users
+      console.log(state.users)
     },
     setUser(state, user){
       state.user = user
@@ -22,13 +23,15 @@ export default {
         // state.user.room = data.room
         // state.user.online = 'Y'
         console.log(state.users);
-      let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
-      if(index !== -1){
-        state.users[index].sid = data.sid
-        state.users[index].room = data.room
-        state.users.forEach((user, i) => {
-          state.users[i].room = data.room
-        });
+      if(state.users !== undefined){
+        let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
+        if(index !== -1){
+          state.users[index].sid = data.sid
+          state.users[index].room = data.room
+          state.users.forEach((user, i) => {
+            state.users[i].room = data.room
+          });
+        }
       }
     },
     SOCKET_online(state, id){
@@ -73,7 +76,7 @@ export default {
       })
       return postres
     },
-    async logout({state}){
+    async logout({}){
       let user = await JSON.parse(localStorage.getItem('user'))
       let res = await axios.delete('user', {params:{token: user.token}})
       if(res.data.success){
@@ -84,8 +87,8 @@ export default {
     },
   },
   getters: {
-    users: state => state.users,
-    user: state => JSON.parse(localStorage.getItem('user')), //state.user,
+    users: state => {console.log('state', state.users);},
+    user: state => state.user,
     notimessage: state => state.notimessage
   }
 }

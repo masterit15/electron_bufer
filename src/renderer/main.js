@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
-import { BootstrapVue, IconsPlugin, ToastPlugin } from 'bootstrap-vue'
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 import smalltalk from '../../node_modules/smalltalk/lib/smalltalk'

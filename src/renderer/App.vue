@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <component :is="layout">
+      <router-view></router-view>
+    </component>
     <div class="app_version">{{ version }}</div>
     <div id="updatenotification" v-show="updateNotification">
       <h5 id="messagetitle">{{ messageTitle }}</h5>
@@ -16,6 +18,8 @@
 <script>
 const { ipcRenderer } = require("electron");
 import { mapActions, mapGetters } from "vuex";
+import EmptyLayout from "./layout/Emptylayout.vue";
+import MainLayout from "./layout/Mainlayout.vue";
 export default {
   sockets: {
     connect: function () {
@@ -38,21 +42,6 @@ export default {
   mounted() {
     this.chekUpdate();
   },
-  watch: {
-    noticeMessages() {
-      if(this.notimessage) {
-        let {title, text, variant} = this.notimessage
-        this.$message(title, text, variant);
-      }
-    },
-  },
-  computed: {
-    ...mapGetters(["user", "notimessage"]),
-    noticeMessages() {
-      return this.notimessage || '';
-    },
-  },
-
   methods: {
     chekUpdate() {
       let that = this;
@@ -83,5 +72,14 @@ export default {
       ipcRenderer.send("restart_app");
     },
   },
+  computed: {
+    layout() {
+      return (this.$route.meta.layout || "empty") + "-layout";
+    }
+  },
+  components: {
+    EmptyLayout,
+    MainLayout
+  }
 };
 </script>

@@ -1,68 +1,82 @@
 <template>
-  <div id="home wrapper">
-    <div id="container">
-      <app-sidebar></app-sidebar>
-      <div id="resizer"></div>
-      <app-header></app-header>
-      <div id="main" class="content mCustomScrollbar" >
-        <transition name="slide-down">
-          <div class="file_actions" v-show="fileActionPanel">
-              <button @click.prevent="actionEvent('notice')">Уведомить</button>
-              <button @click.prevent="actionEvent('rename')">Переименовать</button>
-              <button v-if="activeFolderArr && (activeFolderArr.id == user.id)" @click.prevent="actionEvent('delete')">Удалить</button>
-          </div>
-        </transition>
-        <b-table hover :items="files" :fields="fields">
-          <template v-slot:head(check)="">
-            <input @change="chekedFiles($event)" class="cinput" type="checkbox" ref="chekone">
-          </template>
-          <template #cell(check)="data">
-            <input @change="fileSelect($event)" class="cinput chekone" type="checkbox" :value="data.item.id">
-          </template>
-          <template #cell(name)="data">
-            <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              <span class="file_icon" v-html="fileExt(data.item.name)"></span>
-              {{ data.item.originalName }}
-            </div>
-          </template>
-          <template #cell(createDate)="data">
-            <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              {{ data.item.date | date('datetime') }}
-            </div>
-          </template>
-          <template #cell(ownerName)="data">
-            <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              {{ data.item.ownerName }}
-            </div>
-          </template>
-          <template #cell(size)="data">
-            <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-              <a :href="data.item.path" rel="noopener noreferrer" download>Скачать</a>
-              {{ bytesToSize(data.item.size) }}
-            </div>
-          </template>
-        </b-table>
-
-          <context-menu :display="showContextMenu" :position="style">
-            <li @click.prevent="actionEvent('notice')">Уведомить</li>
-            <li @click.prevent="actionEvent('rename')">Переименовать</li>
-            <li v-if="activeFolderArr && (activeFolderArr.id == user.id || activeFolderArr.ownerId == user.id)" @click.prevent="actionEvent('delete')">Удалить</li>
-          </context-menu>
-        
-          <DragDroup v-show="activeFolderArr"/>
+  <div class="content">
+    <transition name="slide-down">
+      <div class="file_actions" v-show="fileActionPanel">
+        <button @click.prevent="actionEvent('notice')">Уведомить</button>
+        <button @click.prevent="actionEvent('rename')">Переименовать</button>
+        <button
+          v-if="activeFolderArr && activeFolderArr.id == user.id"
+          @click.prevent="actionEvent('delete')"
+        >
+          Удалить
+        </button>
       </div>
-    </div>
+    </transition>
+    <b-table hover :items="files" :fields="fields">
+      <template v-slot:head(check)="">
+        <input
+          @change="chekedFiles($event)"
+          class="cinput"
+          type="checkbox"
+          ref="chekone"
+        />
+      </template>
+      <template #cell(check)="data">
+        <input
+          @change="fileSelect($event)"
+          class="cinput chekone"
+          type="checkbox"
+          :value="data.item.id"
+        />
+      </template>
+      <template #cell(name)="data">
+        <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+          <span class="file_icon" v-html="fileExt(data.item.name)"></span>
+          {{ data.item.originalName }}
+        </div>
+      </template>
+      <template #cell(createDate)="data">
+        <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+          {{ data.item.date | date("datetime") }}
+        </div>
+      </template>
+      <template #cell(ownerName)="data">
+        <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+          {{ data.item.ownerName }}
+        </div>
+      </template>
+      <template #cell(size)="data">
+        <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+          <a :href="data.item.path" rel="noopener noreferrer" download
+            >Скачать</a
+          >
+          {{ bytesToSize(data.item.size) }}
+        </div>
+      </template>
+    </b-table>
+
+    <context-menu :display="showContextMenu" :position="style">
+      <li @click.prevent="actionEvent('notice')">Уведомить</li>
+      <li @click.prevent="actionEvent('rename')">Переименовать</li>
+      <li
+        v-if="
+          activeFolderArr &&
+          (activeFolderArr.id == user.id || activeFolderArr.ownerId == user.id)
+        "
+        @click.prevent="actionEvent('delete')"
+      >
+        Удалить
+      </li>
+    </context-menu>
+    <DragDroup v-show="activeFolderArr" />
   </div>
 </template>
 
 <script>
-import AppSidebar from "@/layout/Sidebar";
-import AppHeader from "@/layout/Header";
 import ContextMenu from "@/components/ContextMenu";
 import DragDroup from "@/components/DragDroupUploader";
 import smalltalk from "smalltalk";
 import { mapActions, mapGetters } from "vuex";
-const fullName = require('fullname');
 export default {
   name: "home",
   data() {
@@ -80,7 +94,7 @@ export default {
         {
           key: "check",
           label: "",
-          class: 'chekall'
+          class: "chekall",
         },
         {
           key: "name",
@@ -119,59 +133,50 @@ export default {
     };
   },
   watch: {
-    fileSelectArr(){
-      if(this.fileSelectArr.length > 0){
-        this.fileActionPanel = true
-      }else{
-        this.fileActionPanel = false
-        this.$refs.chekone.checked = false
+    fileSelectArr() {
+      if (this.fileSelectArr.length > 0) {
+        this.fileActionPanel = true;
+      } else {
+        this.fileActionPanel = false;
+        this.$refs.chekone.checked = false;
       }
-    }
+    },
   },
   computed: {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
-  async mounted() {
-    await this.getDepartaments()
-    // await this.getFolders()
-    await this.getUsers()
-    let win = this.$electron.remote.getCurrentWindow()
-    $('.mCustomScrollbar').mCustomScrollbar({
-      autoHideScrollbar: true,
-      scrollbarPosition: "inside"
-    })
-  },
   methods: {
-    ...mapActions(['getDepartaments', 'getUsers', 'getFolders', 'getFiles', 'deleteFiles']),
-    fileSelect(event){
-      if(event.target.checked){
-        this.fileSelectArr.push(event.target.value)
-      }else{
-        this.fileSelectArr = this.fileSelectArr.filter(file=>file !== event.target.value)
+    ...mapActions(["deleteFiles"]),
+    fileSelect(event) {
+      if (event.target.checked) {
+        this.fileSelectArr.push(event.target.value);
+      } else {
+        this.fileSelectArr = this.fileSelectArr.filter(
+          (file) => file !== event.target.value
+        );
       }
     },
-    actionEvent(option){
+    actionEvent(option) {
       if (option == "notice") {
-        alert("notice")
+        alert("notice");
       } else if (option == "rename") {
-        alert("rename")
+        alert("rename");
       } else if (option == "delete") {
-        let inputOne = document.querySelectorAll('.chekone')
-        let values = []
-        smalltalk.confirm("Удаление", `Вы действительно хотите удалить файл(ы)?`,
-            {
-              buttons: {
-                ok: "Удалить",
-                cancel: "Отмена",
-              },
-            }
-          )
+        let inputOne = document.querySelectorAll(".chekone");
+        let values = [];
+        smalltalk
+          .confirm("Удаление", `Вы действительно хотите удалить файл(ы)?`, {
+            buttons: {
+              ok: "Удалить",
+              cancel: "Отмена",
+            },
+          })
           .then(() => {
-            inputOne.forEach(input=>{
-              values.push(input.value)
+            inputOne.forEach((input) => {
+              values.push(input.value);
               // console.log(input.value)
-            })
-            this.deleteFiles(values)
+            });
+            this.deleteFiles(values);
             this.$message(`Файл(ы) успешно удален(ы)!`, "", "success");
           })
           .catch(() => {
@@ -264,63 +269,61 @@ export default {
       let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
       return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
     },
-    chekedFiles(event){
-      let inputOne = document.querySelectorAll('.chekone')
-      this.fileSelectArr = []
-      if(event.target.checked){
-        inputOne.forEach(input=>{
-          input.checked = true
-          this.fileSelectArr.push(input.value)
-        })
-      }else{
-        inputOne.forEach(input=>{
-          input.checked = false
-          event.target.checked = false
-        })
+    chekedFiles(event) {
+      let inputOne = document.querySelectorAll(".chekone");
+      this.fileSelectArr = [];
+      if (event.target.checked) {
+        inputOne.forEach((input) => {
+          input.checked = true;
+          this.fileSelectArr.push(input.value);
+        });
+      } else {
+        inputOne.forEach((input) => {
+          input.checked = false;
+          event.target.checked = false;
+        });
       }
     },
-    fileExt(filename){
-      let ext = filename.split('.').pop()
-      let icon = ''
+    fileExt(filename) {
+      let ext = filename.split(".").pop();
+      let icon = "";
       switch (ext.toLowerCase()) {
-        case 'zip':
-        case 'rar':
-        case '7zip':
-          icon = `<i class="fa fa-file-archive-o" style="color: #f7b731"></i>`
+        case "zip":
+        case "rar":
+        case "7zip":
+          icon = `<i class="fa fa-file-archive-o" style="color: #f7b731"></i>`;
           break;
-        case 'pdf':
-          icon = `<i class="fa fa-file-pdf-o" style="color: #eb3b5a"></i>`
+        case "pdf":
+          icon = `<i class="fa fa-file-pdf-o" style="color: #eb3b5a"></i>`;
           break;
-        case 'doc':
-        case 'docx':
-          icon = `<i class="fa fa-file-word-o" style="color: #3867d6"></i>`
+        case "doc":
+        case "docx":
+          icon = `<i class="fa fa-file-word-o" style="color: #3867d6"></i>`;
           break;
-        case 'xls':
-        case 'xlsx':
-          icon = `<i class="fa fa-excel-o" style="color: #3867d6"></i>`
+        case "xls":
+        case "xlsx":
+          icon = `<i class="fa fa-excel-o" style="color: #3867d6"></i>`;
           break;
-        case 'sql':
-          icon = `<i class="fa fa-database" style="color: #f7b731"></i>`
+        case "sql":
+          icon = `<i class="fa fa-database" style="color: #f7b731"></i>`;
           break;
-        case 'exe':
-          icon = `<i class="fa fa-cog" style="color: #808080"></i>`
-          break;  
-        case 'gif':
-        case 'png':
-        case 'jpeg':
-        case 'jpg':
-          icon = `<i class="fa fa-file-image-o" style="color: #00b894"></i>`
+        case "exe":
+          icon = `<i class="fa fa-cog" style="color: #808080"></i>`;
+          break;
+        case "gif":
+        case "png":
+        case "jpeg":
+        case "jpg":
+          icon = `<i class="fa fa-file-image-o" style="color: #00b894"></i>`;
           break;
         default:
-          icon = `<i class="fa fa-file" style="color: #808080"></i>`
+          icon = `<i class="fa fa-file" style="color: #808080"></i>`;
           break;
       }
-      return icon
-    }
+      return icon;
+    },
   },
   components: {
-    AppSidebar,
-    AppHeader,
     ContextMenu,
     DragDroup,
   },

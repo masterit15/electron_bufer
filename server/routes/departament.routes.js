@@ -32,7 +32,6 @@ router.get('/', (req, res, next) =>{
     const { name } = req.query 
     if(name && name.length > 0){
         Departament.findAll({ where: { name: { [Op.like]: '%' + name + '%' } } }).then(departaments=>{
-            console.log(departaments);
             return res.status(201).json({ 
                 success: true,
                 message: 'Все департаменты',
@@ -47,7 +46,6 @@ router.get('/', (req, res, next) =>{
         });
     }else{
         Departament.findAll().then(departaments=>{
-            console.log(departaments);
             return res.status(201).json({ 
                 success: true,
                 message: 'Все департаменты',

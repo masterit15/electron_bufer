@@ -32,7 +32,7 @@ function createWindow() {
       enableRemoteModule: true,
     }
   })
-  mainWindow.setMenu(null)
+  // mainWindow.setMenu(null)
   mainWindow.loadURL(winURL)
   mainWindow.on('closed', () => {
     mainWindow = null

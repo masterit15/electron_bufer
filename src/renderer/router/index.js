@@ -10,6 +10,7 @@ const router = new Router({
       name: 'Главная',
       component: require('@/view/Home').default,
       meta: {
+        layout: 'main',
         requiresAuth: true
       }
     },
@@ -18,6 +19,7 @@ const router = new Router({
       name: 'Авторизация',
       component: require('@/view/Auth').default,
       meta: {
+        layout: 'empty',
         requiresGuest: true
       }
     },

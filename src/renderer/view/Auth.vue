@@ -63,7 +63,7 @@ export default {
   async created(){
     let res = await this.getDepartaments()
     this.deparr = res.departaments
-    this.$store.commit('setDepartaments', res.departaments)
+    // this.$store.commit('setDepartaments', res.departaments)
   },
   computed: {
     ...mapGetters(['departaments', 'user', 'users']),
@@ -105,10 +105,7 @@ export default {
       }
       let res = await this.Auth(data)
       if(res.success){
-        await this.getUsers()
         this.bodyFixed('relative')
-        this.$store.commit("addSidUser", {sid: this.$socket.id, room: this.user.departamentName});
-        this.$socket.emit("userJoined", {...this.user, sid: this.$socket.id, room: this.udepartament})
         this.$router.push('/') 
       }
     },

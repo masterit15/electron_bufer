@@ -54,17 +54,9 @@ export default {
       version: ''
     };
   },
-  // created() {
-  //   this.getDepartaments();
-  // },
-  mounted() {
-    
-    this.resizeContent()
-  },
   computed: {
     ...mapGetters(["departaments", "folders", "users"]),
     departamentsList() {
-      console.log(this.departaments);
       return this.departaments.filter((departament) => {
         return departament.name
           .toLowerCase()
@@ -86,53 +78,13 @@ export default {
       }
       return '<i class="fa fa-folder-o" style="color:#252831"></i>'
     },
-    departamentClick(departament) {
+    async departamentClick(departament) {
       this.activeDepartament = departament.name;
-      this.getFolders(departament.id);
+      await this.getFolders(departament.id);
     },
     folderClick(folder) {
-      // this.$emit("folder");
-      // this.activateFolder(folder)
       this.$store.commit('setActiveFolder', folder)
       this.getFiles(folder.id)
-    },
-    resizeContent(){
-      const resizer = document.querySelector("#resizer");
-      const sidebar = document.querySelector("#sidebar");
-      const header = document.querySelector('#header')
-      const main = document.querySelector('#main')
-      const drag = document.querySelector(".addfileform");
-      const body    = document.querySelector('body')
-      resizer.addEventListener("mousedown", (event) => {
-        resizer.classList.add('is_active')
-        body.classList.add('nontextselect')
-        document.addEventListener("mousemove", resize, false);
-        document.addEventListener(
-          "mouseup",
-          () => {
-            
-            resizer.classList.remove('is_active')
-            body.classList.remove('nontextselect')
-            document.removeEventListener("mousemove", resize, false);
-          },
-          false
-        );
-      });
-
-      function resize(e) {
-        const size = `${e.x}px`;
-        sidebar.style.flexBasis = size;
-        header.style.cssText = `width: ${main.offsetWidth}px`
-        drag.style.cssText = `width: ${main.offsetWidth}px`
-      }
-      sidebar.style.flexBasis = "325px";
-      header.style.cssText = `width: ${main.offsetWidth}px`
-      drag.style.cssText = `width: ${main.offsetWidth}px`
-      window.addEventListener('resize', function(e){
-        e.preventDefault();
-        header.style.cssText = `width: ${main.offsetWidth}px`
-        drag.style.cssText = `width: ${main.offsetWidth}px`
-      })
     }
   },
 };

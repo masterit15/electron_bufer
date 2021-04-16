@@ -79,7 +79,9 @@ export default {
   computed: {
     ...mapGetters(['notices', 'user']),
     noticeList(){
-      return this.notices.filter(notice=>notice.status == 'unread')
+      if(this.notices !== 'undefined'){
+        return this.notices.filter(notice=>notice.status == 'unread')
+      }
     }
   },
   methods: {

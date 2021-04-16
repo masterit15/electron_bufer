@@ -27,30 +27,25 @@ export default {
     ...mapGetters(['user', 'users']),
   },
   methods: {
-    ...mapActions(['logout', 'getDepartaments', 'getUsers']),
+    ...mapActions(['logout']),
   },
   components: {
     Notifycation,
   },
   methods: {
-    resetState(){
-      let state = this.$store.state;
-      let newState = {};
-      Object.keys(state).forEach(key => {
-        if(key !== 'departament'){
-          // newState.push(`${key}s`)
-          newState[`${key}s`] = []
-        }
-      });
-      console.log(newState);
-      this.$store.replaceState(newState);
-    },
     async Outh() {
-      // await this.logout()
       this.resetState()
       localStorage.removeItem("user");
       this.$socket.emit("userLeft", this.user);
       this.$router.push("/auth");
+    },
+    resetState(){
+      this.$store.commit('setUser', [])
+      this.$store.commit('setUsers', [])
+      this.$store.commit('setFiles', [])
+      this.$store.commit('setFolders', [])
+      this.$store.commit('setDepartaments', [])
+
     },
   },
 };
