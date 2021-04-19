@@ -31,9 +31,9 @@ io.on('connection', socket => {
         { where: { id: data.id } }
       )
       .then(res =>{
-        console.log('userJoined>',data);
         io.sockets.in(data.room).emit('noticeUser', data.id);
         socket.broadcast.to(data.room).emit('online', data.id)
+        // socket.broadcast.to(data.room).emit('addSidUsers', data)
       })
       .catch(err =>
         console.log('userJoined err:', err)
@@ -57,11 +57,12 @@ io.on('connection', socket => {
   // срабатывает при добавлении файла в папку
   socket.on('userAddFiles', data => {
     Notice.create({
-      title: `У Вас новый файл(ы) от ${data.ownerName}`,
-      text: 'Перейдите в свою папку папку для ознакомления',
-      userId: data.userId
+      title: `У Вас новый файл(ы) от ${data.username}`,
+      text: `${data.files}`,
+      userId: data.id
     })
-    socket.broadcast.to(data.sid).emit('noticeUser', data.id);
+    console.log(data);
+    io.sockets.in(data.room).emit('noticeUser', data.id);
   })
 
   // срабатывает при прочтении уведомления

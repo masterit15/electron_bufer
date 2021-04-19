@@ -21,7 +21,7 @@ Vue.filter('date', dateFilter)
 var baseURL = ''
 
 if(process.env.NODE_ENV === 'production'){
-  baseURL = 'http://10.20.0.41:5050/api/'
+  baseURL = 'http://localhost:5050/api/'//'http://10.20.0.41:3000/api/'
 }else{
   baseURL = 'http://localhost:5050/api/'
 }

@@ -23,8 +23,10 @@ import MainLayout from "./layout/Mainlayout.vue";
 export default {
   sockets: {
     connect: function () {
-      this.$socket.emit('join_room', this.user.departamentName);
-      this.$store.commit("addSidUser", {sid: this.$socket.id, room: this.user.departamentName});
+      if(this.user){
+        this.$socket.emit('join_room', this.user.departamentName);
+        this.$store.commit("addSidUser", {sid: this.$socket.id, room: this.user.departamentName});
+      }
     },
     disconnect() {
       console.log("Пользователь отключился");

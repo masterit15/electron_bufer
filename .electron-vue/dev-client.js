@@ -9,6 +9,7 @@ hotClient.subscribe(event => {
    * https://github.com/jantimon/html-webpack-plugin/issues/680
    */
   // if (event.action === 'reload') {
+  //   console.log('reload reload reload reload');
   //   window.location.reload()
   // }
 

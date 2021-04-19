@@ -1,5 +1,8 @@
-import { app, dialog, BrowserWindow, powerMonitor, ipcMain, session } from 'electron'
-
+import { app, dialog, BrowserWindow, powerMonitor, ipcMain } from 'electron'
+import request from 'request'
+import fs from 'fs'
+import os from 'os'
+const username = os.userInfo().username
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
@@ -39,9 +42,12 @@ function createWindow() {
   })
 
   mainWindow.once('ready-to-show', () => {
-    autoUpdater.checkForUpdates()
+    if (process.env.NODE_ENV === 'production') {
+      autoUpdater.checkForUpdates()
+    }
   });
- 
+  
+
 }
 
 app.on('ready', createWindow)
@@ -128,3 +134,68 @@ ipcMain.on('app_version', (event) => {
 ipcMain.on('restart_app', () => {
   autoUpdater.quitAndInstall();
 });
+
+ipcMain.on('download-url', async (event, file) => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory']
+  })
+  let localFile = `${result.filePaths}\\${file}`
+  downloadFile({
+    remoteFile: `http://localhost:5050/download/${file}`,
+    localFile: localFile,
+    onProgress: function (received,total){
+        var percentage = (received * 100) / total;
+        console.log(percentage + "% | " + received + " bytes out of " + total + " bytes.");
+    }
+  }).then(function(){
+    console.log(`File succesfully downloaded ${file.path}`);
+
+  });
+});
+
+ipcMain.on('ondragstart', (event, filePath) => {
+  event.sender.startDrag({
+    file: filePath,
+    icon: './static/hand-drag.png'
+  })
+})
+
+function downloadFile(configuration){
+  return new Promise(function(resolve, reject){
+      // Save variable to know progress
+      var received_bytes = 0;
+      var total_bytes = 0;
+
+      var req = request({
+          method: 'GET',
+          uri: configuration.remoteFile
+      });
+
+      var out = fs.createWriteStream(configuration.localFile);
+      req.pipe(out);
+
+      req.on('response', function ( data ) {
+          // Change the total bytes value to get progress later.
+          total_bytes = parseInt(data.headers['content-length' ]);
+      });
+
+      // Get progress if callback exists
+      if(configuration.hasOwnProperty("onProgress")){
+          req.on('data', function(chunk) {
+              // Update the received bytes
+              received_bytes += chunk.length;
+
+              configuration.onProgress(received_bytes, total_bytes);
+          });
+      }else{
+          req.on('data', function(chunk) {
+              // Update the received bytes
+              received_bytes += chunk.length;
+          });
+      }
+
+      req.on('end', function() {
+          resolve();
+      });
+  });
+}

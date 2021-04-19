@@ -29,7 +29,6 @@ export default {
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
-      console.log(index);
       if(index !== -1){
         state.notimessage = { text: '', title: `Пользователь ${state.users[index].username} вошел`, variant: 'success' }
         state.users[index].online = 'Y'

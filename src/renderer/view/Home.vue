@@ -31,6 +31,7 @@
       </template>
       <template #cell(name)="data">
         <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
+          <div class="dragfile"></div>
           <span class="file_icon" v-html="fileExt(data.item.name)"></span>
           {{ data.item.originalName }}
         </div>
@@ -47,10 +48,9 @@
       </template>
       <template #cell(size)="data">
         <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-          <a :href="data.item.path" rel="noopener noreferrer" download
-            >Скачать</a
-          >
-          {{ bytesToSize(data.item.size) }}
+          <div class="download" @click="downloadFiles(data.item.name)">
+            Скачать {{ bytesToSize(data.item.size) }}
+          </div>
         </div>
       </template>
     </b-table>
@@ -73,6 +73,7 @@
 </template>
 
 <script>
+const { ipcRenderer } = require("electron");
 import ContextMenu from "@/components/ContextMenu";
 import DragDroup from "@/components/DragDroupUploader";
 import smalltalk from "smalltalk";
@@ -145,6 +146,13 @@ export default {
   computed: {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
+  mounted() {
+    document.querySelector('.dragfile').ondragstart = (event) => {
+      event.preventDefault()
+      console.log('drag');
+      ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
+    }
+  },
   methods: {
     ...mapActions(["deleteFiles", "getFiles", "downloadZIP"]),
     fileSelect(event) {
@@ -155,6 +163,9 @@ export default {
           (file) => file !== event.target.value
         );
       }
+    },
+    downloadFiles(file){
+      ipcRenderer.send('download-url', file);
     },
     async actionEvent(option) {
       if (option == "getzip") {
@@ -174,12 +185,14 @@ export default {
             setTimeout(()=>{
               ziplink.remove()
             }, 10000)
+            this.fileActionPanel = false
           })
           .catch(() => {
             console.log("no");
           });
       } else if (option == "rename") {
         alert("rename");
+        this.fileActionPanel = false
       } else if (option == "delete") {
         smalltalk
           .confirm("Удаление", `Вы действительно хотите удалить файл(ы)?`, {
@@ -190,6 +203,7 @@ export default {
           })
           .then(() => {
             this.delete();
+            this.fileActionPanel = false
           })
           .catch(() => {
             console.log("no");

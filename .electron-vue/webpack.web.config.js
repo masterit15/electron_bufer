@@ -60,6 +60,7 @@ let webConfig = {
         use: {
           loader: 'vue-loader',
           options: {
+            hotReload: false,
             extractCSS: true,
             loaders: {
               sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',

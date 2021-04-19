@@ -1,6 +1,6 @@
 <template>
   <div id="header">
-    <div class="folder_name"><h3>{{activeFolderArr.name}}</h3></div>
+    <div class="folder_name"><h3 v-if="activeFolderArr">{{activeFolderArr.name}}</h3></div>
     <div class="user_container">
       <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
         <template #button-content>
@@ -35,9 +35,8 @@ export default {
   },
   methods: {
     async Outh() {
-      this.resetState()
-      localStorage.removeItem("user");
       this.$socket.emit("userLeft", this.user);
+      this.resetState()
       this.$router.push("/auth");
     },
     resetState(){
@@ -46,7 +45,7 @@ export default {
       this.$store.commit('setFiles', [])
       this.$store.commit('setFolders', [])
       this.$store.commit('setDepartaments', [])
-
+      localStorage.removeItem("user")
     },
   },
 };

@@ -4,7 +4,7 @@
       class="notice_btn"
       :class="noticeList.length > 0 ? 'is_active' : ''"
       ref="notice"
-      @click="shownotify = !shownotify"
+      @click="shownotify = !shownotify, notice()"
       v-b-tooltip.hover
       :title="'Уводомлений: ' + noticeList.length"
     >
@@ -79,30 +79,29 @@ export default {
   computed: {
     ...mapGetters(['notices', 'user']),
     noticeList(){
-      if(this.notices !== 'undefined'){
+      
         return this.notices.filter(notice=>notice.status == 'unread')
-      }
+
     }
   },
   methods: {
     ...mapActions(['deleteNotices', 'updateNotices']),
-    // notice() {
-    //   const audio = new Audio("static/notify.mp3");
-    //   // if (audio) {
-    //   //     audio.play();
-    //   // }
-    //   // let myNotification = new Notification("Title", {
-    //   //   body: this.username,
-    //   //   timeoutType: 'never',
-    //   //   audio: this.$path.join(__dirname, '/static/notify.mp3'),
-    //   //   hasReply: true
-    //   // });
-    //   // console.log(myNotification)
-    //   // myNotification.onclick = () => {
-    //   //   console.log('Notification clicked')
-    //   //   myNotification.close()
-    //   // }
-    // },
+    notice() {
+      const audio = new Audio("static/notify.mp3");
+      if (audio) {
+          audio.play();
+      }
+      let myNotification = new Notification("Title", {
+        body: this.username,
+        timeoutType: 'never',
+        hasReply: true
+      });
+      console.log(myNotification)
+      myNotification.onclick = () => {
+        console.log('Notification clicked')
+        myNotification.close()
+      }
+    },
     sowNoticeParam(event){
       let input = event.target.closest(".notice_item").querySelector('.notice_item_chekbox')
       input.classList.toggle('is_active')

@@ -13,6 +13,7 @@ export default {
   actions: {
     SOCKET_noticeUser({dispatch}, userId){
       dispatch('getNotices', userId)
+      
     },
     getNotices({commit}, id){
       axios.get('notice', {params:{id}}).then(res=>{

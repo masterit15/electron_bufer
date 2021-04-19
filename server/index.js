@@ -20,6 +20,8 @@ app.use (bodyParser.json({limit: '10mb', extended: true}))
 app.use (bodyParser.urlencoded({limit: '10mb', extended: true}))
 
 app.use('/update', express.static('update'));
+app.use('/download', express.static('uploads'));
+app.use('/api/subscribe', require('./routes/webpush.routes'))
 app.use('/api/user', require('./routes/user.routes'))
 app.use('/api/folder', require('./routes/folder.routes'))
 app.use('/api/notice', require('./routes/notice.routes'))
