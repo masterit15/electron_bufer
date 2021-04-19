@@ -17,7 +17,7 @@
 
 <script>
 const { ipcRenderer } = require("electron");
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import EmptyLayout from "./layout/Emptylayout.vue";
 import MainLayout from "./layout/Mainlayout.vue";
 export default {
@@ -73,6 +73,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['user']),
     layout() {
       return (this.$route.meta.layout || "empty") + "-layout";
     }

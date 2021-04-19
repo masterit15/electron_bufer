@@ -30,7 +30,7 @@ Vue.config.devtools = true
 
 Vue.use(new VueSocketIO({
     debug: false,
-    connection: baseURL,
+    connection: baseURL.replace("/api/", ""),
     vuex: {
         store,
         actionPrefix: 'SOCKET_',

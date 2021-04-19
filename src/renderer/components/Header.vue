@@ -1,5 +1,6 @@
 <template>
   <div id="header">
+    <div class="folder_name"><h3>{{activeFolderArr.name}}</h3></div>
     <div class="user_container">
       <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
         <template #button-content>
@@ -24,7 +25,7 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters(['user', 'users']),
+    ...mapGetters(['user', 'users', 'activeFolderArr']),
   },
   methods: {
     ...mapActions(['logout']),

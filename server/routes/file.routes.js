@@ -8,6 +8,8 @@ const File = require('../model/file')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const uploadDir = './uploads';
+const AdmZip = require('adm-zip');
+
 
 const storageConfig = multer.diskStorage({
   destination: (req, file, cb) =>{
@@ -83,16 +85,20 @@ router.put('/', (req, res, next) => {
 })
 
 router.delete('/', async (req, res, next) => {
-  const { folderId, id } = req.query
+  const { id } = req.query
   try {
-    const files = await File.findAll({where: {folderId, id}, raw:true})
+    const files = await File.findAll({where: {id}, raw:true})
+    
     for(const file of files){
       fs.unlinkSync(file.path);
     }
-    await File.destroy({where: { id }})
-    res.status(201).json({
-      success: true,
-    });
+    const idArr = id.map(Number)
+    let delres = await File.destroy({where: { id: idArr }})
+    if(delres > 0){
+      res.status(200).json({
+        success: true,
+      });
+    }
   } catch (error) {
     res.status(404).json({
       success: false,
@@ -100,6 +106,28 @@ router.delete('/', async (req, res, next) => {
       error
   });
   }
+})
+router.get('/zip', async (req, res)=>{
+  const { filesArrId } = req.query
+  try {
+    const filesArr = await File.findAll({ where: { id: filesArrId.map(Number) }, raw: true })
+    const zip = new AdmZip();
+    for(const f of filesArr){
+      zip.addLocalFile(f.path);
+    }
+    const willSendthis = zip.toBuffer();
+
+    const zipFile = `./uploads/${Date.now()}_files.zip`
+    zip.writeZip(zipFile);
+    
+    res.json({
+      success: true,
+      file: zipFile
+    })
+  } catch (error) {
+    res.json({error})
+  }
+	
 })
 // функция добавления загруженных файлов в базу
 async function addFiles(ownerName,ownerId, folderId, files) {

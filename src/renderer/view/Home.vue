@@ -2,7 +2,7 @@
   <div class="content">
     <transition name="slide-down">
       <div class="file_actions" v-show="fileActionPanel">
-        <button @click.prevent="actionEvent('notice')">Уведомить</button>
+        <button @click.prevent="actionEvent('getzip')">Скачать архивом</button>
         <button @click.prevent="actionEvent('rename')">Переименовать</button>
         <button
           v-if="activeFolderArr && activeFolderArr.id == user.id"
@@ -146,7 +146,7 @@ export default {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   methods: {
-    ...mapActions(["deleteFiles"]),
+    ...mapActions(["deleteFiles", "getFiles", "downloadZIP"]),
     fileSelect(event) {
       if (event.target.checked) {
         this.fileSelectArr.push(event.target.value);
@@ -156,14 +156,31 @@ export default {
         );
       }
     },
-    actionEvent(option) {
-      if (option == "notice") {
-        alert("notice");
+    async actionEvent(option) {
+      if (option == "getzip") {
+        let res = await this.downloadZIP(this.fileSelectArr)
+        smalltalk
+          .confirm("Архивация", `${res.file}`, {
+            buttons: {
+              ok: "Скачать",
+              cancel: "Отмена",
+            },
+          })
+          .then(() => {
+            let body = document.querySelector('body')
+            body.insertAdjacentHTML('beforeend', `<a class="ziplink" href="${res.file}" download>${res.file}</a>`);
+            let ziplink = document.querySelector('.ziplink')
+            ziplink.click()
+            setTimeout(()=>{
+              ziplink.remove()
+            }, 10000)
+          })
+          .catch(() => {
+            console.log("no");
+          });
       } else if (option == "rename") {
         alert("rename");
       } else if (option == "delete") {
-        let inputOne = document.querySelectorAll(".chekone");
-        let values = [];
         smalltalk
           .confirm("Удаление", `Вы действительно хотите удалить файл(ы)?`, {
             buttons: {
@@ -172,12 +189,7 @@ export default {
             },
           })
           .then(() => {
-            inputOne.forEach((input) => {
-              values.push(input.value);
-              // console.log(input.value)
-            });
-            this.deleteFiles(values);
-            this.$message(`Файл(ы) успешно удален(ы)!`, "", "success");
+            this.delete();
           })
           .catch(() => {
             console.log("no");
@@ -282,6 +294,14 @@ export default {
           input.checked = false;
           event.target.checked = false;
         });
+      }
+    },
+    delete(){
+      let success = this.deleteFiles(this.fileSelectArr)
+      if(success){
+        this.$message(`Файл(ы) успешно удален(ы)!`, "", "success");
+        this.$refs.chekone.checked = false
+        this.getFiles(this.activeFolderArr.id)
       }
     },
     fileExt(filename) {

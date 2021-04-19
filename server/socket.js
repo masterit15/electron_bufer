@@ -31,8 +31,9 @@ io.on('connection', socket => {
         { where: { id: data.id } }
       )
       .then(res =>{
+        console.log('userJoined>',data);
         io.sockets.in(data.room).emit('noticeUser', data.id);
-        socket.emit('online', data.id)
+        socket.broadcast.to(data.room).emit('online', data.id)
       })
       .catch(err =>
         console.log('userJoined err:', err)
@@ -60,7 +61,6 @@ io.on('connection', socket => {
       text: 'Перейдите в свою папку папку для ознакомления',
       userId: data.userId
     })
-    console.log(data.sid);
     socket.broadcast.to(data.sid).emit('noticeUser', data.id);
   })
 

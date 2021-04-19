@@ -31,7 +31,6 @@ router.post('/', async (req, res, next) =>{
 // метод получения департамента
 router.get('/', (req, res, next) =>{
     const {departamentId} = req.query
-    console.log(departamentId);
     Folder.findAll({ where: { departamentId } }).then(folders=>{
         return res.status(201).json({ 
             success: true,

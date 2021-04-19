@@ -20,17 +20,14 @@ export default {
         console.log('getFiles error', err)
       })
     },
-    deleteFiles({commit}, id = null){
-      axios.delete('http://localhost:5050/api/file', {params: {
-        id
-      }})
-      .then(res=>{
-        commit('setFiles', res.data.files)
-      })
-      .catch(err=>{
-        console.log('getFiles error', err)
-      })
+    async deleteFiles({}, id = {}){
+      let res = await axios.delete('http://localhost:5050/api/file', { params: { id } })
+      return res.data.success
     },
+    async downloadZIP({}, filesArrId = {}){
+      let res = await axios.get('file/zip', { params: { filesArrId } })
+      return res.data
+    }
     // addFiles({}, {folderId, files}) {
     //   let percentCompleted
     //   const config = {
