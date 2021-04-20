@@ -140,23 +140,24 @@ ipcMain.on('download-url', async (event, file) => {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory']
   })
-  let localFile = `${result.filePaths}\\${file}`
-  let percent = 0
-  downloadFile({
-    remoteFile: `http://localhost:5050/download/${file}`,
-    localFile: localFile,
-    onProgress: function (received,total){
-      percent = Math.round((received * 100) / total) / 100
-      if(percent == 0 || percent == 1){
-        mainWindow.setProgressBar(-1)
-      }else{
-        mainWindow.setProgressBar(percent)
+  if(!result.canceled){
+    let localFile = `${result.filePaths}\\${file}`
+    let percent = 0
+    downloadFile({
+      remoteFile: `http://localhost:5050/download/${file}`,
+      localFile: localFile,
+      onProgress: function (received,total){
+        percent = Math.round((received * 100) / total) / 100
+        if(percent == 0 || percent == 1){
+          mainWindow.setProgressBar(-1)
+        }else{
+          mainWindow.setProgressBar(percent)
+        }
       }
-    }
-  }).then(function(){
-    console.log(`File succesfully downloaded ${file.path}`);
-
-  });
+    }).then(function(){
+      // console.log(`File succesfully downloaded ${file.path}`);
+    });
+  }
 });
 
 ipcMain.on('ondragstart', async (event, file) => {
