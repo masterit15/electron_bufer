@@ -1,4 +1,4 @@
-import { app, dialog, BrowserWindow, powerMonitor, ipcMain } from 'electron'
+import { app, dialog, BrowserWindow, powerMonitor, ipcMain, Menu } from 'electron'
 import request from 'request'
 import fs from 'fs'
 import os from 'os'
@@ -24,8 +24,9 @@ function createWindow() {
     minHeight: 600,
     movable: true,//может ли окно перемещаться. В Linux это не реализовано
     opacity: 1,
-    frame: true,
+    frame: false,
     visualEffectState: 'active',
+    vibrancy: 'ultra-dark',
     title: 'Буфер',
     titleBarStyle: 'default',
     webPreferences: {
@@ -35,7 +36,7 @@ function createWindow() {
       enableRemoteModule: true,
     }
   })
-  // mainWindow.setMenu(null)
+  mainWindow.setMenu(null)
   mainWindow.loadURL(winURL)
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -140,12 +141,17 @@ ipcMain.on('download-url', async (event, file) => {
     properties: ['openDirectory']
   })
   let localFile = `${result.filePaths}\\${file}`
+  let percent = 0
   downloadFile({
     remoteFile: `http://localhost:5050/download/${file}`,
     localFile: localFile,
     onProgress: function (received,total){
-        var percentage = (received * 100) / total;
-        console.log(percentage + "% | " + received + " bytes out of " + total + " bytes.");
+      percent = Math.round((received * 100) / total) / 100
+      if(percent == 0 || percent == 1){
+        mainWindow.setProgressBar(-1)
+      }else{
+        mainWindow.setProgressBar(percent)
+      }
     }
   }).then(function(){
     console.log(`File succesfully downloaded ${file.path}`);
@@ -153,11 +159,35 @@ ipcMain.on('download-url', async (event, file) => {
   });
 });
 
-ipcMain.on('ondragstart', (event, filePath) => {
+ipcMain.on('ondragstart', async (event, file) => {
+  // let res = screen;
+  let localFile = `C:\\Users\\${username}\\AppData\\Local\\Temp\\${file}`
+  let percent = 0
+  await downloadFile({
+    remoteFile: `http://localhost:5050/download/${file}`,
+    localFile: localFile,
+    onProgress: function (received,total){
+        percent = Math.round((received * 100) / total) / 100
+        if(percent == 0 || percent == 1){
+          mainWindow.setProgressBar(-1)
+        }else{
+          mainWindow.setProgressBar(percent)
+        }
+    }
+  }).then(res=>{
+    
+    
+  });
   event.sender.startDrag({
-    file: filePath,
+    file: localFile,
     icon: './static/hand-drag.png'
   })
+  if(percent == 1){
+    fs.unlink(localFile, (err) => {
+      if (err) throw err;
+      console.log('path/file.txt was deleted');
+    })
+  }
 })
 
 function downloadFile(configuration){

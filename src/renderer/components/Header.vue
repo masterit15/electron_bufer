@@ -1,5 +1,5 @@
 <template>
-  <div id="header">
+  <div id="header" class="nontextselect">
     <div class="folder_name"><h3 v-if="activeFolderArr">{{activeFolderArr.name}}</h3></div>
     <div class="user_container">
       <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>

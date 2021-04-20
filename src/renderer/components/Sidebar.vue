@@ -1,6 +1,6 @@
 <template>
   <div id="sidebar">
-    <div class="logo">
+    <div class="logo nontextselect dragselect">
       <img src="../assets/logo.png" alt="logo" />
       <h2>BUFER</h2>
     </div>

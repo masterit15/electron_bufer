@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="content nontextselect">
     <transition name="slide-down">
       <div class="file_actions" v-show="fileActionPanel">
         <button @click.prevent="actionEvent('getzip')">Скачать архивом</button>
@@ -30,8 +30,8 @@
         />
       </template>
       <template #cell(name)="data">
-        <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-          <div class="dragfile"></div>
+        <div class="rows dragfile" @contextmenu.prevent="contextMenu($event, data)" :data-file="data.item.name" draggable="true" 
+          @dragstart="dragStartFile($event)" >
           <span class="file_icon" v-html="fileExt(data.item.name)"></span>
           {{ data.item.originalName }}
         </div>
@@ -147,14 +147,45 @@ export default {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   mounted() {
-    document.querySelector('.dragfile').ondragstart = (event) => {
-      event.preventDefault()
-      console.log('drag');
-      ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
-    }
+    let dragFiles = document.querySelectorAll('.dragfile')
+    dragFiles.forEach(dragFile=>{
+      dragFile.ondragstart = (event) => {
+        event.preventDefault()
+        
+        ipcRenderer.send('ondragstart', dragFile.dataset.file)
+      }
+    })
   },
   methods: {
     ...mapActions(["deleteFiles", "getFiles", "downloadZIP"]),
+    // dragLeaveFile(event){
+    //   console.log('dragLeaveFile',event);
+    //   // event.target.ondragstart = (event) => {
+    //   //   event.preventDefault()
+    //   //   ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
+    //   // }
+    // },
+    // dragEnterFile(event){
+    //   console.log('dragEnterFile',event);
+    //   // event.target.ondragstart = (event) => {
+    //   //   event.preventDefault()
+    //   //   ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
+    //   // }
+    // },
+    dragStartFile(event){
+      // console.log('dragStartFile',event);
+      // ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
+    },
+    // dragEndFile(event){
+    //   console.log('dragEndFile',event);
+    //   // this.$refs.drag.ondragstart = (event) => {
+    //   //   event.preventDefault()
+    //   //   ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
+    //   // }
+    // },
+    // dropFile(event){
+    //   console.log('dropFile',event);
+    // },
     fileSelect(event) {
       if (event.target.checked) {
         this.fileSelectArr.push(event.target.value);
