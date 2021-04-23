@@ -15,17 +15,17 @@ export default {
     addSidUser(state, data){
       let storageUser = JSON.parse(localStorage.getItem('user'))
         storageUser.sid = data.sid
-        storageUser.room = data.room
-        storageUser.online = 'Y'
+        storageUser.room = storageUser.departamentName
         localStorage.setItem('user', JSON.stringify(storageUser))
-        let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
-        if(index !== -1){
-          state.users[index].sid = data.sid
-          state.users[index].room = data.room
-          state.users.forEach((user, i) => {
-            state.users[i].room = data.room
-          });
-        }
+        state.user = storageUser
+        // let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
+        // if(index !== -1){
+        //   state.users[index].sid = data.sid
+        //   state.users[index].room = data.room
+        //   state.users.forEach((user, i) => {
+        //     state.users[i].room = data.room
+        //   });
+        // }
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))

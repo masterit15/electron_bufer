@@ -1,5 +1,12 @@
 <template>
   <div id="app">
+    <div class="window_border dragselect nontextselect">
+      <div class="window_border_action">
+        <button class="window_border_action_btn_hide" @click="resizeApp('rollup')"></button>
+        <button class="window_border_action_btn_size" @click="resizeApp('resize')"></button>
+        <button class="window_border_action_btn_close" @click="resizeApp('close')"></button>
+      </div>
+    </div>
     <component :is="layout">
       <router-view></router-view>
     </component>
@@ -21,17 +28,6 @@ import { mapGetters } from "vuex";
 import EmptyLayout from "./layout/Emptylayout.vue";
 import MainLayout from "./layout/Mainlayout.vue";
 export default {
-  sockets: {
-    connect: function () {
-      if(this.user){
-        this.$socket.emit('join_room', this.user.departamentName);
-        this.$store.commit("addSidUser", {sid: this.$socket.id, room: this.user.departamentName});
-      }
-    },
-    disconnect() {
-      console.log("Пользователь отключился");
-    },
-  },
   name: "bufer",
   data() {
     return {
@@ -45,6 +41,22 @@ export default {
     this.chekUpdate();
   },
   methods: {
+    resizeApp(param){
+      let win = this.$electron.remote.getCurrentWindow()
+      if(param == "resize"){
+        if (!win.isMaximized()) {
+            win.maximize();          
+        } else {
+            win.unmaximize();
+        }
+      }else if(param = 'rollup'){
+        win.minimize()
+      }else if(param == 'close'){
+        win.close()
+        // ipcRenderer.send("quit-app");
+      }
+    },
+    
     chekUpdate() {
       let that = this;
       ipcRenderer.send("app_version");

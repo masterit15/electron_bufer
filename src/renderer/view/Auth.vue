@@ -1,5 +1,5 @@
 <template>
-  <div class="form" :style="{backgroundImage: `url(${bgImage})`}" style="-webkit-app-region: drag">
+  <div class="form" :style="{backgroundImage: `url(${bgImage})`}">
     <div class="logo">
       <img src="../assets/logo.png" alt="logo">
       <h2>BUFER</h2>
@@ -66,7 +66,7 @@ export default {
     // this.$store.commit('setDepartaments', res.departaments)
   },
   computed: {
-    ...mapGetters(['departaments', 'user', 'users']),
+    ...mapGetters(['departaments']),
     departamentList(){
       return this.departaments.filter(departament=>{
         return departament.name.toLowerCase().includes(this.udepartament.toLowerCase())
@@ -81,7 +81,7 @@ export default {
     this.bodyFixed()
   },
   methods: {
-    ...mapActions(['getDepartaments', 'Auth', 'getUsers']),
+    ...mapActions(['getDepartaments', 'Auth']),
     async searchDepartament(){
       this.openDropdown = true
       // // this.getDepartaments()
@@ -100,7 +100,7 @@ export default {
       }
       let res = await this.Auth(data)
       if(res.success){
-        this.bodyFixed('relative')
+        this.bodyFixed(null)
         this.$router.push('/') 
       }
     },
@@ -148,7 +148,7 @@ export default {
       })
     },
     beforeDestroy() {
-      this.bodyFixed('relative')
+      this.bodyFixed(null)
     },
   }
 }

@@ -155,6 +155,7 @@ export default {
       axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`, data, config)
       .then(res=>{
         if(res.data.success){
+          console.log(this.users);
           let user = this.users.find(user=>user.id==this.activeFolderArr.userId)
           let data = {
             ...user,

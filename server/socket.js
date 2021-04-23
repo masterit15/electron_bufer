@@ -3,7 +3,7 @@ const server = require('http').createServer(app)
 const User = require('./model/user')
 const Notice = require('./model/notice')
 const Users = require('./onlineUsers')
-const users = new Users()
+const user = new Users()
 
 const io = require('socket.io')(server, {
   cors: {
@@ -21,19 +21,22 @@ io.on('connection', socket => {
     // console.log('join_room',room);
     //Вот здесь ты можешь подключить сокет к нужной тебе комнате
     socket.join(room);
+    
     // socket.broadcast.to(room).emit('test', 'dsfsfsdfsfsdsdf')// отправит всем в этой комнате (кроме себя), что подключился новый пользователь
   })
 
   socket.on('userJoined', async data => {
-      socket.join(data.room)
+      // socket.join(data.room)
       User.update(
         { online: 'Y' },
         { where: { id: data.id } }
       )
       .then(res =>{
+        data.sid = socket.id
+        data.room = data.departamentName
+        user.add(data)
         io.sockets.in(data.room).emit('noticeUser', data.id);
         socket.broadcast.to(data.room).emit('online', data.id)
-        // socket.broadcast.to(data.room).emit('addSidUsers', data)
       })
       .catch(err =>
         console.log('userJoined err:', err)
@@ -46,7 +49,8 @@ io.on('connection', socket => {
       { online: 'N' },
       { where: { id: data.id } }
     )
-    .then(user =>{
+    .then(res =>{
+      user.remove(socket.id)
       socket.broadcast.to(data.room).emit('offline', data.id)
     })
     .catch(err =>
@@ -61,7 +65,6 @@ io.on('connection', socket => {
       text: `${data.files}`,
       userId: data.id
     })
-    console.log(data);
     io.sockets.in(data.room).emit('noticeUser', data.id);
   })
 
@@ -72,7 +75,6 @@ io.on('connection', socket => {
       { where: { id: data.noticeId } }
     )
     .then(notices =>{
-      // console.log(notices);
       socket.emit('noticeUser', data.userId)
     })
     .catch(err =>
@@ -93,10 +95,10 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', () => {
-    const user = users.remove(socket.id)
-    if (user) {
-      io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
-    }
+    user.remove(socket.id)
+    // if (user) {
+    //   io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
+    // }
   })
 })
 

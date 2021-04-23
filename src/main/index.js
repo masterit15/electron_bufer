@@ -1,4 +1,5 @@
-import { app, dialog, BrowserWindow, powerMonitor, ipcMain, Menu } from 'electron'
+import { app, dialog, BrowserWindow, powerMonitor, ipcMain, Menu, Tray } from 'electron'
+
 import request from 'request'
 import fs from 'fs'
 import os from 'os'
@@ -15,6 +16,25 @@ const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
+
+// let appIcon = null
+// app.whenReady().then(() => {
+//   appIcon = new Tray('/static/hand-drag.png')
+//   const contextMenu = Menu.buildFromTemplate([
+//     { label: 'Item1', type: 'radio' },
+//     { label: 'Item2', type: 'radio' }
+//   ])
+
+//   // Make a change to the context menu
+//   contextMenu.items[1].checked = false
+
+//   // Call this again for Linux because we modified the context menu
+//   appIcon.setContextMenu(contextMenu)
+// })
+
+
+
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     useContentSize: true,
@@ -23,15 +43,15 @@ function createWindow() {
     minWidth: 900,
     minHeight: 600,
     movable: true,//может ли окно перемещаться. В Linux это не реализовано
-    opacity: 1,
-    frame: false,
     visualEffectState: 'active',
-    vibrancy: 'ultra-dark',
     title: 'Буфер',
     titleBarStyle: 'default',
+    // transparent: false, 
+    frame: false,
+    // backgroundColor: '#b8daffff',
+    // titleBarStyle: 'hiddenInset',
     webPreferences: {
       nodeIntegration: true,
-      //nodeIntegrationInWorker: true,
       contextIsolation: false,
       enableRemoteModule: true,
     }
@@ -73,6 +93,13 @@ app.on('ready', async() => {
   })
 
 })
+ipcMain.on('quit-app', () => {
+  console.log('quit-app');
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+});
+
 
 /**
  * Auto Updater
@@ -161,8 +188,12 @@ ipcMain.on('download-url', async (event, file) => {
 });
 
 ipcMain.on('ondragstart', async (event, file) => {
-  // let res = screen;
-  let localFile = `C:\\Users\\${username}\\AppData\\Local\\Temp\\${file}`
+  let localFile = ''
+  if (process.platform === "win32") {
+    localFile = `C:\\Users\\${username}\\AppData\\Local\\Temp\\${file}`
+  }else{
+    localFile = `/tmp/${file}`
+  }
   let percent = 0
   await downloadFile({
     remoteFile: `http://localhost:5050/download/${file}`,

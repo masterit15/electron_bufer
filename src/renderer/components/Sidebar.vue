@@ -13,7 +13,7 @@
         <span class="folder_list_head_close" ><i class="fa fa-chevron-left"></i> <i class="fa fa-folder-open-o" ></i>{{activeDepartament}} </span>
       </div>
     </transition>
-    <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list mCustomScrollbar" data-mcs-theme="dark">
+    <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list">
         <li
           class="folder_list_item"
           :class="activeDepartament == departament.id ? 'is_active' : ''"
@@ -27,7 +27,7 @@
             </div>
         </li>
     </transition-group>
-    <transition-group v-else  name="slide-fade" tag="ul" class="folder_list mCustomScrollbar" data-mcs-theme="dark">
+    <transition-group v-else  name="slide-fade" tag="ul" class="folder_list">
         <li
           class="folder_list_item"
           :class="isActiveFolder == folder.id ? 'is_active' : ''"

@@ -1,5 +1,5 @@
 <template>
-  <div id="home wrapper">
+  <div id="wrapper">
     <div id="container">
       <app-sidebar></app-sidebar>
       <div id="resizer"></div>
@@ -17,9 +17,19 @@ import AppHeader from "../components/Header";
 import AppSidebar from "../components/Sidebar";
 import { mapActions, mapGetters } from "vuex";
 export default {
+  sockets: {
+    connect: function () {
+      this.$socket.emit('join_room', this.user.departamentName);
+      this.$store.commit("addSidUser", {sid: this.$socket.id, room: this.user.departamentName});
+    },
+    disconnect() {
+      console.log("Пользователь отключился");
+    },
+  },
   async created(){
     await this.getDepartaments();
     await this.getUsers();
+    
   },
   watch: {
     fileSelectArr() {
@@ -45,10 +55,10 @@ export default {
   },
   mounted() {
     this.resizeContent()
-    this.$store.commit("addSidUser", {
-      sid: this.$socket.id,
-      room: this.user.departamentName,
-    });
+    // this.$store.commit("addSidUser", {
+    //   sid: this.$socket.id,
+    //   room: this.user.departamentName,
+    // });
     this.$socket.emit("userJoined", {
       ...this.user,
       sid: this.$socket.id,
