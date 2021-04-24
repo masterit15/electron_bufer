@@ -23,7 +23,7 @@
   },
   "build": {
     "productName": "bufer",
-    "appId": "com.example.yourapp",
+    "appId": "com.example.bufer",
     "directories": {
       "output": "build"
     },
@@ -60,12 +60,12 @@
     "bootstrap": "^4.6.0",
     "cross-unzip": "^0.0.2",
     "electron-dl": "^3.2.1",
+    "electron-log": "^4.3.4",
     "electron-updater": "^4.3.8",
     "events": "^3.3.0",
     "gsap": "^3.5.1",
     "jquery-mousewheel": "^3.1.13",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
-    "nedb": "^1.8.0",
     "readdirp": "^3.6.0",
     "smalltalk": "^4.0.7",
     "v-click-outside": "^3.1.2",

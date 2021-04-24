@@ -66,7 +66,7 @@ export default {
     // this.$store.commit('setDepartaments', res.departaments)
   },
   computed: {
-    ...mapGetters(['departaments']),
+    ...mapGetters(['departaments', 'user']),
     departamentList(){
       return this.departaments.filter(departament=>{
         return departament.name.toLowerCase().includes(this.udepartament.toLowerCase())
@@ -84,13 +84,9 @@ export default {
     ...mapActions(['getDepartaments', 'Auth']),
     async searchDepartament(){
       this.openDropdown = true
-      // // this.getDepartaments()
-      // await this.getDepartaments({name: this.udepartament})
-      // let res = await this.getDepartaments()
-      // this.$store.commit('setDepartaments', res.departaments)
     },
     async authBufer(){
-      let data = {
+      let userData = {
         login: this.ulogin,
         username: this.uname,
         avatar: this.uavatar,
@@ -98,10 +94,22 @@ export default {
         network: this.unetwork,
         mac: this.unetwork.mac
       }
-      let res = await this.Auth(data)
+      let res = await this.Auth(userData)
       if(res.success){
-        this.bodyFixed(null)
-        this.$router.push('/') 
+        const user = {
+          ...res.user,
+          room: this.udepartament,
+        }
+        this.$socket.emit("userJoined", user, data =>{
+          if(typeof data === 'string'){
+            console.error(data)
+          }else{
+            console.log('this.Auth(userData)', data.users);
+            this.$store.commit('setUser', data.user)
+            this.bodyFixed(null)
+            this.$router.push('/') 
+          }
+        });
       }
     },
     bodyFixed(position='fixed'){

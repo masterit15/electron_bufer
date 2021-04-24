@@ -8,9 +8,9 @@ class Users {
     this.users.push(user)
   }
 
-  get(id) {
-    console.log('Сработала функция get(id)');
-    return this.users.find(user => Number(user.id) === Number(id))
+  get(sid) {
+    console.log('Сработала функция get(id)', sid);
+    return this.users.find(user => user.sid === sid)
   }
 
   remove(sid) {

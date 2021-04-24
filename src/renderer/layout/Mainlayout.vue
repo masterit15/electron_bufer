@@ -19,8 +19,16 @@ import { mapActions, mapGetters } from "vuex";
 export default {
   sockets: {
     connect: function () {
-      this.$socket.emit('join_room', this.user.departamentName);
-      this.$store.commit("addSidUser", {sid: this.$socket.id, room: this.user.departamentName});
+      // this.$socket.emit('join_room', this.user.departamentName);
+      if(this.user){
+        this.$socket.emit("userJoined", this.user, data =>{
+          if(typeof data === 'string'){
+            console.error(data)
+          }else{
+            this.$store.commit('setUser', data.user)
+          }
+        });
+      }
     },
     disconnect() {
       console.log("Пользователь отключился");
@@ -55,15 +63,6 @@ export default {
   },
   mounted() {
     this.resizeContent()
-    // this.$store.commit("addSidUser", {
-    //   sid: this.$socket.id,
-    //   room: this.user.departamentName,
-    // });
-    this.$socket.emit("userJoined", {
-      ...this.user,
-      sid: this.$socket.id,
-      room: this.udepartament,
-    });
     let win = this.$electron.remote.getCurrentWindow();
     $(".mCustomScrollbar").mCustomScrollbar({
       autoHideScrollbar: true,

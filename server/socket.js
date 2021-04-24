@@ -4,7 +4,7 @@ const User = require('./model/user')
 const Notice = require('./model/notice')
 const Users = require('./onlineUsers')
 const user = new Users()
-
+const m = (name, text, id) => ({name, text, id})
 const io = require('socket.io')(server, {
   cors: {
       origin: "http://localhost:9080",
@@ -25,22 +25,28 @@ io.on('connection', socket => {
     // socket.broadcast.to(room).emit('test', 'dsfsfsdfsfsdsdf')// отправит всем в этой комнате (кроме себя), что подключился новый пользователь
   })
 
-  socket.on('userJoined', async data => {
+  socket.on('userJoined', async (data, cb) => {
       // socket.join(data.room)
-      User.update(
-        { online: 'Y' },
-        { where: { id: data.id } }
-      )
-      .then(res =>{
-        data.sid = socket.id
-        data.room = data.departamentName
-        user.add(data)
-        io.sockets.in(data.room).emit('noticeUser', data.id);
-        socket.broadcast.to(data.room).emit('online', data.id)
-      })
-      .catch(err =>
-        console.log('userJoined err:', err)
-      )
+      if(!data.username || !data.login){
+        return cb('Данные не коректны')
+      }else{
+        User.update(
+          { online: 'Y' },
+          { where: { id: data.id } }
+        )
+        .then(res =>{
+          data.sid = socket.id
+          data.room = data.departamentName
+          // запихиваем пользователя в массив
+          user.add(data)
+          // io.sockets.in(data.room).emit('noticeUser', data.id);
+          socket.broadcast.to(data.room).emit('online', data.id)
+          cb({users: user.users, user: data})
+        })
+        .catch(err =>
+          console.log('userJoined err:', err)
+        )
+    }
   })
 
   // срабатывает при выходе
@@ -95,10 +101,22 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', () => {
-    user.remove(socket.id)
-    // if (user) {
-    //   io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
-    // }
+    let thisUser = user.get(socket.id)
+    
+    console.log('thisUser', thisUser);
+    if (thisUser) {
+      User.update(
+        { online: 'N' },
+        { where: { id: thisUser.id } }
+      )
+      .then(res =>{
+        io.to(thisUser.room).emit('offline', thisUser.id)
+        user.remove(socket.id)
+      })
+      .catch(err =>
+        console.log('userLeft err:', err)
+      )
+    }
   })
 })
 

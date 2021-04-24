@@ -10,22 +10,8 @@ export default {
       state.users = users
     },
     setUser(state, user){
+      localStorage.setItem('user', JSON.stringify(user))
       state.user = user
-    },
-    addSidUser(state, data){
-      let storageUser = JSON.parse(localStorage.getItem('user'))
-        storageUser.sid = data.sid
-        storageUser.room = storageUser.departamentName
-        localStorage.setItem('user', JSON.stringify(storageUser))
-        state.user = storageUser
-        // let index = state.users.findIndex(user=>Number(user.id) == Number(state.user.id))
-        // if(index !== -1){
-        //   state.users[index].sid = data.sid
-        //   state.users[index].room = data.room
-        //   state.users.forEach((user, i) => {
-        //     state.users[i].room = data.room
-        //   });
-        // }
     },
     SOCKET_online(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
@@ -40,10 +26,7 @@ export default {
         state.notimessage = { text: '', title: `Пользователь ${state.users[index].username} вышел`, variant: 'warning' }
         state.users[index].online = 'N'
       }
-    },
-    SOCKET_test(state, id){
-      state.notimessage = { text: '', title: `Пользователь ${id} вышел`, variant: 'danger' }
-    },
+    }
   },
   actions: {
     getUsers({commit}, data = {}){
@@ -60,8 +43,7 @@ export default {
       await axios.post('user', params)
       .then(res=>{
         let user = res.data.user
-        localStorage.setItem('user', JSON.stringify(user))
-        commit('setUser', user)
+        // commit('setUser', user)
         postres = res.data
       })
       .catch(err=>{

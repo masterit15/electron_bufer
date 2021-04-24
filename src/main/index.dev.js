@@ -12,8 +12,9 @@
 
 // Install `vue-devtools`
 require('electron').app.on('ready', () => {
-  require('electron-debug')({ showDevTools: true })
-
+  if(process.env.NODE_ENV !== 'production'){
+    require('electron-debug')({ showDevTools: true })
+  }
 })
 
 // Require `main` process to boot app

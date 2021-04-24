@@ -1,39 +1,19 @@
-import { app, dialog, BrowserWindow, powerMonitor, ipcMain, Menu, Tray } from 'electron'
-
+import { app, dialog, BrowserWindow, powerMonitor, ipcMain} from 'electron'
+import log from 'electron-log'
 import request from 'request'
 import fs from 'fs'
 import os from 'os'
 const username = os.userInfo().username
+
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
-
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 let mainWindow
 
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
-
-
-// let appIcon = null
-// app.whenReady().then(() => {
-//   appIcon = new Tray('/static/hand-drag.png')
-//   const contextMenu = Menu.buildFromTemplate([
-//     { label: 'Item1', type: 'radio' },
-//     { label: 'Item2', type: 'radio' }
-//   ])
-
-//   // Make a change to the context menu
-//   contextMenu.items[1].checked = false
-
-//   // Call this again for Linux because we modified the context menu
-//   appIcon.setContextMenu(contextMenu)
-// })
-
-
-
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -46,10 +26,8 @@ function createWindow() {
     visualEffectState: 'active',
     title: 'Буфер',
     titleBarStyle: 'default',
-    // transparent: false, 
+    transparent: true, 
     frame: false,
-    // backgroundColor: '#b8daffff',
-    // titleBarStyle: 'hiddenInset',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -67,8 +45,7 @@ function createWindow() {
       autoUpdater.checkForUpdates()
     }
   });
-  
-
+  log.info('createWindow')
 }
 
 app.on('ready', createWindow)
@@ -104,63 +81,56 @@ ipcMain.on('quit-app', () => {
 /**
  * Auto Updater
  */
+if(process.platform === "win32"){
+  const { AppImageUpdater, MacUpdater, NsisUpdater } = require("electron-updater")
 
-const { AppImageUpdater, MacUpdater, NsisUpdater } = require("electron-updater")
+  var options
 
-var options
-
-if (process.env.NODE_ENV === 'production') {
-  options = {
-    requestHeaders: {
-      // Any request headers to include here
-      Authorization: 'Basic 123456789'
-    },
-    provider: 'generic',
-    url: 'http://10.20.0.41:3000/update/'
+  if (process.env.NODE_ENV === 'production') {
+    options = {
+      requestHeaders: {
+        // Any request headers to include here
+        Authorization: 'Basic 123456789'
+      },
+      provider: 'generic',
+      url: 'http://localhost:5050/update/',//'http://10.20.0.41:3000/update/'
+    }
+  } else {
+    
+    options = {
+      requestHeaders: {
+        // Any request headers to include here
+        Authorization: 'Basic 123456789'
+      },
+      provider: 'generic',
+      url: 'http://localhost:5050/update/'
+    }
   }
-} else {
-  
-  options = {
-    requestHeaders: {
-      // Any request headers to include here
-      Authorization: 'Basic 123456789'
-    },
-    provider: 'generic',
-    url: 'http://localhost:5050/update/'
+
+  var autoUpdater
+
+  if (process.platform === "win32") {
+    autoUpdater = new NsisUpdater(options)
   }
+  else if (process.platform === "darwin") {
+    autoUpdater = new MacUpdater(options)
+  }
+  else {
+    autoUpdater = new AppImageUpdater(options)
+  }
+
+  autoUpdater.on('update-available', () => {
+    mainWindow.webContents.send('update_available');
+  });
+  autoUpdater.on('update-downloaded', () => {
+    mainWindow.webContents.send('update_downloaded');
+  });
+  ipcMain.on('restart_app', () => {
+    autoUpdater.quitAndInstall();
+  });
 }
-
-var autoUpdater
-
-if (process.platform === "win32") {
-  autoUpdater = new NsisUpdater(options)
-}
-else if (process.platform === "darwin") {
-  autoUpdater = new MacUpdater(options)
-}
-else {
-  autoUpdater = new AppImageUpdater(options)
-}
-
-autoUpdater.on('update-available', () => {
-  mainWindow.webContents.send('update_available');
-});
-autoUpdater.on('update-downloaded', () => {
-  mainWindow.webContents.send('update_downloaded');
-});
-
-// autoUpdater.on('download-progress', (progressObj) => {
-//   let log_message = "Download speed: " + progressObj.bytesPerSecond;
-//   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-//   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-//   mainWindow.webContents.send('download-progress', log_message);
-// })
-
 ipcMain.on('app_version', (event) => {
   event.sender.send('app_version', { version: app.getVersion() });
-});
-ipcMain.on('restart_app', () => {
-  autoUpdater.quitAndInstall();
 });
 
 ipcMain.on('download-url', async (event, file) => {

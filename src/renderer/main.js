@@ -25,9 +25,6 @@ if(process.env.NODE_ENV === 'production'){
 }else{
   baseURL = 'http://localhost:5050/api/'
 }
-
-Vue.config.devtools = true
-
 Vue.use(new VueSocketIO({
     debug: false,
     connection: baseURL.replace("/api/", ""),
@@ -40,11 +37,10 @@ Vue.use(new VueSocketIO({
 }))
 
 import './sass/main.sass'
-Vue.config.devtools = process.env.NODE_ENV === 'development'
+// Vue.config.devtools = process.env.NODE_ENV === 'development'
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$http = axios
 Vue.prototype.$http.defaults.baseURL = baseURL
-
 
 if (localStorage.user) {
   const token = JSON.parse(localStorage.user).token
@@ -57,6 +53,7 @@ import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min'
 
 Vue.prototype.$smalltalk = smalltalk
 Vue.config.productionTip = false
+
 Vue.component('Avatar', Avatar)
 /* eslint-disable no-new */
 new Vue({
