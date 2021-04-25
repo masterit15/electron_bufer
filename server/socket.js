@@ -41,6 +41,7 @@ io.on('connection', socket => {
           user.add(data)
           // io.sockets.in(data.room).emit('noticeUser', data.id);
           socket.broadcast.to(data.room).emit('online', data.id)
+          io.emit('userIsOnline', data.id)
           cb({users: user.users, user: data})
         })
         .catch(err =>

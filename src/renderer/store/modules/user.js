@@ -20,6 +20,13 @@ export default {
         state.users[index].online = 'Y'
       }
     },
+    SOCKET_userIsOnline(state, id){
+      let index = state.users.findIndex(user=>Number(user.id) == Number(id))
+      if(index !== -1){
+        // state.notimessage = { text: '', title: `Пользователь ${state.users[index].username} вошел`, variant: 'success' }
+        state.users[index].online = 'Y'
+      }
+    },
     SOCKET_offline(state, id){
       let index = state.users.findIndex(user=>Number(user.id) == Number(id))
       if(index !== -1){

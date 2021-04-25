@@ -104,7 +104,6 @@ export default {
           if(typeof data === 'string'){
             console.error(data)
           }else{
-            console.log('this.Auth(userData)', data.users);
             this.$store.commit('setUser', data.user)
             this.bodyFixed(null)
             this.$router.push('/') 
