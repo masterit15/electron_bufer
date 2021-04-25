@@ -41,7 +41,7 @@ function createWindow() {
   })
 
   mainWindow.once('ready-to-show', () => {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && process.platform === "win32") {
       autoUpdater.checkForUpdates()
     }
   });

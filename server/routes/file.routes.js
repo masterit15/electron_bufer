@@ -66,29 +66,30 @@ router.get('/', async (req, res, next) => {
     });
   }
 })
-router.put('/', (req, res, next) => {
-  const { folderId } = req.query
-  File.findAll({where: {folderId}, raw:true}).then(files =>{
+router.put('/', async(req, res, next) => {
+  const { id, originalName } = req.body
+  let changeFile = await File.update(
+    { originalName },
+    { where: { id }, raw: true }
+  )
+  if(changeFile){
     res.status(201).json({
       success: true,
-      message: 'Все файлы раздела',
-      files
+      message: 'Файл успешно изменен',
     });
-  })
-  .catch(err => {
+  }else{
     res.status(404).json({
-        success: false,
-        message: 'Ошибка, что то пошло не так!',
-        err
+      success: false,
+      message: 'Ошибка, что то пошло не так!',
+      err
     });
-  })
+  }
 })
 
 router.delete('/', async (req, res, next) => {
   const { id } = req.query
   try {
     const files = await File.findAll({where: {id}, raw:true})
-    
     for(const file of files){
       fs.unlinkSync(file.path);
     }

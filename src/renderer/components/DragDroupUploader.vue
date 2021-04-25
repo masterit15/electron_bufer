@@ -1,14 +1,17 @@
 <template>
-  <div class="addfileform" :class="files.length > 0 ? 'is_active' : ''">
-    <div class="file_form">
+  <div class="file_form" :class="files.length > 0 ? 'is_active' : ''">
+    <div class="file_form_wrap">
       <div class="file_prev" v-show="files.length > 0">
         <div class="file_prev_wrap">
           <div class="file_prev_list mCustomScrollbar">
             <ul>
               <li v-for="(file, index) in files" :key="index">
                 <span class="file_name">
-                  <i class="fa fa-file"></i> 
+                  <span :inner-html.prop="file.name|icon()"></span>
                   {{ file.name }}
+                </span>
+                <span class="file_size">
+                  {{ file.size | size() }}
                 </span>
                 <span class="file_delete" @click="deleteFile(index)"
                   ><i class="fa fa-times"></i
@@ -17,11 +20,14 @@
             </ul>
           </div>
         </div>
-        <button @click="uploadFiles">Загрузить</button>
+        <button class="btn file_btn" @click="uploadFiles">Загрузить</button>
       </div>
-      <div id="drag-file" class="add_btn" @click="clickInput">
+      <div id="drag-file" class="add_btn" @click="clickInput" :class="files.length > 0 ? 'is_active' : ''">
         <input type="file" @change="addFiles" id="files_input" multiple />
-        <span class="file_text">перетащите или кликните, что бы прикрепить файл(ы) <i class="fa fa-upload"></i> </span>
+        <span class="file_text">
+          <h4>перетащите или кликните, что бы прикрепить файл(ы)</h4> 
+          <i class="fa fa-upload"></i> 
+        </span>
       </div>
     </div>
     <transition name="fade">
@@ -84,7 +90,7 @@ export default {
   mounted() {
     // console.log(this.$electron.remote.getCurrentWindow().setProgressBar(-1))
     
-    let holder = document.getElementById("drag-file");
+    let holder = document.getElementById("main");
     holder.classList = "";
     // срабатывает, когда элемент будет перенесен на заданную зону (цель для переноса)
     holder.ondragenter = () => {
@@ -122,6 +128,11 @@ export default {
     holder.ondragend = () => {
       return false;
     };
+  },
+  watch: {
+    files(){
+      console.log(this.files);
+    }
   },
   computed: {
     ...mapGetters(['users','user', 'activeFolderArr'])

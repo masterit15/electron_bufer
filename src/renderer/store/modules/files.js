@@ -20,13 +20,20 @@ export default {
         console.log('getFiles error', err)
       })
     },
-    async deleteFiles({}, id = {}){
-      let res = await axios.delete('http://localhost:5050/api/file', { params: { id } })
+    async deleteFiles({state, dispatch}, fileParam = {}){
+      let res = await axios.delete('http://localhost:5050/api/file', { params: { id: fileParam.id } })
+      dispatch('getFiles', fileParam.folderId)
       return res.data.success
     },
     async downloadZIP({}, filesArrId = {}){
       let res = await axios.get('file/zip', { params: { filesArrId } })
       return res.data
+    },
+    async renameFile({dispatch}, fileParam = {}){
+      console.log(fileParam);
+      let res = await axios.put('http://localhost:5050/api/file', { ...fileParam })
+      dispatch('getFiles', fileParam.folderId)
+      return res.data.success
     }
     // addFiles({}, {folderId, files}) {
     //   let percentCompleted

@@ -2,14 +2,9 @@
   <div class="content nontextselect">
     <transition name="slide-down">
       <div class="file_actions" v-show="fileActionPanel">
-        <button @click.prevent="actionEvent('getzip')">Скачать архивом</button>
-        <button @click.prevent="actionEvent('rename')">Переименовать</button>
-        <button
-          v-if="activeFolderArr && activeFolderArr.id == user.id"
-          @click.prevent="actionEvent('delete')"
-        >
-          Удалить
-        </button>
+        <button v-if="fileSelectArr.length > 1" @click.prevent="actionEvent('getzip')">Скачать архивом</button>
+        <button v-if="fileSelectArr.length == 1" @click.prevent="actionEvent('rename')">Переименовать</button>
+        <button v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</button>
       </div>
     </transition>
     <b-table hover :items="files" :fields="fields">
@@ -32,7 +27,7 @@
       <template #cell(name)="data">
         <div class="rows dragfile" @contextmenu.prevent="contextMenu($event, data)" :data-file="data.item.name" draggable="true" 
           @dragstart="dragStartFile($event)" >
-          <span class="file_icon" v-html="fileExt(data.item.name)"></span>
+          <span class="file_icon" :inner-html.prop="data.item.name|icon()"></span>
           {{ data.item.originalName }}
         </div>
       </template>
@@ -49,7 +44,7 @@
       <template #cell(size)="data">
         <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
           <div class="download" @click="downloadFiles(data.item.name)">
-            Скачать {{ bytesToSize(data.item.size) }}
+            Скачать {{ data.item.size | size() }}
           </div>
         </div>
       </template>
@@ -57,16 +52,8 @@
 
     <context-menu :display="showContextMenu" :position="style">
       <li @click.prevent="actionEvent('notice')">Уведомить</li>
-      <li @click.prevent="actionEvent('rename')">Переименовать</li>
-      <li
-        v-if="
-          activeFolderArr &&
-          (activeFolderArr.id == user.id || activeFolderArr.ownerId == user.id)
-        "
-        @click.prevent="actionEvent('delete')"
-      >
-        Удалить
-      </li>
+      <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('rename')">Переименовать</li>
+      <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</li>
     </context-menu>
     <DragDroup v-show="activeFolderArr" />
   </div>
@@ -82,10 +69,11 @@ export default {
   name: "home",
   data() {
     return {
-      contextActiveItem: null,
+      activeFileItem: null, 
       showContextMenu: false,
       showLoader: false,
       fileActionPanel: false,
+      isOwner: false,
       fileSelectArr: [],
       style: {
         top: "",
@@ -151,41 +139,16 @@ export default {
     dragFiles.forEach(dragFile=>{
       dragFile.ondragstart = (event) => {
         event.preventDefault()
-        
         ipcRenderer.send('ondragstart', dragFile.dataset.file)
       }
     })
   },
   methods: {
-    ...mapActions(["deleteFiles", "getFiles", "downloadZIP"]),
-    // dragLeaveFile(event){
-    //   console.log('dragLeaveFile',event);
-    //   // event.target.ondragstart = (event) => {
-    //   //   event.preventDefault()
-    //   //   ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
-    //   // }
-    // },
-    // dragEnterFile(event){
-    //   console.log('dragEnterFile',event);
-    //   // event.target.ondragstart = (event) => {
-    //   //   event.preventDefault()
-    //   //   ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
-    //   // }
-    // },
+    ...mapActions(["deleteFiles", "getFiles", "downloadZIP", "renameFile"]),
     dragStartFile(event){
       // console.log('dragStartFile',event);
       // ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
     },
-    // dragEndFile(event){
-    //   console.log('dragEndFile',event);
-    //   // this.$refs.drag.ondragstart = (event) => {
-    //   //   event.preventDefault()
-    //   //   ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
-    //   // }
-    // },
-    // dropFile(event){
-    //   console.log('dropFile',event);
-    // },
     fileSelect(event) {
       if (event.target.checked) {
         this.fileSelectArr.push(event.target.value);
@@ -222,8 +185,38 @@ export default {
             console.log("no");
           });
       } else if (option == "rename") {
-        alert("rename");
-        this.fileActionPanel = false
+        let fileExt = this.activeFileItem.originalName.split('.').pop()
+        let fileName = this.activeFileItem.originalName.replace(`.${fileExt}`, '');
+        console.log(fileName);
+        smalltalk
+          .prompt(
+            "Переивеновать",
+            "Введите новое имя файла",
+            `${fileName}`,
+            {
+              buttons: {
+                ok: "Переименовать",
+                cancel: "Отмена",
+              },
+            }
+          )
+          .then((newFileName) => {
+            if (newFileName != fileName) {
+              newFileName = newFileName + "." + fileExt
+              this.renameFile({id: this.activeFileItem.id, originalName: newFileName, folderId: this.activeFileItem.folderId })
+              this.$message(
+                `Файл ${fileName} успешно переименован в ${newFileName}`,
+                "",
+                "success"
+              );
+
+              this.fileActionPanel = false
+            }
+          })
+          .catch(() => {
+            this.fileActionPanel = false
+          });
+        
       } else if (option == "delete") {
         smalltalk
           .confirm("Удаление", `Вы действительно хотите удалить файл(ы)?`, {
@@ -233,6 +226,7 @@ export default {
             },
           })
           .then(() => {
+            this.fileSelectArr.push(this.activeFileItem.id)
             this.delete();
             this.fileActionPanel = false
           })
@@ -242,7 +236,14 @@ export default {
       }
     },
     contextMenu(event, data) {
-      this.contextActiveItem = data;
+      // console.log(data.item.ownerId);
+
+      if(data.item.ownerId === this.user.id){
+        this.isOwner = true
+      }else{
+        this.isOwner = false
+      }
+      this.activeFileItem = data.item
       this.style.top = event.clientY;
       this.style.left = event.clientX;
       this.outsideClick(event.target);
@@ -269,63 +270,6 @@ export default {
         );
       }
     },
-    contextItemClick(option) {
-      if (option == "notice") {
-        console.log("notice");
-      } else if (option == "rename") {
-        smalltalk
-          .prompt(
-            "Переивеновать",
-            "Введите новое имя файла",
-            `${fileName[0]}`,
-            {
-              buttons: {
-                ok: "Переименовать",
-                cancel: "Отмена",
-              },
-            }
-          )
-          .then((newFileName) => {
-            if (newFileName != data.file) {
-              this.$message(
-                `Файл ${data.file} успешно переименован в ${
-                  newFileName + "." + fileExt
-                }`,
-                "",
-                "success"
-              );
-              this.getDirContent(this.$path.resolve(this.dirPath));
-            }
-          })
-          .catch(() => {
-            console.log("cancel");
-          });
-      } else if (option == "delete") {
-        smalltalk
-          .confirm(
-            "Удаление",
-            `Вы действительно хотите удалить файл '${data.file}'?`,
-            {
-              buttons: {
-                ok: "Удалить",
-                cancel: "Отмена",
-              },
-            }
-          )
-          .then(() => {
-            this.$message(`Файл '${data.file}' успешно удален!`, "", "success");
-          })
-          .catch(() => {
-            console.log("no");
-          });
-      }
-    },
-    bytesToSize(bytes) {
-      let sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-      if (bytes == 0) return "0 Byte";
-      let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-      return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
-    },
     chekedFiles(event) {
       let inputOne = document.querySelectorAll(".chekone");
       this.fileSelectArr = [];
@@ -342,51 +286,16 @@ export default {
       }
     },
     delete(){
-      let success = this.deleteFiles(this.fileSelectArr)
+      let fileParam = {
+        id: this.fileSelectArr,
+        folderId: this.activeFileItem.folderId
+      }
+      let success = this.deleteFiles(fileParam)
       if(success){
         this.$message(`Файл(ы) успешно удален(ы)!`, "", "success");
-        this.$refs.chekone.checked = false
-        this.getFiles(this.activeFolderArr.id)
+        // this.$refs.chekone.checked = false
       }
-    },
-    fileExt(filename) {
-      let ext = filename.split(".").pop();
-      let icon = "";
-      switch (ext.toLowerCase()) {
-        case "zip":
-        case "rar":
-        case "7zip":
-          icon = `<i class="fa fa-file-archive-o" style="color: #f7b731"></i>`;
-          break;
-        case "pdf":
-          icon = `<i class="fa fa-file-pdf-o" style="color: #eb3b5a"></i>`;
-          break;
-        case "doc":
-        case "docx":
-          icon = `<i class="fa fa-file-word-o" style="color: #3867d6"></i>`;
-          break;
-        case "xls":
-        case "xlsx":
-          icon = `<i class="fa fa-excel-o" style="color: #3867d6"></i>`;
-          break;
-        case "sql":
-          icon = `<i class="fa fa-database" style="color: #f7b731"></i>`;
-          break;
-        case "exe":
-          icon = `<i class="fa fa-cog" style="color: #808080"></i>`;
-          break;
-        case "gif":
-        case "png":
-        case "jpeg":
-        case "jpg":
-          icon = `<i class="fa fa-file-image-o" style="color: #00b894"></i>`;
-          break;
-        default:
-          icon = `<i class="fa fa-file" style="color: #808080"></i>`;
-          break;
-      }
-      return icon;
-    },
+    }
   },
   components: {
     ContextMenu,

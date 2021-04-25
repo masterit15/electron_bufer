@@ -18,6 +18,13 @@ Vue.use(messages)
 import dateFilter from './filter/date.filter'
 Vue.filter('date', dateFilter)
 
+import fileIcon from './filter/fileicon.filter'
+Vue.filter('icon', fileIcon)
+
+import fileSize from './filter/filesize.filter'
+Vue.filter('size', fileSize)
+
+
 var baseURL = ''
 
 if(process.env.NODE_ENV === 'production'){

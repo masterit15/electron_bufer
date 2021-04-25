@@ -77,7 +77,7 @@ export default {
       const sidebar = document.querySelector("#sidebar");
       const header = document.querySelector('#header')
       const main = document.querySelector('#main')
-      const drag = document.querySelector(".addfileform");
+      const drag = document.querySelector(".file_form.is_active");
       const body    = document.querySelector('body')
       resizer.addEventListener("mousedown", (event) => {
         resizer.classList.add('is_active')
@@ -98,15 +98,21 @@ export default {
         const size = `${e.x}px`;
         sidebar.style.flexBasis = size;
         header.style.cssText = `width: ${main.offsetWidth}px`
-        drag.style.cssText = `width: ${main.offsetWidth}px`
+        if(drag){
+          drag.style.cssText = `width: ${main.offsetWidth}px`
+        }
       }
       sidebar.style.flexBasis = "325px";
       header.style.cssText = `width: ${main.offsetWidth}px`
-      drag.style.cssText = `width: ${main.offsetWidth}px`
+      if(drag){
+        drag.style.cssText = `width: ${main.offsetWidth}px`
+      }
       window.addEventListener('resize', function(e){
         e.preventDefault();
         header.style.cssText = `width: ${main.offsetWidth}px`
-        drag.style.cssText = `width: ${main.offsetWidth}px`
+        if(drag){
+          drag.style.cssText = `width: ${main.offsetWidth}px`
+        }
       })
     }
   },
