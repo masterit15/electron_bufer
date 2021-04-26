@@ -9,6 +9,9 @@ export default {
     }
   },
   actions: {
+    SOCKET_updateChange({dispatch}, folderId){
+      dispatch('getFiles', folderId)
+    },
     getFiles({commit}, folderId = null){
       axios.get('file', {params: {
         folderId
@@ -20,7 +23,7 @@ export default {
         console.log('getFiles error', err)
       })
     },
-    async deleteFiles({state, dispatch}, fileParam = {}){
+    async deleteFiles({dispatch}, fileParam = {}){
       let res = await axios.delete('http://localhost:5050/api/file', { params: { id: fileParam.id } })
       dispatch('getFiles', fileParam.folderId)
       return res.data.success

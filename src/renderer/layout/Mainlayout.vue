@@ -4,7 +4,7 @@
       <app-sidebar></app-sidebar>
       <div id="resizer"></div>
       <app-header></app-header>
-      <main class="main-content mCustomScrollbar" id="main">
+      <main class="main-content" id="main">
         <transition name="slide-fade">
           <router-view />
         </transition>

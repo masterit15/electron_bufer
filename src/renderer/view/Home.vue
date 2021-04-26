@@ -1,5 +1,5 @@
 <template>
-  <div class="content nontextselect">
+  <div class="content nontextselect mCustomScrollbar">
     <transition name="slide-down">
       <div class="file_actions" v-show="fileActionPanel">
         <button v-if="fileSelectArr.length > 1" @click.prevent="actionEvent('getzip')">Скачать архивом</button>
@@ -44,7 +44,7 @@
       <template #cell(size)="data">
         <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
           <div class="download" @click="downloadFiles(data.item.name)">
-            Скачать {{ data.item.size | size() }}
+            <span class="file_size">{{ data.item.size | size() }}</span> Скачать
           </div>
         </div>
       </template>
@@ -122,6 +122,7 @@ export default {
     };
   },
   watch: {
+    
     fileSelectArr() {
       if (this.fileSelectArr.length > 0) {
         this.fileActionPanel = true;
@@ -187,7 +188,6 @@ export default {
       } else if (option == "rename") {
         let fileExt = this.activeFileItem.originalName.split('.').pop()
         let fileName = this.activeFileItem.originalName.replace(`.${fileExt}`, '');
-        console.log(fileName);
         smalltalk
           .prompt(
             "Переивеновать",
@@ -225,10 +225,11 @@ export default {
               cancel: "Отмена",
             },
           })
-          .then(() => {
+          .then(async() => {
             this.fileSelectArr.push(this.activeFileItem.id)
-            this.delete();
+            await this.delete();
             this.fileActionPanel = false
+            // this.fileSelectArr = []
           })
           .catch(() => {
             console.log("no");
@@ -285,12 +286,12 @@ export default {
         });
       }
     },
-    delete(){
+    async delete(){
       let fileParam = {
         id: this.fileSelectArr,
         folderId: this.activeFileItem.folderId
       }
-      let success = this.deleteFiles(fileParam)
+      let success = await this.deleteFiles(fileParam)
       if(success){
         this.$message(`Файл(ы) успешно удален(ы)!`, "", "success");
         // this.$refs.chekone.checked = false

@@ -73,6 +73,7 @@ io.on('connection', socket => {
       userId: data.id
     })
     io.sockets.in(data.room).emit('noticeUser', data.id);
+    io.sockets.in(data.room).emit('updateChange', data.folderId);
   })
 
   // срабатывает при прочтении уведомления
