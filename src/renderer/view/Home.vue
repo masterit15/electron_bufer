@@ -49,20 +49,17 @@
         </div>
       </template>
     </b-table>
-
     <context-menu :display="showContextMenu" :position="style">
       <li @click.prevent="actionEvent('notice')">Уведомить</li>
       <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('rename')">Переименовать</li>
       <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</li>
     </context-menu>
-    <DragDroup v-show="activeFolderArr" />
   </div>
 </template>
 
 <script>
 const { ipcRenderer } = require("electron");
 import ContextMenu from "@/components/ContextMenu";
-import DragDroup from "@/components/DragDroupUploader";
 import smalltalk from "smalltalk";
 import { mapActions, mapGetters } from "vuex";
 export default {
@@ -225,9 +222,10 @@ export default {
               cancel: "Отмена",
             },
           })
-          .then(async() => {
+          .then(() => {
+            console.log(this.fileSelectArr);
             this.fileSelectArr.push(this.activeFileItem.id)
-            await this.delete();
+            this.delete();
             this.fileActionPanel = false
             // this.fileSelectArr = []
           })
@@ -300,7 +298,6 @@ export default {
   },
   components: {
     ContextMenu,
-    DragDroup,
   },
 };
 </script>

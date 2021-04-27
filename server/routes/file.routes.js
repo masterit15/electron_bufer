@@ -88,6 +88,7 @@ router.put('/', async(req, res, next) => {
 
 router.delete('/', async (req, res, next) => {
   const { id } = req.query
+  console.log(id);
   try {
     const files = await File.findAll({where: {id}, raw:true})
     for(const file of files){

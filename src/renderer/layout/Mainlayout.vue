@@ -4,10 +4,11 @@
       <app-sidebar></app-sidebar>
       <div id="resizer"></div>
       <app-header></app-header>
-      <main class="main-content" id="main">
-        <transition name="slide-fade">
-          <router-view />
-        </transition>
+      <main id="main">
+          <transition name="slide-fade">
+            <router-view />
+          </transition>
+        <DragDroup v-show="activeFolderArr" />
       </main>
     </div>
   </div>
@@ -15,6 +16,7 @@
 <script>
 import AppHeader from "../components/Header";
 import AppSidebar from "../components/Sidebar";
+import DragDroup from "@/components/DragDroupUploader";
 import { mapActions, mapGetters } from "vuex";
 export default {
   sockets: {
@@ -119,6 +121,7 @@ export default {
   components: {
     AppHeader,
     AppSidebar,
+    DragDroup
   },
 };
 </script>
