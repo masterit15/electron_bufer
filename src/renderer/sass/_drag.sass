@@ -3,6 +3,26 @@
   &:hover
     text-decoration: underline
 .file
+  &_actions
+    position: absolute
+    bottom: 0
+    left: 0
+    width: 100%
+    display: flex
+    justify-content: flex-start
+    flex-direction: row
+    background-color: #fff
+    button
+      background-color: #fff
+      border: 2px solid tomato
+      border-radius: 5px
+      margin: 10px 15px
+      padding: 5px 15px
+      transition: all .3 ease
+      &:hover
+        background-color: tomato
+        color: #fff
+        transition: all .3 ease
   &_form
     position: fixed
     display: flex

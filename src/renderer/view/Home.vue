@@ -1,12 +1,6 @@
 <template>
+<div>
   <div class="content nontextselect mCustomScrollbar">
-    <transition name="slide-down">
-      <div class="file_actions" v-show="fileActionPanel">
-        <button v-if="fileSelectArr.length > 1" @click.prevent="actionEvent('getzip')">Скачать архивом</button>
-        <button v-if="fileSelectArr.length == 1" @click.prevent="actionEvent('rename')">Переименовать</button>
-        <button v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</button>
-      </div>
-    </transition>
     <b-table hover :items="files" :fields="fields">
       <template v-slot:head(check)="">
         <input
@@ -55,6 +49,14 @@
       <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</li>
     </context-menu>
   </div>
+  <transition name="slide-down">
+    <div class="file_actions" v-show="fileActionPanel">
+      <button v-if="fileSelectArr.length > 1" @click.prevent="actionEvent('getzip')">Скачать архивом</button>
+      <button v-if="fileSelectArr.length == 1" @click.prevent="actionEvent('rename')">Переименовать</button>
+      <button v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</button>
+    </div>
+  </transition>
+</div>
 </template>
 
 <script>
@@ -177,10 +179,11 @@ export default {
             setTimeout(()=>{
               ziplink.remove()
             }, 10000)
-            this.fileActionPanel = false
+            
           })
           .catch(() => {
             console.log("no");
+            this.fileActionPanel = false
           });
       } else if (option == "rename") {
         let fileExt = this.activeFileItem.originalName.split('.').pop()
@@ -223,20 +226,20 @@ export default {
             },
           })
           .then(() => {
-            console.log(this.fileSelectArr);
-            this.fileSelectArr.push(this.activeFileItem.id)
+            if(this.activeFileItem){
+              this.fileSelectArr.push(this.activeFileItem.id)
+            }
             this.delete();
             this.fileActionPanel = false
-            // this.fileSelectArr = []
+            this.fileSelectArr = []
           })
-          .catch(() => {
-            console.log("no");
+          .catch((err) => {
+            console.log("no", err);
+            this.fileActionPanel = false
           });
       }
     },
     contextMenu(event, data) {
-      // console.log(data.item.ownerId);
-
       if(data.item.ownerId === this.user.id){
         this.isOwner = true
       }else{
@@ -275,7 +278,7 @@ export default {
       if (event.target.checked) {
         inputOne.forEach((input) => {
           input.checked = true;
-          this.fileSelectArr.push(input.value);
+          this.fileSelectArr.push(Number(input.value));
         });
       } else {
         inputOne.forEach((input) => {
@@ -287,13 +290,19 @@ export default {
     async delete(){
       let fileParam = {
         id: this.fileSelectArr,
-        folderId: this.activeFileItem.folderId
+        folderId: this.activeFolderArr.id
       }
       let success = await this.deleteFiles(fileParam)
       if(success){
         this.$message(`Файл(ы) успешно удален(ы)!`, "", "success");
-        // this.$refs.chekone.checked = false
+        this.$refs.chekone.checked = false
+        let inputOne = document.querySelectorAll(".chekone");
+        inputOne.forEach((input) => {
+          input.checked = false;
+        });
+        this.fileActionPanel = false
       }
+      
     }
   },
   components: {

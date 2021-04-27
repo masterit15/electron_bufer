@@ -26,7 +26,7 @@ function createWindow() {
     visualEffectState: 'active',
     title: 'Буфер',
     titleBarStyle: 'default',
-    transparent: true, 
+    // transparent: true, 
     frame: false,
     webPreferences: {
       nodeIntegration: true,

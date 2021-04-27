@@ -18,10 +18,8 @@ const io = require('socket.io')(server, {
 io.on('connection', socket => {
   // срабатывает при входе
   socket.on('join_room', function(room){
-    // console.log('join_room',room);
     //Вот здесь ты можешь подключить сокет к нужной тебе комнате
     socket.join(room);
-    
     // socket.broadcast.to(room).emit('test', 'dsfsfsdfsfsdsdf')// отправит всем в этой комнате (кроме себя), что подключился новый пользователь
   })
 
@@ -104,8 +102,6 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     let thisUser = user.get(socket.id)
-    
-    console.log('thisUser', thisUser);
     if (thisUser) {
       User.update(
         { online: 'N' },

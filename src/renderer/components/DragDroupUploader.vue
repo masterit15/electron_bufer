@@ -50,6 +50,7 @@
   </div>
 </template>
 <script>
+const { ipcRenderer } = require("electron");
 import { mapActions, mapGetters } from "vuex";
 import axios from 'axios'
 export default {
@@ -90,7 +91,6 @@ export default {
   },
   mounted() {
     // console.log(this.$electron.remote.getCurrentWindow().setProgressBar(-1))
-    
     let holder = document.getElementById("main");
     holder.classList = "";
     // срабатывает, когда элемент будет перенесен на заданную зону (цель для переноса)
@@ -136,8 +136,34 @@ export default {
   methods: {
     ...mapActions(["getFiles"]),
     clickInput() {
-      let input = document.getElementById("files_input");
-      input.click();
+      // let input = document.getElementById("files_input");
+      // input.click();
+      // ipcRenderer.send('getfiles');
+      
+      // console.log();
+      
+      this.$electron.remote.dialog.showOpenDialog({properties: ['openFile', 'multiSelections']})
+      .then(res=>{
+        let files
+        res.filePaths.forEach(filepath=>{
+          let path = filepath
+          let name = filepath.split('\\').pop()
+          
+          let file = new File([], name)
+          var reader = new FileReader();
+          reader.onloadend = function() {
+              console.log(reader.result);
+          }
+
+          reader.readAsText(file);
+          // file.name = path
+          // file.path = name
+          console.log(reader);
+          this.files.push(file);
+        })
+        
+      })
+      
     },
     addFiles(e) {
       let files = e.target.files || e.dataTransfer.files;
