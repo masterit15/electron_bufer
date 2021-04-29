@@ -10,7 +10,9 @@ class Users {
   get(sid) {
     return this.users.find(user => user.sid === sid)
   }
-
+  getBiId(id){
+    return this.users.find(user => user.id === id)
+  }
   remove(sid) {
     return this.users = this.users.filter(user => user.sid !== sid)
   }

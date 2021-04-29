@@ -23,7 +23,7 @@
         <button class="btn file_btn" @click="uploadFiles">Загрузить</button>
       </div>
       <div id="drag-file" class="add_btn" @click="clickInput" :class="files.length > 0 ? 'is_active' : ''">
-        <input type="file" @change="addFiles" id="files_input" multiple />
+        <input type="file"  @change="addFiles" id="files_input" multiple />
         <span class="file_text">
           <h4>перетащите или кликните, что бы прикрепить файл(ы)</h4> 
           <i class="fa fa-upload"></i> 
@@ -51,6 +51,8 @@
 </template>
 <script>
 const { ipcRenderer } = require("electron");
+import fs from 'fs'
+import os from 'os'
 import { mapActions, mapGetters } from "vuex";
 import axios from 'axios'
 export default {
@@ -63,31 +65,31 @@ export default {
     };
   },
   watch: {
-    percent(){
-      let dashArray = document.querySelector('.xpath').style.strokeDasharray.split(',')[0]
-      let dashOffset = document.querySelector('.xpath')
-      dashOffset.style.strokeDashoffset = `${(dashArray-(dashArray*this.percentFull/100))}px`
-      if(this.percent == 0 || this.percent == 1){
-        this.$electron.remote.getCurrentWindow().setProgressBar(-1)
-        let that = this
-        function done() {
-          return new Promise(function(resolve, reject) {
-            setTimeout(()=>{
-              that.loader = false
-              resolve(that.loader)
-            }, 200)
-          });
-        }
-        done().then(res=>{
-          if(!res) this.files = []
-          this.getFiles(this.activeFolderArr.id)
-        })
-        
-      }else{
-        this.$electron.remote.getCurrentWindow().setProgressBar(this.percent)
-        this.loader = true
-      }
-    }
+    // percent(){
+    //   let dashArray = document.querySelector('.xpath').style.strokeDasharray.split(',')[0]
+    //   let dashOffset = document.querySelector('.xpath')
+    //   dashOffset.style.strokeDashoffset = `${(dashArray-(dashArray*this.percentFull/100))}px`
+    //   if(this.percent == 0 || this.percent == 1){
+    //     this.$electron.remote.getCurrentWindow().setProgressBar(-1)
+    //     let that = this
+    //     function done() {
+    //       return new Promise(function(resolve, reject) {
+    //         setTimeout(()=>{
+    //           that.loader = false
+    //           resolve(that.loader)
+    //         }, 200)
+    //       });
+    //     }
+    //     done().then(res=>{
+    //       console.log(res);
+    //       if(!res) this.files = []
+    //       this.getFiles(this.activeFolderArr.id)
+    //     })
+    //   }else{
+    //     this.$electron.remote.getCurrentWindow().setProgressBar(this.percent)
+    //     this.loader = true
+    //   }
+    // }
   },
   mounted() {
     // console.log(this.$electron.remote.getCurrentWindow().setProgressBar(-1))
@@ -136,34 +138,8 @@ export default {
   methods: {
     ...mapActions(["getFiles"]),
     clickInput() {
-      // let input = document.getElementById("files_input");
-      // input.click();
-      // ipcRenderer.send('getfiles');
-      
-      // console.log();
-      
-      this.$electron.remote.dialog.showOpenDialog({properties: ['openFile', 'multiSelections']})
-      .then(res=>{
-        let files
-        res.filePaths.forEach(filepath=>{
-          let path = filepath
-          let name = filepath.split('\\').pop()
-          
-          let file = new File([], name)
-          var reader = new FileReader();
-          reader.onloadend = function() {
-              console.log(reader.result);
-          }
-
-          reader.readAsText(file);
-          // file.name = path
-          // file.path = name
-          console.log(reader);
-          this.files.push(file);
-        })
-        
-      })
-      
+      let input = document.getElementById("files_input");
+      input.click();
     },
     addFiles(e) {
       let files = e.target.files || e.dataTransfer.files;
@@ -172,6 +148,30 @@ export default {
     },
     deleteFile(index) {
       this.files.splice(index, 1);
+    },
+    progressAnimation(){
+      let dashArray = document.querySelector('.xpath').style.strokeDasharray.split(',')[0]
+      let dashOffset = document.querySelector('.xpath')
+      dashOffset.style.strokeDashoffset = `${(dashArray-(dashArray*this.percentFull/100))}px`
+      if(this.percent == 0 || this.percent == 1){
+        this.$electron.remote.getCurrentWindow().setProgressBar(-1)
+        let that = this
+        function done() {
+          return new Promise(function(resolve, reject) {
+            setTimeout(()=>{
+              that.loader = false
+              resolve(that.loader)
+            }, 200)
+          });
+        }
+        done().then(res=>{
+          if(!res) this.files = []
+          this.getFiles(this.activeFolderArr.id)
+        })
+      }else{
+        this.$electron.remote.getCurrentWindow().setProgressBar(this.percent)
+        this.loader = true
+      }
     },
     async uploadFiles() {
       let data = new FormData()
@@ -183,10 +183,11 @@ export default {
         onUploadProgress: function(progressEvent) {
           that.percentFull = Math.round((progressEvent.loaded * 100) / progressEvent.total)
           that.percent = Math.round((progressEvent.loaded * 100) / progressEvent.total) / 100
+          that.progressAnimation()
         }
       }
       axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`, data, config)
-      .then(res=>{
+      .then(async res=>{
         if(res.data.success){
           let user = this.users.find(user=>user.id==this.activeFolderArr.userId)
           let data = {

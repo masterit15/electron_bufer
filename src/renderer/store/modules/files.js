@@ -9,8 +9,10 @@ export default {
     }
   },
   actions: {
-    SOCKET_updateChange({dispatch}, folderId){
-      dispatch('getFiles', folderId)
+    SOCKET_updateChange({state, dispatch}, userId){
+      let folder = state.folders.filter(folder=>Number(folder.userId) === Number(userId))
+      console.log(folder);
+      dispatch('getFiles', folder.id)
     },
     getFiles({commit}, folderId = null){
       axios.get('file', {params: {

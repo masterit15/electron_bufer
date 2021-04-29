@@ -131,17 +131,20 @@ router.get('/zip', async (req, res)=>{
   }
 	
 })
+function strFormate(txt){
+  return txt.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+}
 // функция добавления загруженных файлов в базу
 async function addFiles(ownerName,ownerId, folderId, files) {
   for (const file of files) {
     await File.create({
-      name: file.filename,
+      name: strFormate(file.filename),
       path: file.path,
       size: file.size,
       ownerId,
       ownerName, 
       mimeType: file.mimetype,
-      originalName: file.originalname,
+      originalName: strFormate(file.originalname),
       folderId,
       userId: ownerId
     })

@@ -24,7 +24,7 @@ io.on('connection', socket => {
   })
 
   socket.on('userJoined', async (data, cb) => {
-      // socket.join(data.room)
+      socket.join(data.room)
       if(!data.username || !data.login){
         return cb('Данные не коректны')
       }else{
@@ -36,10 +36,11 @@ io.on('connection', socket => {
           data.sid = socket.id
           data.room = data.departamentName
           // запихиваем пользователя в массив
+          console.log('userJoined');
           user.add(data)
-          // io.sockets.in(data.room).emit('noticeUser', data.id);
+          socket.emit('userIsOnline', data.id);
+          socket.broadcast.to(data.room).emit('noticeUser', data.id);
           socket.broadcast.to(data.room).emit('online', data.id)
-          io.emit('userIsOnline', data.id)
           cb({users: user.users, user: data})
         })
         .catch(err =>
@@ -56,6 +57,7 @@ io.on('connection', socket => {
     )
     .then(res =>{
       user.remove(socket.id)
+      console.log('userLeft', data.id);
       socket.broadcast.to(data.room).emit('offline', data.id)
     })
     .catch(err =>
@@ -70,8 +72,12 @@ io.on('connection', socket => {
       text: `${data.files}`,
       userId: data.id
     })
-    io.sockets.in(data.room).emit('noticeUser', data.id);
-    io.sockets.in(data.room).emit('updateChange', data.folderId);
+    let thisUser = user.getBiId(data.id)
+    console.log(thisUser);
+    if(thisUser){
+      socket.broadcast.to(thisUser.sid).emit('noticeUser', thisUser.id)
+      socket.broadcast.to(thisUser.sid).emit('updateChange', thisUser.id)
+    }
   })
 
   // срабатывает при прочтении уведомления
@@ -108,7 +114,7 @@ io.on('connection', socket => {
         { where: { id: thisUser.id } }
       )
       .then(res =>{
-        io.to(thisUser.room).emit('offline', thisUser.id)
+        socket.broadcast.to(thisUser.room).emit('offline', thisUser.id)
         user.remove(socket.id)
       })
       .catch(err =>

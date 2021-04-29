@@ -153,9 +153,8 @@ export default {
       if (event.target.checked) {
         this.fileSelectArr.push(event.target.value);
       } else {
-        this.fileSelectArr = this.fileSelectArr.filter(
-          (file) => file !== event.target.value
-        );
+        this.fileSelectArr = this.fileSelectArr.filter(file => Number(file) !== Number(event.target.value));
+        console.log(this.fileSelectArr );
       }
     },
     downloadFiles(file){
