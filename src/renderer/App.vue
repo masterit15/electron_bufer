@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <div class="window_border dragselect nontextselect">
+      <div class="window_border_folder" v-if="activeFolderArr">Текущая директория: {{activeFolderArr.name}}</div>
       <div class="window_border_action">
         <button class="window_border_action_btn_hide" @click="resizeApp('rollup')"></button>
         <button class="window_border_action_btn_size" @click="resizeApp('resize')"></button>
@@ -43,7 +44,10 @@ export default {
   methods: {
     resizeApp(param){
       let win = this.$electron.remote.getCurrentWindow()
-      if(param == "resize"){
+      if(param == 'close'){
+        // win.close()
+        ipcRenderer.send("quit-app");
+      }else if(param == "resize"){
         if (!win.isMaximized()) {
             win.maximize();          
         } else {
@@ -51,9 +55,6 @@ export default {
         }
       }else if(param = 'rollup'){
         win.minimize()
-      }else if(param == 'close'){
-        win.close()
-        // ipcRenderer.send("quit-app");
       }
     },
     
@@ -87,7 +88,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['user', 'activeFolderArr']),
     layout() {
       return (this.$route.meta.layout || "empty") + "-layout";
     }

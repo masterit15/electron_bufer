@@ -10,6 +10,8 @@ import store from './store'
 import Avatar from 'vue-avatar'
 import VueSocketIO from 'vue-socket.io'
 import vClickOutside from 'v-click-outside'
+import inViewportDirective from 'vue-in-viewport-directive'
+Vue.directive('in-viewport', inViewportDirective)
 
 Vue.use(vClickOutside)
 import messages from './plugins/messages'
@@ -53,10 +55,6 @@ if (localStorage.user) {
   const token = JSON.parse(localStorage.user).token
   Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
-window.console.log
-window.$ = window.jQuery = require('jquery');
-import 'jquery-mousewheel'
-import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min'
 
 Vue.prototype.$smalltalk = smalltalk
 Vue.config.productionTip = false

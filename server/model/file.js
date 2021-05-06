@@ -15,6 +15,7 @@ const File = sequelize.define('file', {
     mimeType: { type: Sequelize.STRING, allowNull: false},
     date: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
     originalName: { type: Sequelize.STRING, allowNull: false},
+    status: {type: Sequelize.ENUM, values:['not_viewed','viewed'], defaultValue: 'not_viewed'},
 
   })
 

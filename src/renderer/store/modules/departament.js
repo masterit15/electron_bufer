@@ -1,11 +1,15 @@
 import axios from 'axios'
 export default {
   state: {
-    departaments: []
+    departaments: [],
+    activeDepartament: null
   },
   mutations: {
     setDepartaments(state, departaments){
       state.departaments = departaments
+    },
+    setActiveDepartament(state, departament){
+      state.activeDepartament = departament
     }
   },
   actions: {
@@ -23,6 +27,7 @@ export default {
     }
   },
   getters: {
-    departaments: state => state.departaments
+    departaments: state => state.departaments,
+    activeDepartament: state => state.activeDepartament
   }
 }

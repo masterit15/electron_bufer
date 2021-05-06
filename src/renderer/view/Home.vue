@@ -1,7 +1,7 @@
 <template>
 <div>
-  <div class="content nontextselect mCustomScrollbar">
-    <b-table hover :items="files" :fields="fields">
+  <div class="content nontextselect">
+    <b-table hover :items="files" :fields="fields" tbody-tr-class="file_row" tbody-class="is_body" sticky-header="100vh">
       <template v-slot:head(check)="">
         <input
           @change="chekedFiles($event)"
@@ -17,6 +17,9 @@
           type="checkbox"
           :value="data.item.id"
         />
+        <span class="file_status" v-if="activeFolderArr.userId !== user.id">
+          <i class="fa" :class="data.item.status == 'not_viewed' ? 'fa-eye-slash':'fa-eye'" v-b-tooltip.hover :title="data.item.status == 'not_viewed' ? 'Файл не просмотрен': 'Файл просмотрен'"></i>
+        </span>
       </template>
       <template #cell(name)="data">
         <div class="rows dragfile" @contextmenu.prevent="contextMenu($event, data)" :data-file="data.item.name" draggable="true" 
@@ -74,6 +77,7 @@ export default {
       fileActionPanel: false,
       isOwner: false,
       fileSelectArr: [],
+      zipFiles: '',
       style: {
         top: "",
         left: "",
@@ -121,7 +125,6 @@ export default {
     };
   },
   watch: {
-    
     fileSelectArr() {
       if (this.fileSelectArr.length > 0) {
         this.fileActionPanel = true;
@@ -129,22 +132,49 @@ export default {
         this.fileActionPanel = false;
         this.$refs.chekone.checked = false;
       }
-    },
+    }
   },
   computed: {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   mounted() {
     let dragFiles = document.querySelectorAll('.dragfile')
+    // let sticky = document.querySelector('.sticky')
     dragFiles.forEach(dragFile=>{
       dragFile.ondragstart = (event) => {
         event.preventDefault()
         ipcRenderer.send('ondragstart', dragFile.dataset.file)
       }
     })
+    this.getAllFilesRow()
+    
   },
   methods: {
-    ...mapActions(["deleteFiles", "getFiles", "downloadZIP", "renameFile"]),
+    ...mapActions(["deleteFiles", "getFiles", "downloadZIP", "deleteZIP", "renameFile"]),
+    getAllFilesRow(){
+      if(this.user.id === this.activeFolderArr.userId){
+        let files = document.querySelectorAll('.file_row')
+        let content = document.querySelectorAll('.content')
+        files.forEach(file=>{
+          if(this.isVisible(file, content) && !this.hasClass(file, 'is_viewed')){
+            this.$socket.emit("fileStatus", {...this.activeFolderArr ,fileId: file.firstChild.firstChild.value})
+            // that.$store.commit('setFilesChange', file.firstChild.firstChild.value)
+            file.classList.add('is_viewed')
+          }
+        })
+      }
+    },
+    hasClass(el, clss) {
+      return el.className && new RegExp("(^|\\s)" + clss + "(\\s|$)").test(el.className) == '' ? true : false;
+    },
+    isVisible(tag, parent) {
+      let t = tag;
+      let w = parent;
+      let wt = w.scrollTop + 80
+      let tt = t.offsetTop;
+      let tb = tt + t.offsetHeight;
+      return ((tb <= wt + w.offsetHeight) && (tt >= wt));
+    },
     dragStartFile(event){
       // console.log('dragStartFile',event);
       // ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
@@ -154,7 +184,6 @@ export default {
         this.fileSelectArr.push(event.target.value);
       } else {
         this.fileSelectArr = this.fileSelectArr.filter(file => Number(file) !== Number(event.target.value));
-        console.log(this.fileSelectArr );
       }
     },
     downloadFiles(file){
@@ -162,9 +191,9 @@ export default {
     },
     async actionEvent(option) {
       if (option == "getzip") {
-        let res = await this.downloadZIP(this.fileSelectArr)
+        this.zipFiles = await this.downloadZIP(this.fileSelectArr)
         smalltalk
-          .confirm("Архивация", `${res.file}`, {
+          .confirm("Архивация", `${this.zipFiles}`, {
             buttons: {
               ok: "Скачать",
               cancel: "Отмена",
@@ -172,17 +201,24 @@ export default {
           })
           .then(() => {
             let body = document.querySelector('body')
-            body.insertAdjacentHTML('beforeend', `<a class="ziplink" href="${res.file}" download>${res.file}</a>`);
+            this.$message(
+                `Файлы успешно заархивированы`,
+                "Уведомление об архивации",
+                "success"
+              );
+            body.insertAdjacentHTML('beforeend', `<a class="ziplink" href="${this.zipFiles}" download>${res.file}</a>`);
             let ziplink = document.querySelector('.ziplink')
             ziplink.click()
+
             setTimeout(()=>{
               ziplink.remove()
             }, 10000)
             
           })
           .catch(() => {
-            console.log("no");
-            this.fileActionPanel = false
+              let zipFileName = this.zipFiles.split('/').pop()
+              this.deleteZIP(zipFileName)
+              this.fileActionPanel = false
           });
       } else if (option == "rename") {
         let fileExt = this.activeFileItem.originalName.split('.').pop()
@@ -203,16 +239,16 @@ export default {
             if (newFileName != fileName) {
               newFileName = newFileName + "." + fileExt
               this.renameFile({id: this.activeFileItem.id, originalName: newFileName, folderId: this.activeFileItem.folderId })
+              this.$socket.emit("updateChange", this.user)
               this.$message(
                 `Файл ${fileName} успешно переименован в ${newFileName}`,
-                "",
+                "Уведомление об изменении",
                 "success"
               );
-
               this.fileActionPanel = false
             }
           })
-          .catch(() => {
+          .catch((err) => {
             this.fileActionPanel = false
           });
         
@@ -230,10 +266,16 @@ export default {
             }
             this.delete();
             this.fileActionPanel = false
+            this.$socket.emit("updateChange", this.user, data=>{
+              // this.$message(
+              //   `Файл(ы) успешно удалены`,
+              //   "Уведомление об удалении",
+              //   "success"
+              // );
+            })
             this.fileSelectArr = []
           })
           .catch((err) => {
-            console.log("no", err);
             this.fileActionPanel = false
           });
       }

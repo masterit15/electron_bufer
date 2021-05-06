@@ -13,10 +13,10 @@
         </div>
       </div>
       <div class="form-field">
-        <input required type="text" @input="searchDepartament" v-model="udepartament" id="udepartament" @click="searchDepartament">
+        <input required type="text" v-model="udepartament" id="udepartament">
         <label class="form-field-label" for="udepartament">Выберите свой департамент</label>
-        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown mCustomScrollbar" v-click-outside="closeDropdown" data-mcs-theme="dark" ref="dropdown" v-show="deparr.length > 0">
-          <li v-for="departament in deparr" :key="departament.id" @click="clickItem(departament)">{{departament.name}}</li>
+        <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown" v-click-outside="closeDropdown">
+          <li v-for="departament in departamentList" :key="departament.id" @click="clickItem(departament)">{{departament.name}}</li>
         </ul>
       </div>
       <div class="form-field">
@@ -42,8 +42,7 @@ if(os.type() == 'Windows_NT'){
 }else if(os.type() == 'Darwin'){
   userNetwork = network.en1[1]
 }else{
-
-
+  userNetwork = {}
 }
 const username = userInfo.username;
 export default {
@@ -60,10 +59,14 @@ export default {
       searchdep: ''
     }
   },
-  async created(){
-    let res = await this.getDepartaments()
-    this.deparr = res.departaments
-    // this.$store.commit('setDepartaments', res.departaments)
+  watch: {
+    udepartament(){
+      if(this.udepartament.length > 0){
+        this.openDropdown = true
+      }else{
+        this.openDropdown = false
+      }
+    }
   },
   computed: {
     ...mapGetters(['departaments', 'user']),
@@ -74,17 +77,10 @@ export default {
     }
   },
   mounted(){
-    $('.mCustomScrollbar').mCustomScrollbar({
-      autoHideScrollbar: true,
-      scrollbarPosition: "inside"
-    })
     this.bodyFixed()
   },
   methods: {
     ...mapActions(['getDepartaments', 'Auth']),
-    async searchDepartament(){
-      this.openDropdown = true
-    },
     async authBufer(){
       let userData = {
         login: this.ulogin,
@@ -122,7 +118,7 @@ export default {
       }
     },
     closeDropdown(event){
-      if(!event){
+      if(event.target){
         this.openDropdown = false
       }
     },
