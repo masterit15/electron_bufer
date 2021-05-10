@@ -1,7 +1,7 @@
 <template>
 <div>
   <div class="content nontextselect">
-    <b-table hover :items="files" :fields="fields" tbody-tr-class="file_row" tbody-class="is_body" sticky-header="100vh">
+    <b-table hover responsive :items="files" :fields="fields" tbody-tr-class="file_row" tbody-class="is_body" sticky-header="100vh">
       <template v-slot:head(check)="">
         <input
           @change="chekedFiles($event)"
