@@ -58,9 +58,8 @@ export default {
       return res.data
     },
     async renameFile({dispatch}, fileParam = {}){
-      console.log(fileParam);
       let res = await axios.put('http://localhost:5050/api/file', { ...fileParam })
-      dispatch('getFiles', fileParam.folderId)
+      // dispatch('getFiles', fileParam.folderId)
       return res.data.success
     }
   },

@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const config = require('config')
 const sequelize = require('./db')
 const logger = require('./loger')
-
+require('./cron')
 
 app.use(express.json({ extended: true }))
 app.use(cors())

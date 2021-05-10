@@ -77,11 +77,10 @@ io.on('connection', socket => {
       socket.broadcast.to(thisUser.sid).emit('updateChange', thisUser.id)
     }
   })
-  socket.on('updateChange', (data, cb) => {
+  socket.on('updateChange', data => {
     let thisUser = user.getBiId(data.id)
     if(thisUser){
-      io.to(thisUser.room).emit('updateChange', thisUser.id);
-      return cb({thisUser})
+      io.to(thisUser.room).emit('updateChange', data.activeFolderUserId);
     }
   })
   //

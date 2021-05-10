@@ -33,16 +33,34 @@
 </template>
 <script>
 import {mapActions, mapGetters} from 'vuex'
+import smalltalk from "smalltalk";
 import os from 'os'
 const userInfo = os.userInfo()
 const network = os.networkInterfaces()
 var userNetwork = []
 if(os.type() == 'Windows_NT'){
-  userNetwork = network.Ethernet[1]
+  userNetwork = network.Ethernet ? network.Ethernet[1] : 'notwork'
 }else if(os.type() == 'Darwin'){
-  userNetwork = network.en1[1]
+  userNetwork = network.en1 ? network.en1[1] : 'notwork'
 }else{
   userNetwork = {}
+}
+if(userNetwork == 'notwork'){
+  const { remote, ipcRenderer } = require('electron');
+  smalltalk
+    .confirm("Сетевое подключения", `Нет сетевого подключения`, {
+      buttons: {
+        ok: "Перезагрузить",
+        cancel: "Закрыть",
+      },
+    })
+    .then(() => {
+      console.log("Перезагрузить");
+      remote.getCurrentWindow().reload()
+    })
+    .catch(() => {
+      ipcRenderer.send("quit-app");
+    });
 }
 const username = userInfo.username;
 export default {
