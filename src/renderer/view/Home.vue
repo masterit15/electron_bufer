@@ -1,7 +1,7 @@
 <template>
 <div>
-  <div class="content nontextselect mCustomScrollbar">
-    <b-table hover :items="files" :fields="fields">
+  <div class="content nontextselect">
+    <b-table hover responsive :items="files" :fields="fields" tbody-tr-class="file_row" tbody-class="is_body" sticky-header="100vh">
       <template v-slot:head(check)="">
         <input
           @change="chekedFiles($event)"
@@ -17,6 +17,9 @@
           type="checkbox"
           :value="data.item.id"
         />
+        <span class="file_status" v-if="activeFolderArr.userId !== user.id">
+          <i class="fa" :class="data.item.status == 'not_viewed' ? 'fa-eye-slash':'fa-eye'" v-b-tooltip.hover :title="data.item.status == 'not_viewed' ? 'Файл не просмотрен': 'Файл просмотрен'"></i>
+        </span>
       </template>
       <template #cell(name)="data">
         <div class="rows dragfile" @contextmenu.prevent="contextMenu($event, data)" :data-file="data.item.name" draggable="true" 
@@ -27,7 +30,8 @@
       </template>
       <template #cell(createDate)="data">
         <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-          {{ data.item.date | date("datetime") }}
+          <!-- {{ data.item.date | date("datetime") }} -->
+          {{ data.item.date}}
         </div>
       </template>
       <template #cell(ownerName)="data">
@@ -43,8 +47,8 @@
         </div>
       </template>
     </b-table>
-    <context-menu :display="showContextMenu" :position="style">
-      <li @click.prevent="actionEvent('notice')">Уведомить</li>
+    <context-menu :display="showContextMenu" :position="style" ref="ctxmenu">
+      <li v-if="fileSelectArr.length > 1" @click.prevent="actionEvent('getzip')">Скачать архивом</li>
       <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('rename')">Переименовать</li>
       <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</li>
     </context-menu>
@@ -52,7 +56,7 @@
   <transition name="slide-down">
     <div class="file_actions" v-show="fileActionPanel">
       <button v-if="fileSelectArr.length > 1" @click.prevent="actionEvent('getzip')">Скачать архивом</button>
-      <button v-if="fileSelectArr.length == 1" @click.prevent="actionEvent('rename')">Переименовать</button>
+      <button v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('rename')">Переименовать</button>
       <button v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</button>
     </div>
   </transition>
@@ -74,6 +78,8 @@ export default {
       fileActionPanel: false,
       isOwner: false,
       fileSelectArr: [],
+      zipFiles: '',
+      menuState: 0,
       style: {
         top: "",
         left: "",
@@ -121,7 +127,10 @@ export default {
     };
   },
   watch: {
-    
+    activeFolderArr(){
+      this.$refs.chekone.checked = false;
+      this.fileActionPanel = false
+    },
     fileSelectArr() {
       if (this.fileSelectArr.length > 0) {
         this.fileActionPanel = true;
@@ -129,7 +138,7 @@ export default {
         this.fileActionPanel = false;
         this.$refs.chekone.checked = false;
       }
-    },
+    }
   },
   computed: {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
@@ -142,11 +151,37 @@ export default {
         ipcRenderer.send('ondragstart', dragFile.dataset.file)
       }
     })
+    this.getAllFilesRow()
+    this.contextinit()
   },
   methods: {
-    ...mapActions(["deleteFiles", "getFiles", "downloadZIP", "renameFile"]),
+    ...mapActions(["deleteFiles", "getFiles", "downloadZIP", "deleteZIP", "renameFile"]),
+    getAllFilesRow(){
+      if(this.user.id === this.activeFolderArr.userId){
+        let files = document.querySelectorAll('.file_row')
+        let content = document.querySelectorAll('.content')
+        files.forEach(file=>{
+          if(this.isVisible(file, content) && !this.hasClass(file, 'is_viewed')){
+            console.log('isVisible');
+            this.$socket.emit("fileStatus", {...this.activeFolderArr ,fileId: file.firstChild.firstChild.value})
+            // that.$store.commit('setFilesChange', file.firstChild.firstChild.value)
+            file.classList.add('is_viewed')
+          }
+        })
+      }
+    },
+    hasClass(el, clss) {
+      return el.className && new RegExp("(^|\\s)" + clss + "(\\s|$)").test(el.className) == '' ? true : false;
+    },
+    isVisible(tag, parent) {
+      let t = tag;
+      let w = parent;
+      let wt = w.scrollTop + 80
+      let tt = t.offsetTop;
+      let tb = tt + t.offsetHeight;
+      return ((tb <= wt + w.offsetHeight) && (tt >= wt));
+    },
     dragStartFile(event){
-      // console.log('dragStartFile',event);
       // ipcRenderer.send('ondragstart', '/absolute/path/to/the/item')
     },
     fileSelect(event) {
@@ -154,7 +189,6 @@ export default {
         this.fileSelectArr.push(event.target.value);
       } else {
         this.fileSelectArr = this.fileSelectArr.filter(file => Number(file) !== Number(event.target.value));
-        console.log(this.fileSelectArr );
       }
     },
     downloadFiles(file){
@@ -162,9 +196,9 @@ export default {
     },
     async actionEvent(option) {
       if (option == "getzip") {
-        let res = await this.downloadZIP(this.fileSelectArr)
+        this.zipFiles = await this.downloadZIP(this.fileSelectArr)
         smalltalk
-          .confirm("Архивация", `${res.file}`, {
+          .confirm("Архивация", `${this.zipFiles}`, {
             buttons: {
               ok: "Скачать",
               cancel: "Отмена",
@@ -172,17 +206,25 @@ export default {
           })
           .then(() => {
             let body = document.querySelector('body')
-            body.insertAdjacentHTML('beforeend', `<a class="ziplink" href="${res.file}" download>${res.file}</a>`);
+            this.$message(
+                `Файлы успешно заархивированы`,
+                "Уведомление об архивации",
+                "success"
+              );
+            body.insertAdjacentHTML('beforeend', `<a class="ziplink" href="${this.zipFiles}" download>${res.file}</a>`);
             let ziplink = document.querySelector('.ziplink')
             ziplink.click()
+
             setTimeout(()=>{
               ziplink.remove()
             }, 10000)
-            
+            this.toggleMenuOff();
           })
           .catch(() => {
-            console.log("no");
-            this.fileActionPanel = false
+              let zipFileName = this.zipFiles.split('/').pop()
+              this.deleteZIP(zipFileName)
+              this.fileActionPanel = false
+              this.toggleMenuOff();
           });
       } else if (option == "rename") {
         let fileExt = this.activeFileItem.originalName.split('.').pop()
@@ -202,18 +244,21 @@ export default {
           .then((newFileName) => {
             if (newFileName != fileName) {
               newFileName = newFileName + "." + fileExt
-              this.renameFile({id: this.activeFileItem.id, originalName: newFileName, folderId: this.activeFileItem.folderId })
-              this.$message(
-                `Файл ${fileName} успешно переименован в ${newFileName}`,
-                "",
-                "success"
-              );
-
-              this.fileActionPanel = false
+              if(this.renameFile({id: this.activeFileItem.id, originalName: newFileName, folderId: this.activeFileItem.folderId })){
+                this.$socket.emit("updateChange", {...this.user, activeFolderUserId: this.activeFolderArr.userId})
+                this.$message(
+                  `Файл ${fileName} успешно переименован в ${newFileName}`,
+                  "Уведомление об изменении",
+                  "success"
+                );
+                this.fileActionPanel = false
+                this.toggleMenuOff();
+              }
             }
           })
-          .catch(() => {
+          .catch((err) => {
             this.fileActionPanel = false
+            this.toggleMenuOff();
           });
         
       } else if (option == "delete") {
@@ -230,11 +275,13 @@ export default {
             }
             this.delete();
             this.fileActionPanel = false
+            this.$socket.emit("updateChange", {...this.user, activeFolderUserId: this.activeFolderArr.userId})
             this.fileSelectArr = []
+            this.toggleMenuOff();
           })
           .catch((err) => {
-            console.log("no", err);
             this.fileActionPanel = false
+            this.toggleMenuOff();
           });
       }
     },
@@ -245,16 +292,94 @@ export default {
         this.isOwner = false
       }
       this.activeFileItem = data.item
-      this.style.top = event.clientY;
-      this.style.left = event.clientX;
+      let coord = this.positionMenu(event)
+      this.toggleMenuOn()
+      this.style.top = coord.top;
+      this.style.left = coord.left;
       this.outsideClick(event.target);
-      this.showContextMenu = true;
     },
+    getPosition(e) {
+      let posx = 0;
+      let posy = 0;
+      if (!e) e = window.event
+      if (e.pageX || e.pageY) {
+        posx = e.pageX;
+        posy = e.pageY;
+      } else if (e.clientX || e.clientY) {
+        posx =
+          e.clientX +
+          document.body.scrollLeft +
+          document.documentElement.scrollLeft;
+        posy =
+          e.clientY +
+          document.body.scrollTop +
+          document.documentElement.scrollTop;
+      }
+      return {
+        x: posx,
+        y: posy,
+      };
+    },
+    positionMenu(e) {
+      let clickCoords = this.getPosition(e);
+      let clickCoordsX = clickCoords.x;
+      let clickCoordsY = clickCoords.y;
+      console.log(this.$refs.ctxmenu.$el);
+      let menuWidth = 180 + 15;
+      let menuHeight = 135 + 15;
+      let windowWidth = window.innerWidth;
+      let windowHeight = window.innerHeight;
+      let top = ''
+      let left = ''
+
+      if ((windowWidth - clickCoordsX) < menuWidth) {
+        left = windowWidth - menuWidth + "px";
+      } else {
+        left = clickCoordsX + "px";
+      }
+
+      if ((windowHeight - clickCoordsY) < menuHeight) {
+        top = windowHeight - menuHeight + "px";
+      } else {
+        top = clickCoordsY + "px";
+      }
+      return {top,left}
+    },
+    contextinit() {
+      this.keyupListener();
+      this.resizeListener();
+    },
+    keyupListener() {
+      let that = this
+      window.onkeyup = function (e) {
+        if (e.keyCode === 27) {
+          that.toggleMenuOff();
+        }
+      }
+    },
+    resizeListener() {
+      let that = this
+      window.onresize = function (e) {
+        that.toggleMenuOff();
+      };
+    },
+    toggleMenuOn() {
+      if (this.menuState !== 1) {
+        this.menuState = 1;
+        this.showContextMenu = true
+      }
+    },
+    toggleMenuOff() {
+      if (this.menuState !== 0) {
+        this.menuState = 0;
+        this.showContextMenu = false
+      }
+    }, 
     outsideClick(elem) {
       let that = this;
       function outsideClickListener(event) {
         if (!elem.contains(event.target) && isVisible(elem)) {
-          that.showContextMenu = false;
+          that.toggleMenuOff();
           document.removeEventListener("click", outsideClickListener);
         }
       }

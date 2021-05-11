@@ -1,6 +1,7 @@
 const app = require('express')()
 const server = require('http').createServer(app)
 const User = require('./model/user')
+const File = require('./model/file')
 const Notice = require('./model/notice')
 const Users = require('./onlineUsers')
 const user = new Users()
@@ -36,7 +37,6 @@ io.on('connection', socket => {
           data.sid = socket.id
           data.room = data.departamentName
           // запихиваем пользователя в массив
-          console.log('userJoined');
           user.add(data)
           socket.emit('userIsOnline', data.id);
           socket.broadcast.to(data.room).emit('noticeUser', data.id);
@@ -57,7 +57,6 @@ io.on('connection', socket => {
     )
     .then(res =>{
       user.remove(socket.id)
-      console.log('userLeft', data.id);
       socket.broadcast.to(data.room).emit('offline', data.id)
     })
     .catch(err =>
@@ -73,21 +72,41 @@ io.on('connection', socket => {
       userId: data.id
     })
     let thisUser = user.getBiId(data.id)
-    console.log(thisUser);
     if(thisUser){
       socket.broadcast.to(thisUser.sid).emit('noticeUser', thisUser.id)
       socket.broadcast.to(thisUser.sid).emit('updateChange', thisUser.id)
     }
   })
-
+  socket.on('updateChange', data => {
+    let thisUser = user.getBiId(data.id)
+    if(thisUser){
+      io.to(thisUser.room).emit('updateChange', data.activeFolderUserId);
+    }
+  })
+  //
+  socket.on('fileStatus', data=> {
+    File.update(
+      { status: 'viewed' },
+      { where: { id: data.fileId } }
+    )
+    .then(files =>{
+      let thisUser = user.getBiId(data.userId)
+      if(thisUser){
+        io.to(thisUser.room).emit('updateChange', thisUser.id);
+      }
+    })
+    .catch(err =>
+      console.log('userLeft err:', err)
+    )
+  })
   // срабатывает при прочтении уведомления
   socket.on('noticeRead', data=> {
     Notice.update(
       { status: 'readit' },
-      { where: { id: data.noticeId } }
+      { where: { id: data.msId } }
     )
     .then(notices =>{
-      socket.emit('noticeUser', data.userId)
+      socket.emit('noticeUser', data.id)
     })
     .catch(err =>
       console.log('userLeft err:', err)

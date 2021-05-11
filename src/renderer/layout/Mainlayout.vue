@@ -1,22 +1,22 @@
 <template>
   <div id="wrapper">
     <div id="container">
-      <app-sidebar></app-sidebar>
+      <AppSidebar/>
       <div id="resizer"></div>
-      <app-header></app-header>
       <main id="main">
           <transition name="slide-fade">
             <router-view />
           </transition>
-        <DragDroup v-show="activeFolderArr" />
+          <Uploader v-show="inputFiles.length > 0"/>
       </main>
+      <AppRightBar/>
     </div>
   </div>
 </template>
 <script>
-import AppHeader from "../components/Header";
+import AppRightBar from "../components/Header";
 import AppSidebar from "../components/Sidebar";
-import DragDroup from "@/components/DragDroupUploader";
+import Uploader from "../components/FileUploader";
 import { mapActions, mapGetters } from "vuex";
 export default {
   sockets: {
@@ -58,7 +58,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["users", "files", "user", "activeFolderArr", "notimessage"]),
+    ...mapGetters(["users", "files", "user", "activeFolderArr", "notimessage", "inputFiles"]),
     noticeMessages() {
       return this.notimessage || "";
     },
@@ -66,18 +66,51 @@ export default {
   mounted() {
     this.resizeContent()
     let win = this.$electron.remote.getCurrentWindow();
-    $(".mCustomScrollbar").mCustomScrollbar({
-      autoHideScrollbar: true,
-      scrollbarPosition: "inside",
-    });
-    
+    let holder = document.getElementById("main");
+    holder.classList = "";
+    // срабатывает, когда элемент будет перенесен на заданную зону (цель для переноса)
+    holder.ondragenter = () => {
+      holder.classList = "active";
+      return false;
+    };
+    // срабатывает, когда элемент перемещают над допустимой зоной для переноса
+    holder.ondragover = () => {
+      // console.log(holder)
+      return false;
+    };
+    // срабатывает в начале операции перетаскивания элемента
+    holder.ondragstart = () => {
+      return false;
+    };
+    // срабатывает, когда элемент выходит из допустимой зоны для переноса
+    holder.ondragleave = () => {
+      holder.classList = "";
+      return false;
+    };
+    // срабатывает, когда элемент перетаскивается
+    holder.ondrag = () => {
+      return false;
+    };
+    // срабатывает после того, как перетаскиваемый элемент опустился на объект перетаскивания
+    holder.ondrop = async (e) => {
+      e.preventDefault();
+      for (let f of e.dataTransfer.files) {
+        this.$store.commit('setInputFiles', f)
+        holder.classList = "";
+      }
+      return false;
+    };
+    // рабатывает, когда пользователь закончил перетаскивание элемента
+    holder.ondragend = () => {
+      return false;
+    };
   },
   methods: {
     ...mapActions(["getDepartaments", "getUsers"]),
      resizeContent(){
       const resizer = document.querySelector("#resizer");
       const sidebar = document.querySelector("#sidebar");
-      const header = document.querySelector('#header')
+      // const header = document.querySelector('#header')
       const main = document.querySelector('#main')
       const drag = document.querySelector(".file_form.is_active");
       const body    = document.querySelector('body')
@@ -99,19 +132,19 @@ export default {
       function resize(e) {
         const size = `${e.x}px`;
         sidebar.style.flexBasis = size;
-        header.style.cssText = `width: ${main.offsetWidth}px`
+        // header.style.cssText = `width: ${main.offsetWidth}px`
         if(drag){
           drag.style.cssText = `width: ${main.offsetWidth}px`
         }
       }
       sidebar.style.flexBasis = "325px";
-      header.style.cssText = `width: ${main.offsetWidth}px`
+      // header.style.cssText = `width: ${main.offsetWidth}px`
       if(drag){
         drag.style.cssText = `width: ${main.offsetWidth}px`
       }
       window.addEventListener('resize', function(e){
         e.preventDefault();
-        header.style.cssText = `width: ${main.offsetWidth}px`
+        // header.style.cssText = `width: ${main.offsetWidth}px`
         if(drag){
           drag.style.cssText = `width: ${main.offsetWidth}px`
         }
@@ -119,9 +152,9 @@ export default {
     }
   },
   components: {
-    AppHeader,
+    AppRightBar,
     AppSidebar,
-    DragDroup
+    Uploader
   },
 };
 </script>

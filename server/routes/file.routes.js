@@ -88,18 +88,18 @@ router.put('/', async(req, res, next) => {
 
 router.delete('/', async (req, res, next) => {
   const { id } = req.query
-  console.log(id);
   try {
     const files = await File.findAll({where: {id}, raw:true})
-    for(const file of files){
-      fs.unlinkSync(file.path);
-    }
+
     const idArr = id.map(Number)
     let delres = await File.destroy({where: { id: idArr }})
     if(delres > 0){
       res.status(200).json({
         success: true,
       });
+    }
+    for(const file of files){
+      fs.unlinkSync(file.path);
     }
   } catch (error) {
     res.status(404).json({
@@ -131,6 +131,21 @@ router.get('/zip', async (req, res)=>{
   }
 	
 })
+
+router.delete('/zip', async (req, res)=>{
+  const { zipFileName } = req.query
+  try {
+    const zipFile = `./uploads/${zipFileName}`
+    fs.unlinkSync(zipFile);
+    res.json({
+      success: true,
+    })
+  } catch (error) {
+    res.json({error})
+  }
+    
+})
+
 function strFormate(txt){
   return txt.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
 }

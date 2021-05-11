@@ -9,8 +9,8 @@
       <input type="search" v-model="search" id="" placeholder="Поиск" />
     </div>
     <transition name="slide-fade">
-      <div class="folder_list_head" v-if="activeDepartament" @click="activeDepartament = null">
-        <span class="folder_list_head_close" ><i class="fa fa-chevron-left"></i> <i class="fa fa-folder-open-o" ></i>{{activeDepartament}} </span>
+      <div class="folder_list_head" v-if="activeDepartament" @click="departamentClose">
+        <span class="folder_list_head_close" ><i class="fa fa-chevron-left"></i> <i class="fa fa-folder-open-o" ></i>{{activeDepartament.name}} </span>
       </div>
     </transition>
     <transition-group v-if="!activeDepartament" name="slide-fade" tag="ul" class="folder_list">
@@ -48,14 +48,13 @@ import { mapActions, mapGetters } from "vuex";
 export default {
   data() {
     return {
-      activeDepartament: '',
       isActiveFolder: null,
       search: '',
       version: ''
     };
   },
   computed: {
-    ...mapGetters(["departaments", "folders", "users"]),
+    ...mapGetters(["departaments", "folders", "users", "activeDepartament"]),
     departamentsList() {
       return this.departaments.filter((departament) => {
         return departament.name
@@ -79,8 +78,11 @@ export default {
       return '<i class="fa fa-folder-o" style="color:#252831"></i>'
     },
     async departamentClick(departament) {
-      this.activeDepartament = departament.name;
+      this.$store.commit('setActiveDepartament', departament)
       await this.getFolders(departament.id);
+    },
+    departamentClose(){
+      this.$store.commit('setActiveDepartament', null)
     },
     folderClick(folder) {
       this.$store.commit('setActiveFolder', folder)

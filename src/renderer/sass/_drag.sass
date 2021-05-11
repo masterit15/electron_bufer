@@ -2,10 +2,46 @@
   cursor: pointer
   &:hover
     text-decoration: underline
+.chekall
+  position: relative
+  min-width: 70px
 .file
+  &_list
+    list-style-type: none
+    & li
+      font-size: 1.3rem
+      cursor: pointer
+      &:hover
+        color: rgba(#fff,0.7)
+  &_add_btn
+    position: relative
+    display: flex
+    justify-self: center
+    align-items: center
+    height: 45px
+    width: 100%
+    padding: 0
+    border-top: 2px solid #e8e8e8
+    transition: all .3s ease
+    & .file_text
+      cursor: pointer
+      height: 100%
+      width: 100%
+      line-height: 45px
+      color: $lightColor
+      text-align: center
+      &:hover
+        color: tomato
+        
+  &_input
+    display: none
+  &_status
+    position: absolute
+    right: 10px
+    top: 10px
   &_actions
     position: absolute
-    bottom: 0
+    bottom: 35px
     left: 0
     width: 100%
     display: flex
@@ -24,44 +60,19 @@
         color: #fff
         transition: all .3 ease
   &_form
-    position: fixed
-    display: flex
-    justify-self: center
-    align-items: center
+    position: absolute
+    background-color: #fff
     bottom: 0px
     right: 0px
-    height: 100px
-    width: 100px
+    height: 100%
+    width: 100%
     padding: 20px
-    // background-color: #fff
     transition: all .3s ease
-    &.is_active
-      position: absolute
-      background-color: #fff
-      bottom: 0px
-      right: 0px
-      height: 100%
-      width: 100%
-      padding-top: 90px
-      // &:hover
-      //   height: 100%
-      //   padding-top: 90px
-    &:hover
-      // box-shadow: 5px 3px 10px 5px rgba(92, 101, 117, 0.18)
-      // height: 220px
-      transition: all .3s ease
     &_wrap
       position: relative
       width: 100%
       height: 100%
-  &_text
-    display: flex
-    .fa
-      margin: 0 15px
-    h4
-      font-size: 0.8rem
-      margin: 0
-      display: none
+
   &_size
     width: 70px
     display: inline-block
@@ -131,47 +142,3 @@
     .xpath
       transition: all .2s ease
       animation-delay: 6s
-#drag-file
-  position: absolute
-  left: 0
-  bottom: 0
-  cursor: pointer
-  display: flex
-  justify-content: center
-  align-items: center
-  width: 100%
-  height: 100%
-  max-height: 300px
-  font-size: 1.2rem
-  text-transform: uppercase
-  border-radius: 10px
-  color: $lightColor
-  border: 2px dashed $border
-  background-color: transparent
-  transition: all .3s ease
-  &:hover
-    color: $accent
-    border: 2px dashed $accent
-    transition: all .3s ease
-  &:active, &:focus
-    outline: none
-  &.active
-    color: $accent
-    border: 2px dashed $accent
-    transition: all .3s ease
-  &.is_active
-    height: 60px
-    .file_text
-      h4
-        display: flex
-
-.file_list
-  list-style-type: none
-  & li
-    font-size: 1.3rem
-    cursor: pointer
-    &:hover
-      color: rgba(#fff,0.7)
-      
-#files_input
-  display: none

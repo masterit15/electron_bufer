@@ -13,6 +13,20 @@ body
   font-family: $font_regular
   background-color: transparent
   -webkit-backdrop-filter: blur(10px)
+  overflow: hidden
+::-webkit-scrollbar 
+  position: absolute
+  right: 0
+  width: 3px
+::-webkit-scrollbar-track
+  // box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3)
+  background-color: transparent
+  display: none
+::-webkit-scrollbar-thumb
+  background-color: darkgrey
+  border-radius: 10px
+  // outline: 1px solid slategrey
+
 .nontextselect
   -webkit-user-select: none
 .dragselect
@@ -36,6 +50,10 @@ pre
 .content
   max-height: 100vh
   overflow: hidden
+  // .b-table
+  //   margin-bottom: 60px
+  .mCSB_draggerRail
+    display: none
 .logo
   display: flex
   justify-content: center
@@ -58,7 +76,10 @@ pre
     font-size: 2rem
 .mCSB_inside > .mCSB_container
   margin: 0
-  
+.b-table-sticky-header .table.b-table thead tr th
+  position: sticky
+  top: 0
+  z-index: 20
 #app
   overflow: hidden
   max-height: 100vh
@@ -75,6 +96,7 @@ pre
   display: flex
   margin: 0
   padding: 0
+  margin-top: 35px
   background-color: #d8dfe7
   &::before
     content: ''
@@ -115,8 +137,8 @@ pre
   flex-direction: column
   position: relative
   display: flex
-  margin: 0
-  padding-top: 95px
+  margin-right: 60px
+  padding: 0
 
 .svgblur
   position: absolute
@@ -130,17 +152,23 @@ pre
   position: fixed
   width: 100%
   height: 36px
+  display: flex
+  flex-direction: row
+  justify-content: space-between
   background: #e2e5e6
   // background: linear-gradient(0deg, rgba(177,178,179,1) 0%, rgba(210,210,210,1) 50%, rgba(243,244,240,1) 100%)
   border-bottom: 1px solid #e2e5e6
   border-top: 1px solid #dddce0
   z-index: 99
+  &_folder
+    margin: 0 15px
+    padding: 0
+    line-height: 35px
   &_action
     width: 80px
     display: flex
     flex-direction: row
     justify-content: space-between
-    float: right
     padding: 10px 10px 
     -webkit-app-region: none
     &_btn_hide,&_btn_size,&_btn_close

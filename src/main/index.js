@@ -72,9 +72,7 @@ app.on('ready', async() => {
 })
 ipcMain.on('quit-app', () => {
   console.log('quit-app');
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.exit(0)
 });
 
 
