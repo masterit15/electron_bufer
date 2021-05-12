@@ -32,15 +32,14 @@ export default {
   computed: {
     ...mapGetters(['user', 'users', 'activeFolderArr', 'inputFiles']),
   },
-  methods: {
-    ...mapActions(['logout']),
-  },
   components: {
     Notifycation,
     DragDroup
   },
   methods: {
+    ...mapActions(['logOut']),
     async Outh() {
+      await this.logOut(this.user.token)
       this.$socket.emit("userLeft", this.user);
       this.resetState()
       this.$router.push("/auth");
@@ -55,12 +54,12 @@ export default {
       this.$store.commit('setInputFiles', files)
     },
     resetState(){
-      this.$store.commit('setUser', [])
-      this.$store.commit('setUsers', [])
-      this.$store.commit('setFiles', [])
-      this.$store.commit('setFolders', [])
-      this.$store.commit('setDepartaments', [])
-      localStorage.removeItem("user")
+        this.$store.commit('setUser', [])
+        this.$store.commit('setUsers', [])
+        this.$store.commit('setFiles', [])
+        this.$store.commit('setFolders', [])
+        this.$store.commit('setDepartaments', [])
+        localStorage.removeItem("user")
     },
   },
 };

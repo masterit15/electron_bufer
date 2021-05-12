@@ -9,6 +9,7 @@ export default {
       state.files = files
     },
     setInputFiles(state, files){
+      console.log(files);
       if(files.length > 0){
         state.inputFiles = [...state.inputFiles, ...files]
       }else{

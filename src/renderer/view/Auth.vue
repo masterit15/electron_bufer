@@ -35,6 +35,7 @@
 import {mapActions, mapGetters} from 'vuex'
 import smalltalk from "smalltalk";
 import os from 'os'
+import axios from 'axios'
 const userInfo = os.userInfo()
 const network = os.networkInterfaces()
 var userNetwork = []
@@ -98,7 +99,7 @@ export default {
     this.bodyFixed()
   },
   methods: {
-    ...mapActions(['getDepartaments', 'Auth']),
+    ...mapActions(['getDepartaments', 'Auth', 'getFolders']),
     async authBufer(){
       let userData = {
         login: this.ulogin,
@@ -114,6 +115,13 @@ export default {
           ...res.user,
           room: this.udepartament,
         }
+        let departament = {
+          id: res.user.departamentId,
+          name: res.user.departamentName
+        }
+        axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`
+        this.$store.commit('setActiveDepartament', departament)
+        await this.getFolders(departament.id);
         this.$socket.emit("userJoined", user, data =>{
           if(typeof data === 'string'){
             console.error(data)

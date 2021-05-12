@@ -16,12 +16,21 @@ router.post('/', async (req, res, next) =>{
     if(candidate){
         const userFind = allUsers.find(user=> (user.mac === candidate.mac && user.login === candidate.login))
         if(userFind){
-            let {token} = await Token.findOne({where: { userId: userFind.id }, raw: true})
-            return res.status(200).json({ 
-                success: true,
-                message: 'Успешная авторизация',
-                user: {...userFind, token}
-            })
+            let access = await Token.findOne({where: { userId: userFind.id }, raw: true})
+            if(access){
+                return res.status(200).json({ 
+                    success: true,
+                    message: 'Успешная авторизация',
+                    user: {...userFind, token: access.token}
+                })
+            }else{
+                let token = await generateAccessToken(userFind)
+                return res.status(200).json({ 
+                    success: true,
+                    message: 'Успешная авторизация',
+                    user: {...userFind, token}
+                })
+            }
         }
     }else{
         User.create({
@@ -33,8 +42,8 @@ router.post('/', async (req, res, next) =>{
             departamentName: departamentArr.name,
             network,
             mac
-        }).then(user=>{
-            user.token = generateAccessToken(user)
+        }).then(async user=>{
+            user.token = await generateAccessToken(user)
             Folder.create({
                 name: user.dataValues.username,
                 userId: user.dataValues.id,
@@ -80,21 +89,20 @@ router.get('/', (req, res, next) =>{
     });
 })
 // метод получения пользователей
-router.delete('/', (req, res, next) =>{
-    const { token } = req.body
-    User.findAll().then(users=>{
+router.delete('/', async(req, res, next) =>{
+    const { token } = req.query
+    try {
+        await Token.destroy({where: { token }})
         return res.status(201).json({ 
             success: true,
-            message: 'Все пользователи',
-            users
         })
-    }).catch((err)=>{
+    } catch (error) {
         return res.status(500).json({
             success: false,
             message: 'Что-то пошло не так, попробуйте еще раз',
-            err
+            error
         })
-    });
+    }
 })
 function getDepartamentId(name){
     return new Promise((resolve, reject)=>{
@@ -114,7 +122,7 @@ function getDepartamentId(name){
     })
 }
 async function generateAccessToken(user) {
-        let token = jwt.sign({ userId: user.id, userId: user.mac, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
+        let token = jwt.sign({ userId: user.id, userName: user.username, macAddress: user.mac, permission: user.permission, departamentId: user.departamentId }, config.get('jwtSecret'))
         await Token.create({
             token,
             userId: user.id

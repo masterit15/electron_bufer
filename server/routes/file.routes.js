@@ -7,9 +7,10 @@ const Folder = require('../model/folder')
 const File = require('../model/file')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
-const uploadDir = './uploads';
-const AdmZip = require('adm-zip');
-
+const uploadDir = './uploads'
+const AdmZip = require('adm-zip')
+const logger = require('../loger')
+const auth = require('../middleware/auth.middleware')
 
 const storageConfig = multer.diskStorage({
   destination: (req, file, cb) =>{
@@ -31,10 +32,11 @@ fs.stat(uploadDir, function(err) {
 });
 
 // функция загрузки файлов
-router.post('/', multer({storage:storageConfig}).array('files'), (req, res, next) => {
+router.post('/', auth, multer({storage:storageConfig}).array('files'), (req, res, next) => {
     let filedata = req.files; 
     const {folderId, ownerId, ownerName} = req.query
     if(!filedata){
+        logger.fileSharing.error(`Произошла ошибка при загрузке файлов от пользователя: ${ownerName}, id: ${ownerId} | folderId: ${folderId} | err: ${filedata}`)
         res.status(404).json({
           success: false,
           message: 'Ошибка при загрузке файла',
@@ -49,7 +51,7 @@ router.post('/', multer({storage:storageConfig}).array('files'), (req, res, next
     });
     }
 });
-router.get('/', async (req, res, next) => {
+router.get('/', auth, async (req, res, next) => {
   const { folderId } = req.query
   try {
     const files = await File.findAll({where: {folderId}, raw:true})
@@ -66,8 +68,11 @@ router.get('/', async (req, res, next) => {
     });
   }
 })
-router.put('/', async(req, res, next) => {
+router.put('/', auth, async(req, res, next) => {
+  const thisUser = req.user
   const { id, originalName } = req.body
+  const oldFile = await File.findOne({where: { id }, raw: true})
+  logger.fileSharing.info(`Пользователь ${thisUser.userName} переименовал файл ${oldFile.originalName} в ${originalName}`)
   let changeFile = await File.update(
     { originalName },
     { where: { id }, raw: true }
@@ -86,11 +91,11 @@ router.put('/', async(req, res, next) => {
   }
 })
 
-router.delete('/', async (req, res, next) => {
+router.delete('/', auth, async (req, res, next) => {
+  const thisUser = req.user
   const { id } = req.query
   try {
     const files = await File.findAll({where: {id}, raw:true})
-
     const idArr = id.map(Number)
     let delres = await File.destroy({where: { id: idArr }})
     if(delres > 0){
@@ -100,8 +105,11 @@ router.delete('/', async (req, res, next) => {
     }
     for(const file of files){
       fs.unlinkSync(file.path);
+      logger.fileSharing.info(`Пользователь ${thisUser.userName}, удалил файл ${file.originalName} | путь: ${file.path}`)
     }
+    
   } catch (error) {
+    logger.fileSharing.error(`Пользователь ${thisUser.userName}, не смог удалить файл(ы) | error: ${error}`)
     res.status(404).json({
       success: false,
       message: 'Ошибка, что то пошло не так!',
@@ -109,7 +117,7 @@ router.delete('/', async (req, res, next) => {
   });
   }
 })
-router.get('/zip', async (req, res)=>{
+router.get('/zip', auth, async (req, res)=>{
   const { filesArrId } = req.query
   try {
     const filesArr = await File.findAll({ where: { id: filesArrId.map(Number) }, raw: true })
@@ -152,6 +160,7 @@ function strFormate(txt){
 // функция добавления загруженных файлов в базу
 async function addFiles(ownerName,ownerId, folderId, files) {
   for (const file of files) {
+    logger.fileSharing.info(`Добавление файла от пользователя: ${ownerName}, id: ${ownerId} | folderId: ${folderId} | путь к файлу: ${file.path}`)
     await File.create({
       name: strFormate(file.filename),
       path: file.path,

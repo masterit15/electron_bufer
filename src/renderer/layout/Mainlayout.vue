@@ -89,14 +89,16 @@ export default {
     };
     // срабатывает, когда элемент перетаскивается
     holder.ondrag = () => {
+      holder.classList = "active";
       return false;
     };
     // срабатывает после того, как перетаскиваемый элемент опустился на объект перетаскивания
     holder.ondrop = async (e) => {
+      holder.classList = "";
       e.preventDefault();
       for (let f of e.dataTransfer.files) {
-        this.$store.commit('setInputFiles', f)
-        holder.classList = "";
+        this.$store.commit('setInputFiles', [f])
+        
       }
       return false;
     };

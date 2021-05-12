@@ -51,10 +51,11 @@ if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$http = axios
 Vue.prototype.$http.defaults.baseURL = baseURL
 
-if (localStorage.user) {
-  const token = JSON.parse(localStorage.user).token
-  Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
-}
+// if (localStorage.user) {
+//   const token = JSON.parse(localStorage.user).token
+//   console.log();
+//   Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
+// }
 
 Vue.prototype.$smalltalk = smalltalk
 Vue.config.productionTip = false

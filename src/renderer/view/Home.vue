@@ -324,7 +324,6 @@ export default {
       let clickCoords = this.getPosition(e);
       let clickCoordsX = clickCoords.x;
       let clickCoordsY = clickCoords.y;
-      console.log(this.$refs.ctxmenu.$el);
       let menuWidth = 180 + 15;
       let menuHeight = 135 + 15;
       let windowWidth = window.innerWidth;

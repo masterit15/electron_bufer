@@ -41,12 +41,12 @@ const PORT = config.get('port') || 3000
 async function start() {
     try {
         await sequelize.authenticate();
-        server.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
-        console.log('Connection has been established successfully.')
-        logger.warn(`Connection has been established successfully.`)
+        server.listen(PORT, () => console.log(`Приложение было запущено на порту ${PORT}...`))
+        console.log('Соединение успешно установлено.')
+        logger.appDiagnostic.info(`Соединение успешно установлено. Приложение было запущено на порту ${PORT}`)
       } catch (error) {
-        console.error('Unable to connect to the database:', error);
-        logger.warn(`Unable to connect to the database: ${error}`)
+        console.error('Не удалось подключиться к базе данных:', error);
+        logger.appDiagnostic.error(`Не удалось подключиться к базе данных: ${error}`)
       }
 }
 start()

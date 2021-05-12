@@ -58,14 +58,13 @@ export default {
       })
       return postres
     },
-    async logout({}){
-      let user = await JSON.parse(localStorage.getItem('user'))
-      let res = await axios.delete('user', {params:{token: user.token}})
-      if(res.data.success){
-        localStorage.removeItem('user')
+    async logOut({}, token){
+      return await axios.delete('user', {params:{token}})
+      .then(res=>{
         delete axios.defaults.headers.common['Authorization']
-      }
-      return res.data.success
+        return res.data.success
+      })
+      .catch(err=>err)
     },
   },
   getters: {
