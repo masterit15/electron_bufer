@@ -91,10 +91,9 @@ if(process.platform === "win32"){
         Authorization: 'Basic 123456789'
       },
       provider: 'generic',
-      url: 'http://localhost:5050/update/',//'http://10.20.0.41:3000/update/'
+      url: 'http://10.20.0.41:3000/update/'
     }
   } else {
-    
     options = {
       requestHeaders: {
         // Any request headers to include here

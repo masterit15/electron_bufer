@@ -30,7 +30,7 @@ Vue.filter('size', fileSize)
 var baseURL = ''
 
 if(process.env.NODE_ENV === 'production'){
-  baseURL = 'http://localhost:5050/api/'//'http://10.20.0.41:3000/api/'
+  baseURL = 'http://10.20.0.41:3000/api/'
 }else{
   baseURL = 'http://localhost:5050/api/'
 }
@@ -48,14 +48,14 @@ Vue.use(new VueSocketIO({
 import './sass/main.sass'
 // Vue.config.devtools = process.env.NODE_ENV === 'development'
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
-Vue.prototype.$http = axios
-Vue.prototype.$http.defaults.baseURL = baseURL
 
-// if (localStorage.user) {
-//   const token = JSON.parse(localStorage.user).token
-//   console.log();
-//   Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
-// }
+axios.defaults.baseURL = baseURL
+
+if (localStorage.user) {
+  const token = JSON.parse(localStorage.user).token
+  console.log(token);
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+}
 
 Vue.prototype.$smalltalk = smalltalk
 Vue.config.productionTip = false

@@ -132,11 +132,14 @@ export default {
       this.fileActionPanel = false
     },
     fileSelectArr() {
+      let tableContent = document.querySelector('.b-table-sticky-header')
       if (this.fileSelectArr.length > 0) {
         this.fileActionPanel = true;
+        tableContent.style.paddingBottom = '95px'
       } else {
         this.fileActionPanel = false;
         this.$refs.chekone.checked = false;
+        tableContent.style.paddingBottom = '30px'
       }
     }
   },
@@ -396,7 +399,7 @@ export default {
       }
     },
     chekedFiles(event) {
-      let inputOne = document.querySelectorAll(".chekone");
+      let inputOne = document.querySelectorAll(".chekone")
       this.fileSelectArr = [];
       if (event.target.checked) {
         inputOne.forEach((input) => {

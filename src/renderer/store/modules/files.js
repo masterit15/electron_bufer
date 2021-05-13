@@ -9,18 +9,17 @@ export default {
       state.files = files
     },
     setInputFiles(state, files){
-      console.log(files);
       if(files.length > 0){
         state.inputFiles = [...state.inputFiles, ...files]
       }else{
         state.inputFiles = []
       }
     },
-    deleteInputFiles(state, index=null){
-      if(!index){
+    deleteInputFiles(state, file){
+      if(!file){
         state.inputFiles = []
       }else{
-        state.inputFiles = state.inputFiles.splice(index, 1);
+        state.inputFiles = state.inputFiles.filter(inpfile=> inpfile.name !== file.name && inpfile.lastModified !== file.lastModified)
       }
     },
     SOCKET_setFilesChange(state, filesId){
