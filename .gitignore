@@ -5,6 +5,7 @@ build/*
 !build/icons
 coverage
 node_modules/
+server/logs/
 server/uploads/
 server/node_modules/
 updateserver/files/
