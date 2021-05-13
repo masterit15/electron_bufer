@@ -34,6 +34,7 @@ if(process.env.NODE_ENV === 'production'){
 }else{
   baseURL = 'http://localhost:5050/api/'
 }
+
 Vue.use(new VueSocketIO({
     debug: false,
     connection: baseURL.replace("/api/", ""),

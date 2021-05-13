@@ -186,7 +186,7 @@ export default {
           that.progressAnimation()
         }
       }
-      axios.post(`http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`, data, config)
+      axios.post(`file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`, data, config)
       .then(async res=>{
         if(res.data.success){
           let user = this.users.find(user=>user.id==this.activeFolderArr.userId)

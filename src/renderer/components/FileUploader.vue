@@ -140,7 +140,7 @@ export default {
       };
       axios
         .post(
-          `http://localhost:5050/api/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`,
+          `/file?folderId=${this.activeFolderArr.id}&ownerId=${this.user.id}&ownerName=${this.user.username}`,
           data,
           config
         )

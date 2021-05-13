@@ -24,7 +24,7 @@
 </template>
 
 <script>
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, remote } = require("electron");
 import { mapGetters } from "vuex";
 import EmptyLayout from "./layout/Emptylayout.vue";
 import MainLayout from "./layout/Mainlayout.vue";
@@ -40,6 +40,11 @@ export default {
   },
   mounted() {
     this.chekUpdate();
+    document.addEventListener("keydown", function (e) {
+      if (e.which === 123) {
+        remote.getCurrentWindow().toggleDevTools();
+      }
+    })
   },
   methods: {
     resizeApp(param){

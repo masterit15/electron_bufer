@@ -45,7 +45,7 @@ export default {
       })
     },
     async deleteFiles({dispatch}, fileParam = {}){
-      let res = await axios.delete('http://localhost:5050/api/file', { params: { id: fileParam.id } })
+      let res = await axios.delete('file', { params: { id: fileParam.id } })
       dispatch('getFiles', fileParam.folderId)
       return res.data.success
     },
@@ -58,7 +58,7 @@ export default {
       return res.data
     },
     async renameFile({dispatch}, fileParam = {}){
-      let res = await axios.put('http://localhost:5050/api/file', { ...fileParam })
+      let res = await axios.put('file', { ...fileParam })
       // dispatch('getFiles', fileParam.folderId)
       return res.data.success
     }

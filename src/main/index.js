@@ -82,25 +82,27 @@ ipcMain.on('quit-app', () => {
 if(process.platform === "win32"){
   const { AppImageUpdater, MacUpdater, NsisUpdater } = require("electron-updater")
 
-  var options
+  var options, url
 
   if (process.env.NODE_ENV === 'production') {
+    url = 'http://10.20.0.41:3000/update/'
     options = {
       requestHeaders: {
         // Any request headers to include here
         Authorization: 'Basic 123456789'
       },
       provider: 'generic',
-      url: 'http://10.20.0.41:3000/update/'
+      url: url
     }
   } else {
+    url = 'http://localhost:5050/update/'
     options = {
       requestHeaders: {
         // Any request headers to include here
         Authorization: 'Basic 123456789'
       },
       provider: 'generic',
-      url: 'http://localhost:5050/update/'
+      url: url
     }
   }
 
