@@ -30,7 +30,7 @@ Vue.filter('size', fileSize)
 var baseURL = ''
 
 if(process.env.NODE_ENV === 'production'){
-  baseURL = 'http://10.20.0.41:3000/api/'
+  baseURL = 'http://10.20.0.41/api/'
 }else{
   baseURL = 'http://localhost:5050/api/'
 }
@@ -54,7 +54,6 @@ axios.defaults.baseURL = baseURL
 
 if (localStorage.user) {
   const token = JSON.parse(localStorage.user).token
-  console.log(token);
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 

@@ -8,7 +8,7 @@ const user = new Users()
 const m = (name, text, id) => ({name, text, id})
 const io = require('socket.io')(server, {
   cors: {
-      origin: "http://localhost:9080",
+      origin: process.env.NODE_ENV === 'production' ? '*' : 'http://localhost:9080',
       methods: ["GET", "POST"],
       transports: ['websocket', 'polling'],
       credentials: true

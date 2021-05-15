@@ -1,6 +1,6 @@
 {
-  "name": "electron_bufer",
-  "version": "1.0.1",
+  "name": "bufer",
+  "version": "1.0.0",
   "author": "masterit15 <masterit15@yandex.ru>",
   "description": "An electron-vue project",
   "license": null,
@@ -49,6 +49,7 @@
       "icon": "build/icons/icon.icns"
     },
     "win": {
+      "artifactName": "${productName}-Setup-${version}.${ext}",
       "icon": "build/icons/icon.ico"
     },
     "linux": {

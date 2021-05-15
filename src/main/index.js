@@ -85,10 +85,9 @@ if(process.platform === "win32"){
   var options, url
 
   if (process.env.NODE_ENV === 'production') {
-    url = 'http://10.20.0.41:3000/update/'
+    url = 'http://10.20.0.41/update/'
     options = {
       requestHeaders: {
-        // Any request headers to include here
         Authorization: 'Basic 123456789'
       },
       provider: 'generic',
@@ -98,7 +97,6 @@ if(process.platform === "win32"){
     url = 'http://localhost:5050/update/'
     options = {
       requestHeaders: {
-        // Any request headers to include here
         Authorization: 'Basic 123456789'
       },
       provider: 'generic',
@@ -140,7 +138,7 @@ ipcMain.on('download-url', async (event, file) => {
     let localFile = `${result.filePaths}\\${file}`
     let percent = 0
     downloadFile({
-      remoteFile: `http://localhost:5050/download/${file}`,
+      remoteFile: process.env.NODE_ENV === 'production' ? `http://10.20.0.41/download/${file}`: `http://localhost:5050/download/${file}`,
       localFile: localFile,
       onProgress: function (received,total){
         percent = Math.round((received * 100) / total) / 100
@@ -165,7 +163,7 @@ ipcMain.on('ondragstart', async (event, file) => {
   }
   let percent = 0
   await downloadFile({
-    remoteFile: `http://localhost:5050/download/${file}`,
+    remoteFile: process.env.NODE_ENV === 'production' ? `http://10.20.0.41/download/${file}`: `http://localhost:5050/download/${file}`,
     localFile: localFile,
     onProgress: function (received,total){
         percent = Math.round((received * 100) / total) / 100
