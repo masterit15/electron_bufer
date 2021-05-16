@@ -142,10 +142,13 @@ ipcMain.on('download-url', async (event, file) => {
       localFile: localFile,
       onProgress: function (received,total){
         percent = Math.round((received * 100) / total) / 100
+        event.reply('downloadProgressStart', Math.round((received * 100) / total))
         if(percent == 0 || percent == 1){
           mainWindow.setProgressBar(-1)
+          // event.reply('downloadProgressDone', 'done')
         }else{
           mainWindow.setProgressBar(percent)
+          
         }
       }
     }).then(function(){

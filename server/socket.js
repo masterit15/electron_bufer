@@ -80,6 +80,7 @@ io.on('connection', socket => {
   socket.on('updateChange', data => {
     let thisUser = user.getBiId(data.id)
     if(thisUser){
+      console.log('updateChange', thisUser);
       io.to(thisUser.room).emit('updateChange', data.activeFolderUserId);
     }
   })

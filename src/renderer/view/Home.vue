@@ -1,7 +1,7 @@
 <template>
 <div>
   <div class="content nontextselect">
-    <b-table hover responsive :items="files" :fields="fields" tbody-tr-class="file_row" tbody-class="is_body" sticky-header="100vh">
+    <b-table hover responsive :sort-compare="mySortCompare" :items="files" :fields="fields" tbody-tr-class="file_row" tbody-class="is_body" sticky-header="100vh">
       <template v-slot:head(check)="">
         <input
           @change="chekedFiles($event)"
@@ -17,7 +17,7 @@
           type="checkbox"
           :value="data.item.id"
         />
-        <span class="file_status" v-if="activeFolderArr.userId !== user.id">
+        <span class="file_status" v-show="activeFolderArr.userId !== user.id">
           <i class="fa" :class="data.item.status == 'not_viewed' ? 'fa-eye-slash':'fa-eye'" v-b-tooltip.hover :title="data.item.status == 'not_viewed' ? 'Файл не просмотрен': 'Файл просмотрен'"></i>
         </span>
       </template>
@@ -30,8 +30,7 @@
       </template>
       <template #cell(createDate)="data">
         <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-          <!-- {{ data.item.date | date("datetime") }} -->
-          {{ data.item.date}}
+          {{ data.item.date | date("datetime") }}
         </div>
       </template>
       <template #cell(ownerName)="data">
@@ -41,7 +40,7 @@
       </template>
       <template #cell(size)="data">
         <div class="rows" @contextmenu.prevent="contextMenu($event, data)">
-          <div class="download" @click="downloadFiles(data.item.name)">
+          <div class="download" @click="downloadFiles($event, data.item.name)">
             <span class="file_size">{{ data.item.size | size() }}</span> Скачать
           </div>
         </div>
@@ -80,6 +79,7 @@ export default {
       fileSelectArr: [],
       zipFiles: '',
       menuState: 0,
+      fileSort: null,
       style: {
         top: "",
         left: "",
@@ -154,33 +154,53 @@ export default {
         ipcRenderer.send('ondragstart', dragFile.dataset.file)
       }
     })
-    this.getAllFilesRow()
     this.contextinit()
+  },
+  updated(){
+    this.getAllFilesRow()
+    let vm = this
+    if(this.ifFolderOwner()){
+      document.addEventListener("mousemove", function(event) { 
+        vm.getAllFilesRow()
+      });
+    }
   },
   methods: {
     ...mapActions(["deleteFiles", "getFiles", "downloadZIP", "deleteZIP", "renameFile"]),
+    mySortCompare(a, b, key) {
+      if (key === 'createDate') {
+        return new Date(a.date) - new Date(b.date)
+      } else {
+        // Let b-table handle sorting other fields (other than `date` field)
+        return false
+      }
+    },
     getAllFilesRow(){
-      if(this.user.id === this.activeFolderArr.userId){
+      if(this.ifFolderOwner){
+        
         let files = document.querySelectorAll('.file_row')
-        let content = document.querySelectorAll('.content')
+        let content = document.querySelector('.content')
         files.forEach(file=>{
-          if(this.isVisible(file, content) && !this.hasClass(file, 'is_viewed')){
-            console.log('isVisible');
+          let icon = file.querySelector('.file_status')
+          if(this.isVisible(file, content) && !this.hasClass(icon, 'is_viewed')){
+            console.log('isVisible', file);
             this.$socket.emit("fileStatus", {...this.activeFolderArr ,fileId: file.firstChild.firstChild.value})
-            // that.$store.commit('setFilesChange', file.firstChild.firstChild.value)
-            file.classList.add('is_viewed')
+            icon.classList.add('is_viewed')
           }
         })
       }
     },
     hasClass(el, clss) {
-      return el.className && new RegExp("(^|\\s)" + clss + "(\\s|$)").test(el.className) == '' ? true : false;
+      return el.classList.contains(clss);
+    },
+    ifFolderOwner(){
+      return Number(this.user.id) === Number(this.activeFolderArr.userId)
     },
     isVisible(tag, parent) {
       let t = tag;
       let w = parent;
-      let wt = w.scrollTop + 80
-      let tt = t.offsetTop;
+      let wt = w.scrollTop
+      let tt = t.offsetTop
       let tb = tt + t.offsetHeight;
       return ((tb <= wt + w.offsetHeight) && (tt >= wt));
     },
@@ -194,8 +214,24 @@ export default {
         this.fileSelectArr = this.fileSelectArr.filter(file => Number(file) !== Number(event.target.value));
       }
     },
-    downloadFiles(file){
+    downloadFiles(event, file){
+      if(document.querySelector('.dprogress')){
+        document.querySelector('.dprogress').remove()
+      }
+      event.target.insertAdjacentHTML('afterend', `<span class="dprogress"></span>`);
+      let progress = event.target.nextSibling
       ipcRenderer.send('download-url', file);
+      ipcRenderer.on('downloadProgressStart', (event, percent) => {
+        progress.style.width = `${percent}%`
+        if(percent >= 100){
+          setTimeout(()=>{
+            progress.style.opacity = '0'
+          }, 1000)
+          setTimeout(()=>{
+            progress.remove()
+          }, 2000)
+        }
+      })
     },
     async actionEvent(option) {
       if (option == "getzip") {

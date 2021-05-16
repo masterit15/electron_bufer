@@ -26,7 +26,19 @@ body
   background-color: darkgrey
   border-radius: 10px
   // outline: 1px solid slategrey
-
+.rows
+  position: relative
+  width: 100%
+  height: 100%
+  .dprogress
+    position: absolute
+    left: 0
+    bottom: 0
+    width: 0
+    height: 4px
+    border-radius: 10px
+    background-color: $green
+    transition: all .3s ease
 .nontextselect
   -webkit-user-select: none
 .dragselect
