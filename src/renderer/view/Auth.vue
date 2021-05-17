@@ -74,17 +74,8 @@ export default {
       uname: '',
       uavatar: '',
       udepartament: '',
-      bgImage: `static/img/${Math.floor(Math.random() * 5) + 1}.jpg`,
+      bgImage: `static/img/5.jpg`,//${Math.floor(Math.random() * 5) + 1}.jpg`,
       searchdep: ''
-    }
-  },
-  watch: {
-    udepartament(){
-      if(this.udepartament.length > 0){
-        this.openDropdown = true
-      }else{
-        this.openDropdown = false
-      }
     }
   },
   computed: {
@@ -98,10 +89,18 @@ export default {
   mounted(){
     this.bodyFixed()
   },
+  updated(){
+    this.getDepartaments()
+  },
   methods: {
     ...mapActions(['getDepartaments', 'Auth', 'getFolders']),
     depList(event){
       console.log(event.target.value);
+      if(event.target.value.length > 0){
+        this.openDropdown = true
+      }else{
+        this.openDropdown = false
+      }
     },
     async authBufer(){
       let userData = {
