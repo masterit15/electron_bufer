@@ -1,9 +1,13 @@
-import { app, dialog, BrowserWindow, powerMonitor, ipcMain} from 'electron'
+import { app, dialog, BrowserWindow, powerMonitor, ipcMain, shell} from 'electron'
+import child_process from 'child_process'
 import log from 'electron-log'
 import request from 'request'
 import fs from 'fs'
 import os from 'os'
+import path from 'path'
 const username = os.userInfo().username
+var activeFilesPath = []
+var interval
 
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
@@ -45,7 +49,7 @@ function createWindow() {
       autoUpdater.checkForUpdates()
     }
   });
-  log.info('createWindow')
+  // log.info('createWindow')
 }
 
 app.on('ready', createWindow)
@@ -70,11 +74,6 @@ app.on('ready', async() => {
   })
 
 })
-ipcMain.on('quit-app', () => {
-  console.log('quit-app');
-  app.exit(0)
-});
-
 
 /**
  * Auto Updater
@@ -115,7 +114,6 @@ if(process.platform === "win32"){
   else {
     autoUpdater = new AppImageUpdater(options)
   }
-
   autoUpdater.on('update-available', () => {
     mainWindow.webContents.send('update_available');
   });
@@ -126,10 +124,49 @@ if(process.platform === "win32"){
     autoUpdater.quitAndInstall();
   });
 }
-ipcMain.on('app_version', (event) => {
+// работает при закрытии приложения
+ipcMain.on('quit-app', () => {
+  app.exit(0)
+});
+// работает при двойном клике, открывает файл
+ipcMain.on('openFile', async(event, file) => {
+  let localFile = ''
+  if (process.platform === "win32") {
+    localFile = `C:\\Users\\${username}\\AppData\\Local\\Temp\\${file}`
+  }else{
+    localFile = `/tmp/${file}`
+  }
+  let percent = 0
+  await downloadFile({
+    remoteFile: process.env.NODE_ENV === 'production' ? `http://10.20.0.41/download/${file}`: `http://localhost:5050/download/${file}`,
+    localFile: localFile,
+    onProgress: function (received,total){
+        percent = Math.round((received * 100) / total) / 100
+        if(percent == 0 || percent == 1){
+          mainWindow.setProgressBar(-1)
+        }else{
+          mainWindow.setProgressBar(percent)
+        }
+    }
+  }).then(res=>{
+    // shell.showItemInFolder(localFile) // Показать данный файл в файловом менеджере. Если это возможно, выберите файл.
+    // shell.openPath('folderpath') // Откройте данный файл в режиме рабочего стола по умолчанию.
+    if(res){
+      open_file_exp(localFile)
+      activeFilesPath.push(localFile)
+      if(activeFilesPath.length > 0){
+        interval = setInterval(()=>{
+            clearTempFiles()
+        }, 3000)
+      }
+    }
+  }) 
+});
+// отправка в приложение версии
+ipcMain.on('app_version', async(event) => {
   event.sender.send('app_version', { version: app.getVersion() });
 });
-
+// работает при скачивании 
 ipcMain.on('download-url', async (event, file) => {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory']
@@ -137,7 +174,7 @@ ipcMain.on('download-url', async (event, file) => {
   if(!result.canceled){
     let localFile = `${result.filePaths}\\${file}`
     let percent = 0
-    downloadFile({
+    await downloadFile({
       remoteFile: process.env.NODE_ENV === 'production' ? `http://10.20.0.41/download/${file}`: `http://localhost:5050/download/${file}`,
       localFile: localFile,
       onProgress: function (received,total){
@@ -145,18 +182,17 @@ ipcMain.on('download-url', async (event, file) => {
         event.reply('downloadProgressStart', Math.round((received * 100) / total))
         if(percent == 0 || percent == 1){
           mainWindow.setProgressBar(-1)
-          // event.reply('downloadProgressDone', 'done')
         }else{
           mainWindow.setProgressBar(percent)
-          
         }
       }
-    }).then(function(){
+    }).then(res=>{
+      if(res) shell.openPath(localFile) 
       // console.log(`File succesfully downloaded ${file.path}`);
     });
   }
 });
-
+// работает при перетаскивании из приложения
 ipcMain.on('ondragstart', async (event, file) => {
   let localFile = ''
   if (process.platform === "win32") {
@@ -177,57 +213,83 @@ ipcMain.on('ondragstart', async (event, file) => {
         }
     }
   }).then(res=>{
-    
-    
-  });
-  event.sender.startDrag({
-    file: localFile,
-    icon: './static/hand-drag.png'
-  })
-  if(percent == 1){
-    fs.unlink(localFile, (err) => {
-      if (err) throw err;
-      console.log('path/file.txt was deleted');
+    event.sender.startDrag({
+      file: localFile,
+      icon: './static/hand-drag.png'
     })
-  }
+    if(res && percent == 1){
+      fs.unlink(localFile, (err) => {
+        if (err) throw err;
+      })
+    }
+  });
 })
-
+// Функция очистки файлов из папки Temp или tmp
+function clearTempFiles(){
+  activeFilesPath.forEach(file=>{
+    fs.open(file,'r+', function(err,data) {
+      if(data !== undefined && data !== null){
+        fs.unlink(file, (err) => {
+          if (err) throw err;
+          console.log('deleted', file);
+          activeFilesPath = activeFilesPath.filter(activFile=> activFile !== file)
+          if(activeFilesPath.length == 0){
+            clearInterval(interval);
+          }
+        })
+      }
+    });
+  })
+}
+// Функция открытия файла по его пути 
+function open_file_exp(fpath) {
+  var command = '';
+  switch (process.platform) {
+    case 'darwin':
+      command = 'open -R ' + fpath;
+      break;
+    case 'win32':
+      // if (process.env.SystemRoot) {
+      //   command = path.join(process.env.SystemRoot, 'explorer.exe');
+      // } else {
+      //   command = 'explorer.exe';
+      // }
+      command = fpath;
+      break;
+    default:
+      fpath = path.dirname(fpath)
+      command = 'xdg-open ' + fpath;
+  }
+  child_process.exec(command, function(stdout) {
+    clearTempFiles()
+  });
+}
+// Функция скачивания файлов
 function downloadFile(configuration){
   return new Promise(function(resolve, reject){
-      // Save variable to know progress
-      var received_bytes = 0;
-      var total_bytes = 0;
-
-      var req = request({
+      let received_bytes = 0;
+      let total_bytes = 0;
+      let req = request({
           method: 'GET',
           uri: configuration.remoteFile
       });
-
-      var out = fs.createWriteStream(configuration.localFile);
+      let out = fs.createWriteStream(configuration.localFile);
       req.pipe(out);
-
       req.on('response', function ( data ) {
-          // Change the total bytes value to get progress later.
           total_bytes = parseInt(data.headers['content-length' ]);
       });
-
-      // Get progress if callback exists
       if(configuration.hasOwnProperty("onProgress")){
           req.on('data', function(chunk) {
-              // Update the received bytes
               received_bytes += chunk.length;
-
               configuration.onProgress(received_bytes, total_bytes);
           });
       }else{
           req.on('data', function(chunk) {
-              // Update the received bytes
               received_bytes += chunk.length;
           });
       }
-
       req.on('end', function() {
-          resolve();
+          resolve(true);
       });
   });
 }

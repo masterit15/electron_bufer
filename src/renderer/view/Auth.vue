@@ -1,5 +1,6 @@
 <template>
   <div class="form" :style="{backgroundImage: `url(${bgImage})`}">
+    <div class="loader" v-if="loader"></div>
     <div class="logo">
       <img src="../assets/logo.png" alt="logo">
       <h2>BUFER</h2>
@@ -67,6 +68,7 @@ const username = userInfo.username;
 export default {
   data(){
     return {
+      loader: true,
       deparr: [],
       openDropdown: false,
       ulogin: username || '',
@@ -85,6 +87,9 @@ export default {
         return departament.name.toLowerCase().includes(this.udepartament.toLowerCase())
       })
     }
+  },
+  created(){
+    this.bgLoad()
   },
   mounted(){
     this.bodyFixed()
@@ -152,6 +157,21 @@ export default {
     },
     addAvatar(){
       this.$refs.avatar.click()
+    },
+    loadImageAsync(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+      });
+    },
+    bgLoad(){
+      Promise.all([
+        this.loadImageAsync("static/img/5.jpg")
+      ])
+      .then(images => {
+        this.loader = false
+      });
     },
     async hendleImages(e){
       await this.getBase64(e.target)

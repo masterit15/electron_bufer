@@ -8,7 +8,11 @@ const log4js = require("log4js");
 log4js.configure({
   appenders: {
     everything: {
-      type: 'multiFile', base: 'logs/', property: 'name', extension: '.log'
+      type: 'multiFile', base: 'logs/', property: 'name', extension: '.log',
+      layout: {
+        type: 'pattern',
+        pattern: '%[[%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p] %c -%] %m',
+      },
     }
   },
   categories: {

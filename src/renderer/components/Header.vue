@@ -14,7 +14,7 @@
       <Notifycation />
     </div>
     <div class="file_add_btn" @click="clickInput">
-      <input type="file"  @change="addFiles" class="file_input" multiple />
+      <input type="file"  @change="addFiles" ref="files" class="file_input" multiple />
       <span class="file_text">
         <i class="fa fa-upload"></i> 
       </span>
@@ -46,11 +46,14 @@ export default {
     },
     clickInput() {
       let input = document.querySelector(".file_input");
+      input.value = ''
       input.click();
     },
     addFiles(e) {
-      let files = e.target.files || e.dataTransfer.files;
+      
+      let files = this.$refs.files.files // e.target.files || e.dataTransfer.files;
       if (!files.length) return;
+      
       this.$store.commit('setInputFiles', files)
     },
     resetState(){

@@ -147,14 +147,20 @@ export default {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
   },
   mounted() {
-    let dragFiles = document.querySelectorAll('.dragfile')
-    dragFiles.forEach(dragFile=>{
-      dragFile.ondragstart = (event) => {
-        event.preventDefault()
-        ipcRenderer.send('ondragstart', dragFile.dataset.file)
-      }
-    })
     this.contextinit()
+    let rows = document.querySelectorAll('.file_row')
+    rows.forEach(row=>{
+      row.ondragstart = (event) => {
+        let file = event.target.closest('.file_row').querySelector('.dragfile').dataset.file
+        event.preventDefault()
+        ipcRenderer.send('ondragstart', file)
+      }
+
+      row.addEventListener('dblclick', function (e) {
+        let file = e.target.closest('.file_row').querySelector('.dragfile').dataset.file
+        ipcRenderer.send('openFile', file)
+      });
+    })
   },
   updated(){
     this.getAllFilesRow()
@@ -183,7 +189,6 @@ export default {
         files.forEach(file=>{
           let icon = file.querySelector('.file_status')
           if(this.isVisible(file, content) && !this.hasClass(icon, 'is_viewed')){
-            console.log('isVisible', file);
             this.$socket.emit("fileStatus", {...this.activeFolderArr ,fileId: file.firstChild.firstChild.value})
             icon.classList.add('is_viewed')
           }
