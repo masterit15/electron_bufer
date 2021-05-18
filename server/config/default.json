@@ -4,7 +4,7 @@
   "public_key": "BJSZPWZ_2UebRSkn1LX39lZ4nOtGH6n-nt26AUM_2hSS9ZpV2pmHUzYqfk4glojhJdYoHuWuq_PyS9zPxjNJFQI",
   "privat_key": "Iv78NdOY2wxftoic9Vsxerss0E2jpnW3UghVY-efv-Q",
   "jwtSecret": "d8adfb5632045404b00adf5bdd11a10d9bd009c1882c7fd1eb07d65cb2a1439b5fcedab1347839d4b16f7fa80d18c0af2ad2953d32b81c79869489f6a42ef9f52c53121e46f6f34af5a8bf2a1450a1829f4a99a38cf96ec0cea251e758ee8cf42244bb88bea75dd96484b98f0198efe5e59b3eae3aae8158fcf95100f3c472fd",
-  "baseUrl": "http://localhost:5000",
+  "baseUrl": "http://localhost:5050",
   "db": {
     "name": "bufer",
     "login": "root",

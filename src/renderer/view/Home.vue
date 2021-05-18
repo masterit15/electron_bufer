@@ -48,16 +48,16 @@
       </template>
     </b-table>
     <context-menu :display="showContextMenu" :position="style" ref="ctxmenu">
-      <li v-if="fileSelectArr.length > 1" @click.prevent="actionEvent('getzip')">Скачать архивом</li>
-      <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('rename')">Переименовать</li>
-      <li v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</li>
+      <li><button :disabled="actionButtonDisable(fileSelectArr.length > 1)" @click.prevent="actionEvent('getzip')">Скачать архивом</button></li>
+      <li><button :disabled="actionButtonDisable(fileSelectArr.length <= 1 && (activeFolderArr.userId == user.id || isOwner))" @click.prevent="actionEvent('rename')">Переименовать</button></li>
+      <li><button :disabled="actionButtonDisable(activeFolderArr.userId == user.id || isOwner)" @click.prevent="actionEvent('delete')">Удалить</button></li>
     </context-menu>
   </div>
   <transition name="slide-down">
     <div class="file_actions" v-show="fileActionPanel">
-      <button v-if="fileSelectArr.length > 1" @click.prevent="actionEvent('getzip')">Скачать архивом</button>
-      <button v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('rename')">Переименовать</button>
-      <button v-if="activeFolderArr.userId == user.id || isOwner" @click.prevent="actionEvent('delete')">Удалить</button>
+      <button :disabled="actionButtonDisable(fileSelectArr.length > 1)" @click.prevent="actionEvent('getzip')">Скачать архивом</button>
+      <button :disabled="actionButtonDisable(fileSelectArr.length <= 1 && (activeFolderArr.userId == user.id || isOwner))" @click.prevent="actionEvent('rename')">Переименовать</button>
+      <button :disabled="actionButtonDisable(activeFolderArr.userId == user.id || isOwner)" @click.prevent="actionEvent('delete')">Удалить</button>
     </div>
   </transition>
 </div>
@@ -146,6 +146,9 @@ export default {
   },
   computed: {
     ...mapGetters(["users", "files", "user", "activeFolderArr"]),
+    ifFolderOwner(){
+      return Number(this.user.id) === Number(this.activeFolderArr.userId)
+    },
   },
   mounted() {
     this.contextinit()
@@ -161,19 +164,26 @@ export default {
         let file = e.target.closest('.file_row').querySelector('.dragfile').dataset.file
         ipcRenderer.send('openFile', file)
       });
+
     })
-  },
-  updated(){
     this.getAllFilesRow()
     let vm = this
-    if(this.ifFolderOwner()){
-      document.addEventListener("mousemove", function(event) { 
+    let content = document.querySelector('.b-table-sticky-header')
+    if(this.ifFolderOwner){
+      // document.addEventListener("mousemove", function(event) { 
+      //   vm.getAllFilesRow()
+      // });
+      content.addEventListener("scroll", function(event) { 
         vm.getAllFilesRow()
+        console.log('scroll');
       });
     }
   },
   methods: {
     ...mapActions(["deleteFiles", "getFiles", "downloadZIP", "deleteZIP", "renameFile"]),
+    actionButtonDisable(param){
+      return !param
+    },
     mySortCompare(a, b, key) {
       if (key === 'createDate') {
         return new Date(a.date) - new Date(b.date)
@@ -197,13 +207,10 @@ export default {
     hasClass(el, clss) {
       return el.classList.contains(clss);
     },
-    ifFolderOwner(){
-      return Number(this.user.id) === Number(this.activeFolderArr.userId)
-    },
     isVisible(tag, parent) {
       let t = tag;
       let w = parent;
-      let wt = w.scrollTop
+      let wt = w.scrollTop + 70
       let tt = t.offsetTop
       let tb = tt + t.offsetHeight;
       return ((tb <= wt + w.offsetHeight) && (tt >= wt));
@@ -214,6 +221,7 @@ export default {
     fileSelect(event) {
       if (event.target.checked) {
         this.fileSelectArr.push(event.target.value);
+        this.activeFileItem = this.files.find(file=>file.id == event.target.value)
       } else {
         this.fileSelectArr = this.fileSelectArr.filter(file => Number(file) !== Number(event.target.value));
       }

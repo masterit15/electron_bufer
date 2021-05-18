@@ -21,11 +21,8 @@ app.use(function (req, res, next) {
 app.use (bodyParser.json({limit: '10mb', extended: true}))
 app.use (bodyParser.urlencoded({limit: '10mb', extended: true}))
 
-// app.use(function(req, res, next) {
-//   res.status(404).send('Sorry cant find that!');
-// });
-
 app.use('/update', updateMiddleware, express.static('update'));
+app.use('/static', express.static('static'));
 app.use('/download', express.static('uploads'));
 app.use('/api/subscribe', require('./routes/webpush.routes'))
 app.use('/api/user', require('./routes/user.routes'))
@@ -34,7 +31,7 @@ app.use('/api/notice', require('./routes/notice.routes'))
 app.use('/api/file', require('./routes/file.routes'))
 app.use('/api/departament', require('./routes/departament.routes'))
 
-// if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   app.use('/', (req, res)=>{
     // res.sendStatus(404)
     res.sendFile(path.resolve(__dirname, 'index.html'))
@@ -42,7 +39,7 @@ app.use('/api/departament', require('./routes/departament.routes'))
   app.get('*', (req, res) => {
       res.sendFile(path.resolve(__dirname, 'index.html'))
   })
-// }
+}
 const PORT = config.get('port') || 3000
 const HOST =  config.get('host') || '0.0.0.0'
 async function start() {

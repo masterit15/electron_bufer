@@ -4,7 +4,10 @@
       <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
         <template #button-content>
           <div class="user" v-b-tooltip.hover :title="user.username">
-            <avatar :username="user.login" :size="42"></avatar>
+            <div class="avatar" v-if="user.avatar" 
+            :style="{backgroundImage: `url(http://10.20.0.41/static/${user.avatar})`}"
+            ></div>
+            <avatar v-else :username="user.login" :size="42"></avatar>
           </div>
         </template>
         <b-dropdown-item href="#">Action</b-dropdown-item>

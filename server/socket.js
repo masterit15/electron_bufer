@@ -99,7 +99,7 @@ io.on('connection', socket => {
     .then(files =>{
       let thisUser = user.getBiId(data.userId)
       if(thisUser){
-        io.to(thisUser.room).emit('fileStatus', {userId: thisUser.id, filesId: [...data.fileId]});
+        io.to(thisUser.room).emit('fileStatus', data.fileId);
       }
     })
     .catch(err =>

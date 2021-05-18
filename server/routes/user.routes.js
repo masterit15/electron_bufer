@@ -1,5 +1,7 @@
 const { Router } = require('express')
 const router = Router()
+const multer  = require('multer')
+const fs = require('fs')
 const auth = require('../middleware/auth.middleware')
 const User = require('../model/user')
 const Token = require('../model/token')
@@ -7,31 +9,28 @@ const Departament = require('../model/departament')
 const Folder = require('../model/folder')
 const config = require('config')
 const jwt = require('jsonwebtoken')
+const storageConfig = multer.diskStorage({
+    destination: (req, file, cb) =>{
+        cb(null, './static');
+    },
+    filename: (req, file, cb) =>{
+        let fileExt = file.originalname.split('.').pop()
+        cb(null, `${Date.now()}_${Math.floor(Math.random() * Math.floor(666))}.${fileExt}`);
+    }
+});
 // метод добавления пользователя
-router.post('/', async (req, res, next) =>{
-    const { login, permission, username, avatar, departament, network, mac } = req.body
+router.post('/', multer({storage:storageConfig}).single('avatar'), async (req, res, next) =>{
+    const avatar = req.file ? req.file.filename : ''
+    const { login, permission, username, departament, network, mac } = req.query
     const departamentArr = await getDepartamentId(departament)
-    const candidate = await User.findOne({where: {login}, raw:true})
-    const allUsers = await User.findAll({raw:true})
+    const candidate = await User.findOne({where: {login, mac}, raw:true})
     if(candidate){
-        const userFind = allUsers.find(user=> (user.mac === candidate.mac && user.login === candidate.login))
-        if(userFind){
-            let access = await Token.findOne({where: { userId: userFind.id }, raw: true})
-            if(access){
-                return res.status(200).json({ 
-                    success: true,
-                    message: 'Успешная авторизация',
-                    user: {...userFind, token: access.token}
-                })
-            }else{
-                let token = await generateAccessToken(userFind)
-                return res.status(200).json({ 
-                    success: true,
-                    message: 'Успешная авторизация',
-                    user: {...userFind, token}
-                })
-            }
-        }
+        let token = await generateAccessToken(candidate)
+        return res.status(200).json({ 
+            success: true,
+            message: 'Успешная авторизация',
+            user: {...candidate, token}
+        })
     }else{
         User.create({
             login, 
@@ -43,7 +42,7 @@ router.post('/', async (req, res, next) =>{
             network,
             mac
         }).then(async user=>{
-            user.token = await generateAccessToken(user)
+            let token = await generateAccessToken(user)
             Folder.create({
                 name: user.dataValues.username,
                 userId: user.dataValues.id,
@@ -52,7 +51,7 @@ router.post('/', async (req, res, next) =>{
             return res.json({ 
                 success: true,
                 message: 'Пользователь создан',
-                user
+                user: {...user.dataValues,token}
             })
         }).catch((err)=>{
             return res.status(500).json({
@@ -106,14 +105,14 @@ router.delete('/', async(req, res, next) =>{
 })
 function getDepartamentId(name){
     return new Promise((resolve, reject)=>{
-        Departament.findOne({where: {name}})
+        Departament.findOne({where: {name}, raw: true})
         .then(res=>{
             if(res == null){
                 Departament.create({name}).then(res=>{
                     resolve(res.dataValues)
                 })
             }else{
-                resolve(res.dataValues)
+                resolve(res)
             }
         })
         .catch(err=>{

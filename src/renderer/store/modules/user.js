@@ -45,9 +45,10 @@ export default {
       })
     },
     async Auth({commit}, data = {}){
-      let params = {...data}
+      let dataForm = new FormData();
+      dataForm.append("avatar", data.avatar);
       let postres = []
-      await axios.post('user', params)
+      await axios.post(`user?login=${data.login}&username=${data.username}&departament=${data.departament}&network=${data.network}&mac=${data.mac}`, dataForm)
       .then(res=>{
         let user = res.data.user
         // commit('setUser', user)

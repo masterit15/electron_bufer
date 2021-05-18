@@ -10,7 +10,7 @@
         <div v-if="uavatar" id="ava" :style="{backgroundImage: `url(${uavatar})`}"><span class="delete_avatar" @click="uavatar = ''"><i class="fa fa-times"></i></span></div>
         <div v-else class="add_avatar" @click="addAvatar">
           <i class="fa fa-user"></i>
-          <input class="input_avatar" @change="hendleImages($event)" type="file" accept="image/*" ref="avatar">
+          <input class="input_avatar" name="avatar" @change="hendleImages($event)" type="file" accept="image/*" ref="avatar">
         </div>
       </div>
       <div class="form-field">
@@ -77,7 +77,8 @@ export default {
       uavatar: '',
       udepartament: '',
       bgImage: `static/img/5.jpg`,//${Math.floor(Math.random() * 5) + 1}.jpg`,
-      searchdep: ''
+      searchdep: '',
+      avatar: null
     }
   },
   computed: {
@@ -94,13 +95,9 @@ export default {
   mounted(){
     this.bodyFixed()
   },
-  updated(){
-    this.getDepartaments()
-  },
   methods: {
     ...mapActions(['getDepartaments', 'Auth', 'getFolders']),
     depList(event){
-      console.log(event.target.value);
       if(event.target.value.length > 0){
         this.openDropdown = true
       }else{
@@ -111,7 +108,7 @@ export default {
       let userData = {
         login: this.ulogin,
         username: this.uname,
-        avatar: this.uavatar,
+        avatar: this.avatar,
         departament: this.udepartament,
         network: this.unetwork,
         mac: this.unetwork.mac
@@ -174,6 +171,7 @@ export default {
       });
     },
     async hendleImages(e){
+      this.avatar = e.target.files[0]
       await this.getBase64(e.target)
       .then(res=>{
         this.uavatar = res
