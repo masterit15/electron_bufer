@@ -7,6 +7,7 @@ export default {
   mutations: {
     setFiles(state, files){
       state.files = files
+      console.log(state.files);
     },
     setInputFiles(state, files){
       if(files.length > 0){
@@ -25,6 +26,9 @@ export default {
     SOCKET_setFilesChange(state, filesId){
       let index = state.files.findIndex(file=>file.id == filesId)
       state.files[index].status = 'viewed'
+    },
+    SOCKET_fileStatus(state, f){
+      console.log(f);
     }
   },
   actions: {

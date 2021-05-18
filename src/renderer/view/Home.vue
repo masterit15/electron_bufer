@@ -1,6 +1,7 @@
 <template>
 <div>
   <div class="content nontextselect">
+
     <b-table hover responsive :sort-compare="mySortCompare" :items="files" :fields="fields" tbody-tr-class="file_row" tbody-class="is_body" sticky-header="100vh">
       <template v-slot:head(check)="">
         <input
@@ -177,13 +178,11 @@ export default {
       if (key === 'createDate') {
         return new Date(a.date) - new Date(b.date)
       } else {
-        // Let b-table handle sorting other fields (other than `date` field)
         return false
       }
     },
     getAllFilesRow(){
       if(this.ifFolderOwner){
-        
         let files = document.querySelectorAll('.file_row')
         let content = document.querySelector('.content')
         files.forEach(file=>{

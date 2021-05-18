@@ -83,6 +83,7 @@ io.on('connection', socket => {
     }
   })
   socket.on('updateChange', data => {
+    console.log('updateChange');
     let thisUser = user.getBiId(data.id)
     if(thisUser){
       io.to(thisUser.room).emit('updateChange', data.activeFolderUserId);
@@ -90,6 +91,7 @@ io.on('connection', socket => {
   })
   //
   socket.on('fileStatus', data=> {
+    console.log('fileStatus');
     File.update(
       { status: 'viewed' },
       { where: { id: data.fileId } }
@@ -97,7 +99,7 @@ io.on('connection', socket => {
     .then(files =>{
       let thisUser = user.getBiId(data.userId)
       if(thisUser){
-        io.to(thisUser.room).emit('updateChange', thisUser.id);
+        io.to(thisUser.room).emit('fileStatus', {userId: thisUser.id, filesId: [...data.fileId]});
       }
     })
     .catch(err =>
