@@ -3,7 +3,8 @@
     <div class="user_container">
       <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
         <template #button-content>
-          <div class="user" v-b-tooltip.hover :title="user.username">
+          <div class="user">
+            <!-- v-b-tooltip.hover :title="user.username" -->
             <div class="avatar" v-if="user.avatar" 
             :style="{backgroundImage: `url(http://10.20.0.41/static/${user.avatar})`}"
             ></div>

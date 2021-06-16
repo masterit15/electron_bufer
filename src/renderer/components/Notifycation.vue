@@ -4,7 +4,7 @@
       class="notice_btn"
       :class="noticeList.length > 0 ? 'is_active' : ''"
       ref="notice"
-      @click="shownotify = !shownotify, notice()"
+      @click="shownotify = !shownotify"
       v-b-tooltip.hover
       :title="'Уводомлений: ' + noticeList.length"
     >

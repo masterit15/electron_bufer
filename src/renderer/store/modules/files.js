@@ -2,11 +2,13 @@ import axios from 'axios'
 export default {
   state: {
     files: [],
+    fileCount: null,
     inputFiles: []
   },
   mutations: {
     setFiles(state, files){
       state.files = files
+      state.fileCount = files.length
     },
     setInputFiles(state, files){
       if(files.length > 0){
@@ -27,15 +29,23 @@ export default {
       state.files[index].status = 'viewed'
     },
     SOCKET_fileStatus(state, fileId){
-      let index = state.files.findIndex(file=>Number(file.id) == Number(fileId))
-      state.files[index].status = 'viewed'
+      if(fileId.length > 0){
+        fileId.forEach(fileId => {
+          let index = state.files.findIndex(file=>Number(file.id) == Number(fileId))
+          if(index !== -1){
+            state.files[index].status = 'viewed'
+          }
+        });
+      }
     }
   },
   actions: {
     SOCKET_updateChange({rootState, dispatch}, userId){
       let folders = rootState.folder.folders
       let folder = folders.filter(folder=>Number(folder.userId) === Number(userId))
-      dispatch('getFiles', folder[0].id)
+      if(rootState.folder.activeFolderArr.id == folder[0].id){
+        dispatch('getFiles', folder[0].id)
+      }
     },
     getFiles({commit}, folderId = null){
       axios.get('file', {params: {
@@ -69,6 +79,7 @@ export default {
   },
   getters: {
     files: state => state.files,
-    inputFiles: state => state.inputFiles
+    inputFiles: state => state.inputFiles,
+    fileCount: state => state.fileCount
   }
 }

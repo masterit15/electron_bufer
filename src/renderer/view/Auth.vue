@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="form-field">
-        <input required type="text" v-model="udepartament" @input="depList($event)" id="udepartament">
+        <input required type="text" v-model="udepartament" @focus="openDropdown = true" @input="depList($event)" id="udepartament">
         <label class="form-field-label" for="udepartament">Выберите свой департамент</label>
         <ul :class="openDropdown ? 'is_active' : ''" class="form-dropdown" v-click-outside="closeDropdown">
           <li v-for="departament in departamentList" :key="departament.id" @click="clickItem(departament)">{{departament.name}}</li>
@@ -94,15 +94,16 @@ export default {
   },
   mounted(){
     this.bodyFixed()
+    this.getDepartaments()
   },
   methods: {
     ...mapActions(['getDepartaments', 'Auth', 'getFolders']),
     depList(event){
-      if(event.target.value.length > 0){
-        this.openDropdown = true
-      }else{
-        this.openDropdown = false
-      }
+      // if(event.target.value.length > 0){
+      //   this.openDropdown = true
+      // }else{
+      //   this.openDropdown = false
+      // }
     },
     async authBufer(){
       let userData = {
@@ -148,7 +149,8 @@ export default {
       }
     },
     closeDropdown(event){
-      if(event.target){
+      let depInput = document.querySelector('#udepartament')
+      if(event.target !== depInput){
         this.openDropdown = false
       }
     },

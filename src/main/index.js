@@ -288,8 +288,8 @@ function downloadFile(configuration){
               received_bytes += chunk.length;
           });
       }
-      req.on('end', function() {
-          resolve(true);
+      req.on('end', function(e) {
+          resolve(e);
       });
   });
 }

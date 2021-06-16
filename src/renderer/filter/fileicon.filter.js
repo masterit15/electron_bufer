@@ -13,6 +13,7 @@ export default function fileExt(filename) {
         break;
       case "doc":
       case "docx":
+      case "rtf":
         icon = `<i class="fa fa-file-word-o" style="color: #3867d6"></i>`;
         break;
       case "xls":
