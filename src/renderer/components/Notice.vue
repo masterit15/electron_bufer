@@ -1,7 +1,7 @@
 <template>
   <div class="notice">
     <div
-      class="notice_btn"
+      class="notice_btn icon neu"
       :class="noticeList.length > 0 ? 'is_active' : ''"
       ref="notice"
       @click="shownotify = !shownotify"
@@ -9,9 +9,9 @@
       :title="'Уводомлений: ' + noticeList.length"
     >
       <i class="fa fa-bell-o"></i>
-      <span class="notice_count">{{
+      <!-- <span class="notice_count">{{
         noticeList.length >= 99 ? 99 : noticeList.length
-      }}</span>
+      }}</span> -->
     </div>
   </div>
 </template>

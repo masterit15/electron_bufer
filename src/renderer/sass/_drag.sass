@@ -5,6 +5,9 @@
 .chekall
   position: relative
   min-width: 70px
+  display: flex
+  justify-content: center
+  align-items: center
 .file
   &_add_btn
     position: relative
@@ -40,22 +43,12 @@
     display: flex
     justify-content: flex-start
     flex-direction: row
-    background-color: #fff
+    gap: 30px
+    padding: 20px
     z-index: 100
-    button
-      background-color: #fff
-      border: 2px solid tomato
-      border-radius: 5px
-      margin: 10px 15px
-      padding: 5px 15px
-      transition: all .3 ease
-      &:hover
-        background-color: tomato
-        color: #fff
-        transition: all .3 ease
   &_form
     position: absolute
-    background-color: #fff
+    background-color: $sbgColor
     bottom: 0px
     right: 0px
     height: 100%
@@ -69,7 +62,7 @@
       height: 100%
       padding: 20px
   &_size
-    width: 70px
+    width: 90px
     display: inline-block
   &_wrap
     display: flex

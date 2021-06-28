@@ -1,16 +1,21 @@
 #sidebar
   height: 100%
   position: relative
-  overflow: hidden
+  overflow-y: auto
   margin: 0
   padding: 0
   box-sizing: border-box
   min-width: 300px
-  background-color: #fff
+  background-color: $sbgColor
+  & .switch
+    position: absolute
+    right: 15px
+    bottom: 15px
+    z-index: 99
   & .folder
     &_list
       width: 100%
-      height: 100%
+      height: auto
       max-height: 600px
       list-style-type: none
       &_head
@@ -19,9 +24,8 @@
         padding: 15px 20px
         display: flex
         justify-content: space-between
-        border-bottom: 1px solid tomato
         &:hover
-          background-color: rgba(tomato,.3)
+          background-color: rgba($sdark,.3)
         &_close
           width: 100%
           display: flex
@@ -36,12 +40,17 @@
             line-height: 30px
       &_item
         position: relative
-        padding: 15px 25px
+        padding: 10px 25px
+        margin: 15px auto
         width: 100%
+        max-width: 80%
         cursor: pointer
         font-size: 1rem
+        border-radius: 1rem
+        color: $scolor
+        transition: all .5s ease
         &:hover,&.is_active
-          background-color: #eee
+          // box-shadow: $inner-shadow
         &_name
           position: relative
           width: 100%
@@ -57,49 +66,23 @@
             text-overflow: ellipsis
           &_icon
             line-height: 30px
-  & .search
-    position: relative
-    align-self: center
-    display: flex
-    justify-content: center
-    width: 80%
-    margin: 30px auto
-    & .fa
-      position: absolute
-      left: 15px
-      top: 10px
-      font-size: 1.6rem
-      color: #cecccc
-    & input
-      width: 100%
-      height: 45px
-      border-radius: 3px 
-      background-color: transparent
-      border: 1px solid $border
-      box-shadow: inset 0 0 6px 1px rgba(92, 101, 117, 0.18)
-      padding: 0 15px 0 50px
-      &:active, &:focus
-        outline: none
-        & ~ .search .fa
-          color: #000
+            color: $scolor
 #resizer
   flex-basis: 2px
   position: relative
   z-index: 400
-  cursor: col-resize
-  background: $border
+  cursor: pointer//col-resize
+  box-shadow: $shadow
+  background: $sbgColor
   margin: 0
   padding: 0
   box-sizing: border-box
   transition: all .3s ease
   &:hover,&.is_active
-    flex-basis: 3px
-    background: tomato
     transition: all .3s ease
     &:before
-      background: tomato
-      color: #fff
-      transition: all .3s ease
+      background: $gradientLight
+      color: $saccent
   &:before
     content: '\f07e'
     font-family: 'FontAwesome'
@@ -112,6 +95,6 @@
     width: 30px
     height: 30px
     text-align: center
-    background: $border
+    box-shadow: $shadow
+    background: $sbgColor
     line-height: 30px
-    transition: all .3s ease

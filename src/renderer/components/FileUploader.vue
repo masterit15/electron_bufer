@@ -21,9 +21,9 @@
         </ul>
       </div>
       <div class="file_actions">
-        <button class="btn file_btn" @click="uploadFiles">Загрузить</button>
-        <button class="btn file_btn" @click="clickInput">Прикрепить еще</button>
-        <button class="btn file_btn" @click="clearInput">Очистить</button>
+        <button class="s_btn" @click="uploadFiles">Загрузить</button>
+        <button class="s_btn" @click="clickInput">Прикрепить еще</button>
+        <button class="s_btn" @click="clearInput">Очистить</button>
       </div>
     </div>
     <transition name="fade">

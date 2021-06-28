@@ -1,0 +1,125 @@
+
+.dark
+  ::-webkit-scrollbar-thumb
+    background-color: $saccentD
+  .online
+    color: $saccentD
+  .circle
+    &__back
+      &-1, &-2
+        background: $gradientDark
+        box-shadow: 10px 10px 20px 5px rgba(0, 0, 0, 0.2),-10px -10px 20px 5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+    &__btn
+      color: $saccentD
+      background-color: $sbgColorD
+      box-shadow: 10px 10px 20px 5px rgba(0, 0, 0, 0.2),-10px -10px 20px 5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+      &:hover,&:active
+        color: $saccentD
+        box-shadow: inset 5px 5px 8px 1px rgba(0, 0, 0, 0.2),inset -5px -5px 8px 0px rgba(77, 71, 100, 0.3),inset -1px -2px 2px 0px rgba(77, 71, 100, 0.4),5px 5px 10px 2.5px rgba(0, 0, 0, 0.2),-5px -5px 10px 2.5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+        transition: all .3s ease
+  .file
+    &_row
+      color: $scolorD
+      &:hover
+        color: $scolorD
+    &_form
+      background-color: $sbgColorD
+  .s_btn
+    width: 15rem
+    height: 3rem
+    border-radius: 1rem
+    box-shadow: 10px 10px 20px 5px rgba(0, 0, 0, 0.2),-10px -10px 20px 5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+    justify-self: center
+    display: flex
+    align-items: center
+    color: $saccentD
+    font-weight: bold
+    border: none
+    background-color: $sbgColorD
+    justify-content: center
+    cursor: pointer
+    transition: 0.3s ease
+    &:active
+      box-shadow: inset 5px 5px 8px 1px rgba(0, 0, 0, 0.2),inset -5px -5px 8px 0px rgba(77, 71, 100, 0.3),inset -1px -2px 2px 0px rgba(77, 71, 100, 0.4),5px 5px 10px 2.5px rgba(0, 0, 0, 0.2),-5px -5px 10px 2.5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+  .neu
+    background-color: $sbgColorD
+    box-shadow: 10px 10px 20px 5px rgba(0, 0, 0, 0.2),-10px -10px 20px 5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+    transition: background 0.1s ease-in-out
+    &:hover,&.is_active
+      // background: hsl(250, 10%, 25%)
+      color: $saccentD
+      box-shadow: inset 5px 5px 8px 1px rgba(0, 0, 0, 0.2),inset -5px -5px 8px 0px rgba(77, 71, 100, 0.3),inset -1px -2px 2px 0px rgba(77, 71, 100, 0.4),5px 5px 10px 2.5px rgba(0, 0, 0, 0.2),-5px -5px 10px 2.5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+    &:active
+      box-shadow: inset 5px 5px 8px 1px rgba(0, 0, 0, 0.2),inset -5px -5px 8px 0px rgba(77, 71, 100, 0.3),inset -1px -2px 2px 0px rgba(77, 71, 100, 0.4),5px 5px 10px 2.5px rgba(0, 0, 0, 0.2),-5px -5px 10px 2.5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+      background: #3a3842
+      color: $saccentD
+  .checkbox
+    input
+      display: none
+      &:checked ~ label
+        box-shadow: 6px 6px 15px 3px rgba(48, 46, 54, 1),1px 1px 5px 1px rgba(48, 46, 54, 0.8),-6px -6px 15px 3px rgba(77, 71, 100, 0.6),-1px -1px 2px 1px rgba(77, 71, 100, 0.6)
+        &:after,&:before
+          opacity: 1
+          background: $saccent
+    label
+      box-shadow: inset 5px 5px 8px 1px rgba(0, 0, 0, 0.2),6px 6px 15px 3px rgba(48, 46, 54, 1),inset -5px -5px 8px 0px rgba(77, 71, 100, 0.3),inset -1px -2px 2px 0px rgba(104, 97, 133, 0.4),-6px -6px 15px 3px rgba(77, 71, 100, 0.6)
+      &:after,&:before
+        opacity: 0
+  .input
+    position: relative
+    align-self: center
+    display: flex
+    justify-content: center
+    max-width: 80%
+    margin: 30px auto
+    & .fa
+      position: absolute
+      left: 15px
+      top: 13px
+      font-size: 1.3rem
+      color: $saccentD
+    & input
+      width: 100%
+      height: 45px
+      border-radius: 1rem
+      background-color: transparent
+      border: none
+      color: $saccentD
+      background: #3a3842;
+      box-shadow: inset 5px 5px 8px 1px rgba(0, 0, 0, 0.2),inset -5px -5px 8px 0px rgba(77, 71, 100, 0.3),inset -1px -2px 2px 0px rgba(77, 71, 100, 0.4)
+      padding: 0 15px 0 50px
+      transition: all .2s ease
+      &:active, &:focus
+        outline: none
+        box-shadow: inset 5px 5px 8px 1px rgba(0, 0, 0, 0.2),inset -5px -5px 8px 0px rgba(77, 71, 100, 0.3),inset -1px -2px 2px 0px rgba(77, 71, 100, 0.4),5px 5px 10px 2.5px rgba(0, 0, 0, 0.2),-5px -5px 10px 2.5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+        transition: all .2s ease
+        & ~ .fa
+          color: $saccentD
+  #sidebar
+    background-color: $sbgColorD
+    color: $theamDarkColor
+    // background: radial-gradient(circle, rgba(119,44,236,1) 0%, rgba(251,4,123,1) 100%)
+    // backdrop-filter: blur(10px)
+    .folder_list_item:hover,
+    .folder_list_item.is_active
+      // background-color: $theamDarkH
+  #resizer
+    color: $saccentD
+    background: $theamDarkBorder
+    box-shadow: 10px 10px 20px 5px rgba(0, 0, 0, 0.2),-10px -10px 20px 5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+    &:hover,&.is_active
+      &:before
+        background: $sbgColorD
+    &:before
+      color: $saccentD
+      background: $theamDarkBorder
+      box-shadow: 10px 10px 20px 5px rgba(0, 0, 0, 0.2),-10px -10px 20px 5px rgba(77, 71, 100, 0.4),-1px -1px 4px 2px rgba(77, 71, 100, 0.4)
+  .table.b-table > thead > tr > .table-b-table-default, .table.b-table > tbody > tr > .table-b-table-default, .table.b-table > tfoot > tr > .table-b-table-default
+    background-color: $theamDarkH
+    color: #fff
+  #wrapper, #main, #header
+    background-color: $sbgColorD
+    &:before,
+      background-color: $theamDarkBorder
+    .file_add_btn
+      border-color: $theamDarkBorder

@@ -17,11 +17,13 @@
       </b-dropdown>
       <Notifycation />
     </div>
-    <div class="file_add_btn" @click="clickInput">
+    <div class="circle" >
       <input type="file"  @change="addFiles" ref="files" class="file_input" multiple />
-      <span class="file_text">
-        <i class="fa fa-upload"></i> 
+      <span class="circle__btn" @click="clickInput">
+        <i class="fa fa-upload"></i>
       </span>
+      <span class="circle__back-1"></span>
+      <span class="circle__back-2"></span>
     </div>
   </div>
 </template>
@@ -49,9 +51,20 @@ export default {
       this.$router.push("/auth");
     },
     clickInput() {
+      let play = document.querySelector('.play');
+      let pause = document.querySelector('.pause');
+      let playBtn = document.querySelector('.circle__btn');
+      let wave1 = document.querySelector('.circle__back-1');
+      let wave2 = document.querySelector('.circle__back-2');
       let input = document.querySelector(".file_input");
       input.value = ''
       input.click();
+
+      // pause.classList.toggle('visibility');
+      // play.classList.toggle('visibility');
+      // playBtn.classList.toggle('shadow');
+      // wave1.classList.toggle('paused');
+      // wave2.classList.toggle('paused');
     },
     addFiles(e) {
       

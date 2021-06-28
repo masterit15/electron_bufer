@@ -11,21 +11,29 @@
         tbody-class="is_body"
         sticky-header="100vh"
       >
-        <template v-slot:head(check)="">
-          <input
-            @change="chekedFiles($event)"
-            class="cinput"
-            type="checkbox"
-            ref="chekone"
-          />
+        <template v-slot:head(check)="" v-if="files.length > 0">
+          <div class="checkbox" >
+            <input
+              @change="chekedFiles($event)"
+              class="cinput"
+              type="checkbox"
+              ref="chekone"
+              id="chekone-all"
+            />
+            <label for="chekone-all"></label>
+          </div>
         </template>
         <template #cell(check)="data">
-          <input
-            @change="fileSelect($event)"
-            class="cinput chekone"
-            type="checkbox"
-            :value="data.item.id"
-          />
+          <div class="checkbox">
+            <input
+              @change="fileSelect($event)"
+              class="cinput chekone"
+              type="checkbox"
+              :value="data.item.id"
+              :id="`chekone-all-${data.item.id}`"
+            />
+            <label :for="`chekone-all-${data.item.id}`"></label>
+          </div>
           <span class="file_status" v-show="activeFolderArr.userId !== user.id">
             <i
               class="fa"
@@ -114,13 +122,13 @@
     </div>
     <transition name="slide-down">
       <div class="file_actions" v-show="fileActionPanel">
-        <button
+        <button class="s_btn"
           :disabled="actionButtonDisable(fileSelectArr.length > 1)"
           @click.prevent="actionEvent('getzip')"
         >
           Скачать архивом
         </button>
-        <button
+        <button class="s_btn"
           :disabled="
             actionButtonDisable(
               fileSelectArr.length <= 1 &&
@@ -131,7 +139,7 @@
         >
           Переименовать
         </button>
-        <button
+        <button class="s_btn"
           :disabled="
             actionButtonDisable(activeFolderArr.userId == user.id || isOwner)
           "
@@ -249,7 +257,7 @@ export default {
   },
   updated(){
     this.getAllFilesRow();
-    this.dragAndClick()
+    // this.dragAndClick()
   },
   methods: {
     ...mapActions([
@@ -267,14 +275,15 @@ export default {
           event.preventDefault();
           console.log(file);
           ipcRenderer.send("ondragstart", file);
-        };
-
-        row.addEventListener("dblclick", function (e) {
-          let file = e.target.closest(".file_row").querySelector(".dragfile")
-            .dataset.file;
-          ipcRenderer.send("openFile", file);
-        });
+        };  
       });
+      document.addEventListener("dblclick", function (e) {
+          let row = e.target.closest(".file_row")
+          if(row){
+            let file = row.querySelector(".dragfile").dataset.file;
+            ipcRenderer.send("openFile", file);
+          }
+        });
     },
     actionButtonDisable(param) {
       return !param;

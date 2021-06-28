@@ -150,16 +150,16 @@ ipcMain.on('openFile', async(event, file) => {
     }
   }).then(res=>{
     // shell.showItemInFolder(localFile) // Показать данный файл в файловом менеджере. Если это возможно, выберите файл.
-    // shell.openPath('folderpath') // Откройте данный файл в режиме рабочего стола по умолчанию.
-    if(res){
-      open_file_exp(localFile)
-      activeFilesPath.push(localFile)
-      if(activeFilesPath.length > 0){
-        interval = setInterval(()=>{
-            clearTempFiles()
-        }, 3000)
-      }
-    }
+    shell.openPath(localFile) // Откройте данный файл в режиме рабочего стола по умолчанию.
+    // if(res){
+    //   open_file_exp(localFile)
+    //   activeFilesPath.push(localFile)
+    //   if(activeFilesPath.length > 0){
+    //     interval = setInterval(()=>{
+    //         clearTempFiles()
+    //     }, 3000)
+    //   }
+    // }
   }) 
 });
 // отправка в приложение версии
@@ -289,7 +289,7 @@ function downloadFile(configuration){
           });
       }
       req.on('end', function(e) {
-          resolve(e);
+          resolve(true);
       });
   });
 }
