@@ -24,6 +24,15 @@ const router = new Router({
       }
     },
     {
+      path: '/lockscreen',
+      name: 'Блокировка',
+      component: require('@/view/LockScreen').default,
+      meta: {
+        layout: 'empty',
+        requiresGuest: true
+      }
+    },
+    {
       path: '*',
       redirect: '/'
     }

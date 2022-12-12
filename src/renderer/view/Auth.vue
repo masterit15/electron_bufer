@@ -34,7 +34,6 @@
 </template>
 <script>
 import {mapActions, mapGetters} from 'vuex'
-import smalltalk from "smalltalk";
 import os from 'os'
 import axios from 'axios'
 const userInfo = os.userInfo()
@@ -49,7 +48,7 @@ if(os.type() == 'Windows_NT'){
 }
 if(userNetwork == 'notwork'){
   const { remote, ipcRenderer } = require('electron');
-  smalltalk
+  this.$smalltalk
     .confirm("Сетевое подключения", `Нет сетевого подключения`, {
       buttons: {
         ok: "Перезагрузить",

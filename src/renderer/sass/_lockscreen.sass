@@ -1,0 +1,116 @@
+#lock_screen
+  padding-top: 35px
+.lock_screen
+  width: 100%
+  height: calc( 100vh - 35px )
+  background-size: cover
+  background-position: 50% 50%
+  background-repeat: no-repeat
+  display: flex
+  justify-content: center
+  align-items: center
+  &_block
+    position: relative
+    width: 400px
+    height: 500px
+    display: flex
+    justify-content: space-between
+    align-items: center
+    flex-direction: column
+    background: inherit
+    border-radius: 10px
+    overflow: hidden
+    box-shadow: 0 5px 10px 3px rgba(0, 0, 0, 0.3)
+    border: 1px solid rgba(58, 58, 58, 0.45)
+    z-index: 10
+    &:before
+      content: ''
+      position: absolute
+      left: 0px
+      top: 0px
+      width: 100%
+      height: 100%
+      background-color: rgba(0, 0, 0, 0.18)
+      z-index: 0
+    &:after
+      content: ''
+      position: absolute
+      left: -20px
+      top: -20px
+      width: 110%
+      height: 110%
+      background: inherit
+      filter: blur(8px)
+      z-index: -1
+    &_dots
+      width: 100%
+      height: 50px
+      display: flex
+      justify-content: center
+      align-items: center
+      z-index: 30
+      &.error
+        animation-name: shake
+        animation-duration: 300ms
+      & svg
+        width: 144px
+        height: 24px
+        & .pin-circle
+          transition: all 100ms ease-out
+          fill: transparent
+          stroke-width: 2px
+          stroke: #f1f1f1
+          outline-offset: -2px
+          outline-width: 2px
+          &.entered
+            fill: #f1f1f1
+          &.success
+            fill: #69be57
+            stroke: #69be57
+          &.error
+            fill: #ff4646
+            stroke: #ff4646
+    &_table
+      border-style: hidden
+      position: relative
+      border-collapse: collapse
+      width: 400px
+      height: 450px
+      text-align: center
+      font-size: 30px
+      color: #f1f1f1
+      font-weight: bold
+      z-index: 20
+      & td
+        border: 1px solid #55555552
+        width: 110px
+        max-height: 110px
+      & .number
+        display: flex
+        justify-content: center
+        align-items: center
+        cursor: pointer
+        width: 100%
+        height: 100%
+        transition: all .1s ease-in
+        -webkit-user-select: none
+        -ms-user-select: none
+        user-select: none
+        &:hover, &.active
+          background-color: #55555552
+          transition: all .1s ease-in
+
+@keyframes shake
+  10%,
+  90%
+    transform: translate3d(-1px, 0, 0)
+  20%,
+  80%
+    transform: translate3d(2px, 0, 0)
+  30%,
+  50%,
+  70%
+    transform: translate3d(-4px, 0, 0)
+  40%,
+  60%
+    transform: translate3d(4px, 0, 0)

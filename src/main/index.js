@@ -8,7 +8,7 @@ import path from 'path'
 const username = os.userInfo().username
 var activeFilesPath = []
 var interval
-
+const serverURL = process.env.NODE_ENV === 'production' ? 'http://localhost:5050': 'http://localhost:5050'//'http://10.20.0.41'
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
@@ -84,7 +84,7 @@ if(process.platform === "win32"){
   var options, url
 
   if (process.env.NODE_ENV === 'production') {
-    url = 'http://10.20.0.41/update/'
+    url = `${serverURL}/update/`
     options = {
       requestHeaders: {
         Authorization: 'Basic 123456789'
@@ -93,7 +93,7 @@ if(process.platform === "win32"){
       url: url
     }
   } else {
-    url = 'http://localhost:5050/update/'
+    url = `${serverURL}/update/`
     options = {
       requestHeaders: {
         Authorization: 'Basic 123456789'
@@ -138,7 +138,7 @@ ipcMain.on('openFile', async(event, file) => {
   }
   let percent = 0
   await downloadFile({
-    remoteFile: process.env.NODE_ENV === 'production' ? `http://10.20.0.41/download/${file}`: `http://localhost:5050/download/${file}`,
+    remoteFile: `${serverURL}/download/${file}`,
     localFile: localFile,
     onProgress: function (received,total){
         percent = Math.round((received * 100) / total) / 100
@@ -175,7 +175,7 @@ ipcMain.on('download-url', async (event, file) => {
     let localFile = `${result.filePaths}\\${file}`
     let percent = 0
     await downloadFile({
-      remoteFile: process.env.NODE_ENV === 'production' ? `http://10.20.0.41/download/${file}`: `http://localhost:5050/download/${file}`,
+      remoteFile: `${serverURL}/download/${file}`,
       localFile: localFile,
       onProgress: function (received,total){
         percent = Math.round((received * 100) / total) / 100
@@ -202,7 +202,7 @@ ipcMain.on('ondragstart', async (event, file) => {
   }
   let percent = 0
   await downloadFile({
-    remoteFile: process.env.NODE_ENV === 'production' ? `http://10.20.0.41/download/${file}`: `http://localhost:5050/download/${file}`,
+    remoteFile: `${serverURL}/download/${file}`,
     localFile: localFile,
     onProgress: function (received,total){
         percent = Math.round((received * 100) / total) / 100

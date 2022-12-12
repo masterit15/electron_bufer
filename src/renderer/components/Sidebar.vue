@@ -9,6 +9,7 @@
       <input @change="theamChange($event)" id="s1" type="checkbox">
       <label for="s1"></label>
     </div>
+      <button @click="lockScreen($event)" class="lock_screen_btn neu" ref="lockBtn"><i class="fa fa-unlock"></i></button>
     <!-- <div class="checkbox">
       <input type="checkbox" name="" id="s_chech-1">
       <label for="s_chech-1"></label>
@@ -84,7 +85,11 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["getDepartaments", "getFolders", "getFiles", "activateFolder"]),
+    ...mapActions(["getDepartaments", "getFolders", "getFiles", "activateFolder", "LockScreen"]),
+    lockScreen(event){
+      // this.$refs.lockBtn.querySelector('.fa').classList.remove('fa-unlock')
+      this.LockScreen()
+    },
     theamChange(event){
       if(event.target.checked){
         document.querySelector('body').classList.add('dark')

@@ -16,6 +16,9 @@ body
   background-color: transparent
   -webkit-backdrop-filter: blur(10px)
   overflow: hidden
+  -webkit-user-select: none
+  -ms-user-select: none
+  user-select: none
 ::-webkit-scrollbar 
   position: absolute
   right: 0
@@ -163,6 +166,17 @@ pre
   top: 0
 .blur
   -webkit-filter: url(#blurFilter);
+.lock_screen_btn
+  border: none
+  border-radius: 100%
+  width: 42px
+  height: 42px
+  display: flex
+  justify-content: center
+  align-items: center
+  position: absolute
+  right: 20px
+  top: 20px
 .window_border
   position: fixed
   width: 100%
@@ -286,3 +300,4 @@ pre
 @import 'context_menu'
 @import 'drag'
 @import 'smalltalk'
+@import 'lockscreen'

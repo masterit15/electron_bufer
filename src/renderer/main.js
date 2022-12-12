@@ -3,7 +3,7 @@ import axios from 'axios'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
-import smalltalk from '../../node_modules/smalltalk/lib/smalltalk'
+import smalltalk from 'smalltalk/lib/smalltalk'
 import App from './App'
 import router from './router'
 import store from './store'
@@ -30,7 +30,7 @@ Vue.filter('size', fileSize)
 var baseURL = ''
 
 if(process.env.NODE_ENV === 'production'){
-  baseURL = 'http://10.20.0.41/api/'
+  baseURL = 'http://localhost:5050/api/'//'http://10.20.0.41/api/'
 }else{
   baseURL = 'http://localhost:5050/api/'
 }

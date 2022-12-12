@@ -155,7 +155,6 @@
 <script>
 const { ipcRenderer } = require("electron");
 import ContextMenu from "@/components/ContextMenu";
-import smalltalk from "smalltalk";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "home",
@@ -379,7 +378,7 @@ export default {
     async actionEvent(option) {
       if (option == "getzip") {
         this.zipFiles = await this.downloadZIP(this.fileSelectArr);
-        smalltalk
+        this.$smalltalk
           .confirm("Архивация", `${this.zipFiles}`, {
             buttons: {
               ok: "Скачать",
@@ -417,7 +416,7 @@ export default {
           `.${fileExt}`,
           ""
         );
-        smalltalk
+        this.$smalltalk
           .prompt("Переивеновать", "Введите новое имя файла", `${fileName}`, {
             buttons: {
               ok: "Переименовать",
@@ -453,7 +452,7 @@ export default {
             this.toggleMenuOff();
           });
       } else if (option == "delete") {
-        smalltalk
+        this.$smalltalk
           .confirm("Удаление", `Вы действительно хотите удалить файл(ы)?`, {
             buttons: {
               ok: "Удалить",

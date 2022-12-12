@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    
     <div class="window_border dragselect nontextselect">
       <div class="window_border_folder" v-if="activeFolderArr">Текущая директория: {{activeFolderArr.name}}| Количество файлов: {{ fileCount }}</div>
       <div class="window_border_action">
@@ -8,6 +9,7 @@
         <button class="window_border_action_btn_close" @click="resizeApp('close')"></button>
       </div>
     </div>
+    
     <component :is="layout">
       <router-view></router-view>
     </component>
@@ -100,7 +102,7 @@ export default {
   },
   components: {
     EmptyLayout,
-    MainLayout
+    MainLayout,
   }
 };
 </script>

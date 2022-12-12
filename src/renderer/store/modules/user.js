@@ -3,9 +3,13 @@ export default {
   state: {
     users: [],
     user: JSON.parse(localStorage.getItem('user')),
-    notimessage: {}
+    notimessage: {},
+    lockscreen: false
   },
   mutations: {
+    setLock(state, lock){
+      state.lockscreen = lock
+    },
     setUsers(state, users){
       state.users = users
     },
@@ -67,10 +71,19 @@ export default {
       })
       .catch(err=>err)
     },
+    async unLockScreen({commit}, password){
+      if(password == '0000'){
+        commit('setLock', false)
+      }
+    },
+    async LockScreen({commit}){
+      commit('setLock', true)
+    },
   },
   getters: {
     users: state => state.users,
     user: state => state.user,
-    notimessage: state => state.notimessage
+    notimessage: state => state.notimessage,
+    lockscreen: state => state.lockscreen
   }
 }

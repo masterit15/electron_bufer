@@ -1,6 +1,10 @@
 <template>
   <div id="wrapper">
-    <div id="container">
+    <transition  name="slide-fade">
+      <LockScreenVue v-if="lockscreen"/>
+    </transition>
+    <transition  name="slide-fade">
+    <div v-if="!lockscreen" id="container">
       <AppSidebar/>
       <div id="resizer"></div>
       <main id="main">
@@ -11,12 +15,14 @@
       </main>
       <AppRightBar/>
     </div>
+  </transition>
   </div>
 </template>
 <script>
 import AppRightBar from "../components/Header";
 import AppSidebar from "../components/Sidebar";
 import Uploader from "../components/FileUploader";
+import LockScreenVue from "../view/LockScreen.vue";
 import { mapActions, mapGetters } from "vuex";
 export default {
   sockets: {
@@ -58,7 +64,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["users", "files", "user", "activeFolderArr", "notimessage", "inputFiles"]),
+    ...mapGetters(["users", "files", "user", "activeFolderArr", "notimessage", "inputFiles", "lockscreen"]),
     noticeMessages() {
       return this.notimessage || "";
     },
@@ -154,6 +160,7 @@ export default {
     }
   },
   components: {
+    LockScreenVue,
     AppRightBar,
     AppSidebar,
     Uploader
